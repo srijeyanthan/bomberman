@@ -8,12 +8,17 @@ import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.WindowManager;
 public class DemoApp extends Activity {
+	DisplayMetrics displaymetrics;
 	DrawView drawView;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        
+		displaymetrics = new DisplayMetrics();
+		WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+		windowManager.getDefaultDisplay().getMetrics(displaymetrics);
+        
         drawView = new DrawView(this);
         setContentView(R.layout.activity_main);
     }

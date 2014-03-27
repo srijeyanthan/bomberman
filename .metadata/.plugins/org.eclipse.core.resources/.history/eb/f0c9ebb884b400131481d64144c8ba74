@@ -10,7 +10,6 @@
     	android:layout_height="wrap_content"
     	android:id="@+id/upprBoard"
     	android:layout_alignParentTop="True">
-    	
     	<TextView
     	    android:id="@+id/uid"
     	    android:layout_width="wrap_content"
@@ -20,11 +19,11 @@
     	    android:gravity="center"
     	    android:layout_weight="1"
     	     />
-    	<View
-    	    android:layout_below="@+id/upprBoard"
-    	    android:layout_height="fill_parent"
-    	    android:layout_width="1dp"
-    	    android:background="@android:color/darker_gray"/>
+    			    <View
+        android:layout_below="@+id/upprBoard"
+        android:layout_height="fill_parent"
+        android:layout_width="1dp"
+        android:background="@android:color/darker_gray"/>
     	
     	<TextView
     	    android:id="@+id/score"
@@ -75,14 +74,15 @@
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"/>
 		    
-		    <com.example.myfirstapp.DrawView
+		    <View
+		        class = "com.example.myfirstapp.DrawView"
 		        android:id="@+id/bckg"
 		        android:layout_below="@+id/upprSeparator" 
 		        android:background="#336600"
 		        android:layout_width="fill_parent"
 		        android:layout_height="fill_parent"
 		        android:layout_above="@+id/lowerSeparator"
-		        />
+		        ></View>
 		    
         <Button
         android:id="@+id/btnBomb"

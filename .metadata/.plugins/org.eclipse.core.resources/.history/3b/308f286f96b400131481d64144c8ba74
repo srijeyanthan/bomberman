@@ -1,0 +1,62 @@
+package com.example.myfirstapp;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.WindowManager;
+
+public class DrawView extends View{
+	private static int[][] state;
+	Paint paint = new Paint();
+	DisplayMetrics displaymetrics;
+	private int rectSize = 50;
+	private int viewHeight = 0;
+	private int viewWidth = 0;
+
+	
+	public DrawView(Context context) {
+		super(context);
+		// TODO Auto-generated constructor stub
+		
+		displaymetrics = new DisplayMetrics();
+		WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+		windowManager.getDefaultDisplay().getMetrics(displaymetrics);
+	}
+	
+	public DrawView(Context context, AttributeSet attrs){
+		super(context,attrs);
+
+	}
+	
+	public void onDraw(Canvas canvas){
+
+		paint.setColor(Color.GRAY);
+		paint.setStrokeWidth(0);
+		//canvas.drawRect(0, 0, rectSize, rectSize, paint);
+		state = new int[MeasureSpec.getSize(measureSpec)/rectSize][displaymetrics.heightPixels/rectSize];
+	}
+	
+	@Override 
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
+		int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
+		int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
+		this.setMeasuredDimension(parentWidth/2, parentHeight);
+		this.setLayoutParams(new *ParentLayoutType*.LayoutParams(parentWidth/2,parentHeight));
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+	}
+	
+	public void setMapSize(int size){
+		//1 - small
+		//2 - medium
+		//3 - large
+		//System.out.println(String.valueOf(displaymetrics.widthPixels)+ " : "+ String.valueOf(displaymetrics.heightPixels));
+		//state = new int[displaymetrics.widthPixels/rectSize][displaymetrics.heightPixels/rectSize];
+		
+	}
+
+}

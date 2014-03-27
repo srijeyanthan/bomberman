@@ -1,0 +1,51 @@
+package com.example.myfirstapp;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.WindowManager;
+
+public class DrawView extends View{
+	private static int[][] state;
+	Paint paint = new Paint();
+	DisplayMetrics displaymetrics;
+	private int rectSize;
+
+	
+	public DrawView(Context context) {
+		super(context);
+		// TODO Auto-generated constructor stub
+		
+		displaymetrics = new DisplayMetrics();
+		WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+		windowManager.getDefaultDisplay().getMetrics(displaymetrics);
+	}
+	
+	public DrawView(Context context, AttributeSet attrs){
+		super(context,attrs);
+
+	}
+	
+	public void onDraw(Canvas canvas){
+
+		paint.setColor(Color.GRAY);
+		paint.setStrokeWidth(0);
+		canvas.drawRect(0, 0, 50, 50, paint);
+		canvas.drawRect(55, 0, 105, 50, paint);
+		canvas.drawRect(110, 0, 160, 50, paint);
+	}
+	
+	public void setMapSize(int size){
+		//1 - small
+		//2 - medium
+		//3 - large
+		state = new int[10][20];
+		
+	}
+
+}

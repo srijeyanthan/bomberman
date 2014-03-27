@@ -5,12 +5,13 @@
     android:layout_height="fill_parent"
     tools:context=".DemoApp" >
     
-    <LinearLayout
-        android:layout_width="fill_parent"
-    	android:layout_height="wrap_content"
-    	android:id="@+id/upprBoard"
-    	android:layout_alignParentTop="True">
-    	
+ 
+    	<LinearLayout
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="wrap_content"
+    	    android:id="@+id/upprBoard"
+    	    android:layout_alignParentTop="True"
+    	    >
     	<TextView
     	    android:id="@+id/uid"
     	    android:layout_width="wrap_content"
@@ -20,11 +21,11 @@
     	    android:gravity="center"
     	    android:layout_weight="1"
     	     />
-    	<View
-    	    android:layout_below="@+id/upprBoard"
-    	    android:layout_height="fill_parent"
-    	    android:layout_width="1dp"
-    	    android:background="@android:color/darker_gray"/>
+    			    <View
+        android:layout_below="@+id/upprBoard"
+        android:layout_height="fill_parent"
+        android:layout_width="1dp"
+        android:background="@android:color/darker_gray"/>
     	
     	<TextView
     	    android:id="@+id/score"
@@ -75,13 +76,10 @@
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"/>
 		    
-		    <com.example.myfirstapp.DrawView
+		    <View
 		        android:id="@+id/bckg"
 		        android:layout_below="@+id/upprSeparator" 
-		        android:background="#336600"
-		        android:layout_width="fill_parent"
-		        android:layout_height="fill_parent"
-		        android:layout_above="@+id/lowerSeparator"
+		        android:background="#00CC66"
 		        />
 		    
         <Button
@@ -91,7 +89,7 @@
 	    android:layout_alignParentRight="true"
 	    android:layout_below="@+id/lowerSeparator" 
 	    android:text="@string/button_bomb"
-        />
+        android:onClick="bomb"/>
     
     <Button
         android:id="@+id/btnPause"
@@ -100,7 +98,7 @@
 	    android:layout_alignParentLeft="true" 
 	    android:layout_below="@+id/lowerSeparator" 
 	    android:text="@string/button_pause"
-        />
+        android:onClick="pause"/>
     
     <Button
         android:id="@+id/btnQuit"
@@ -109,7 +107,7 @@
 	    android:layout_alignParentLeft="true" 
 	    android:layout_below="@+id/btnPause" 
 	    android:text="@string/button_quit"
-        />
+        android:onClick="quit"/>
     <View
         android:id="@+id/lowerSeparator"
         android:layout_above="@+id/btnUp"
@@ -124,7 +122,7 @@
         android:text="@string/button_up"
         android:layout_above="@+id/btnDown"
         android:layout_centerHorizontal="true"
-         />
+        android:onClick="moveUp" />
     
     <Button
         android:id="@+id/btnDown"
@@ -133,7 +131,7 @@
 	    android:layout_alignParentBottom="true"
 	    android:layout_centerHorizontal="true" 
 	    android:text="@string/button_down"
-        />
+        android:onClick="moveDown"/>
     
 
      <Button
@@ -143,7 +141,7 @@
         android:layout_toLeftOf="@+id/btnDown"
         android:layout_alignParentBottom="True"
         android:text="@string/button_left"
-        />   
+        android:onClick="moveLeft"/>   
         
      <Button
         android:id="@+id/btnRight"
@@ -152,6 +150,6 @@
         android:layout_toRightOf="@+id/btnDown"
         android:layout_alignParentBottom="True"
         android:text="@string/button_right"
-         />
+        android:onClick="moveRight" />
      
 </RelativeLayout>

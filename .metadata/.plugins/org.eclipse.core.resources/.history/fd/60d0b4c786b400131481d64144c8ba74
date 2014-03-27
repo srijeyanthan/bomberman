@@ -75,14 +75,15 @@
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"/>
 		    
-		    <com.example.myfirstapp.DrawView
+		    <View
+		        class = "com.example.myfirstapp.DrawView"
 		        android:id="@+id/bckg"
 		        android:layout_below="@+id/upprSeparator" 
 		        android:background="#336600"
 		        android:layout_width="fill_parent"
 		        android:layout_height="fill_parent"
 		        android:layout_above="@+id/lowerSeparator"
-		        />
+		        ></View>
 		    
         <Button
         android:id="@+id/btnBomb"

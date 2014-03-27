@@ -3,19 +3,26 @@ package com.example.myfirstapp;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.content.Context;
-import android.util.DisplayMetrics;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.view.Menu;
-import android.view.WindowManager;
+import android.view.SurfaceView;
+import android.widget.RelativeLayout;
+
 public class DemoApp extends Activity {
-	DrawView drawView;
-	
+		
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        drawView = new DrawView(this);
         setContentView(R.layout.activity_main);
+        
+    }
+    
+    protected void onDraw(Canvas canvas){
+    	canvas.drawColor(Color.GREEN);
+    	
     }
 
     @Override
