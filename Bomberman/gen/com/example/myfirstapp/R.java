@@ -65,11 +65,11 @@ public final class R {
         public static final int button_up=0x7f050007;
         public static final int done=0x7f05000b;
         public static final int edit_message=0x7f050006;
-        public static final int no_players=0x7f050005;
+        public static final int no_players_text=0x7f050005;
         public static final int reminder=0x7f05000c;
-        public static final int score=0x7f050003;
-        public static final int tleft=0x7f050004;
-        public static final int uid=0x7f050002;
+        public static final int score_text=0x7f050003;
+        public static final int tleft_text=0x7f050004;
+        public static final int uid_text=0x7f050002;
     }
     public static final class style {
         /** 

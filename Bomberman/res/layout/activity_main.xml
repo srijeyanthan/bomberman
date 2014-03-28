@@ -18,7 +18,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textSize="20sp" />
+            android:textSize="20sp" 
+            android:text="@string/uid_text" />
 
         <View
             android:layout_width="1dp"
@@ -31,7 +32,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textSize="20sp" />
+            android:textSize="20sp" 
+            android:text="@string/score_text" />
 
         <View
             android:layout_width="1dp"
@@ -44,7 +46,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textSize="20sp" />
+            android:textSize="20sp" 
+            android:text="@string/tleft_text"/>
 
         <View
             android:layout_width="1dp"
@@ -57,7 +60,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textSize="20sp" />
+            android:textSize="20sp" 
+            android:text="@string/no_players_text" />
     </LinearLayout>
 
     <View

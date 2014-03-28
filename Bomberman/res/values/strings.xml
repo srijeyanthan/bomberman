@@ -3,10 +3,10 @@
 
     <string name="app_name">BOMBERMAN</string>
     <string name="action_settings">Settings</string>
-    <string name="uid">DAN</string>
-    <string name="score">3949</string>
-    <string name="tleft">40:30</string>
-    <string name="no_players">4</string>
+    <string name="uid_text">DAN</string>
+    <string name="score_text">3949</string>
+    <string name="tleft_text">40:30</string>
+    <string name="no_players_text">4</string>
     <string name="edit_message" />
     <string name="button_up">▲</string>
     <string name="button_down">▼</string>
