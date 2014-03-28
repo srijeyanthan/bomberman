@@ -44,6 +44,7 @@ public class DrawView extends View{
 		state[1][1] = 1;
 		state[1][0] = 2;//2 => bricks
 		state[1][2] = 2;
+		state[3][4] = 1;
 		
 		for(int i=0;i<state.length;i++){
 			for(int j=0;j<state[i].length;j++){
@@ -124,13 +125,22 @@ public class DrawView extends View{
 		//Using the greatest common divisor between width and height as a base with variable exponents  
 		//in order to set the offset (i.e. square edge) that would fit both the width and the height of the screen
 		//TODO: find smaller values between exponents 3 and 4
-		base = BigInteger.valueOf(vHeight).gcd(BigInteger.valueOf(vWidth)).intValue();
+		if(vHeight % 1 == 0 && vWidth % 1 == 0){
+			base = BigInteger.valueOf(vHeight).gcd(BigInteger.valueOf(vWidth)).intValue();
+		}
+		else if (vHeight % 1 != 0){
+			vHeight--;
+			base = BigInteger.valueOf(vHeight).gcd(BigInteger.valueOf(vWidth)).intValue();
+		} else if (vWidth % 1 != 0){
+			vWidth--;
+			base = BigInteger.valueOf(vHeight).gcd(BigInteger.valueOf(vWidth)).intValue();
+		}
 		cubeOffset = (int) Math.pow(base, size);	
 	}
 	
 	public byte getMapWidth(){
-		//Return the number of columns as the result of the division 
-		//between the width and the offset to identify the width of the 2D array
+		//Return the number of columns  
+		//as the result of width/offset
 		if(base==0)
 			return 0;
 		else
@@ -138,8 +148,8 @@ public class DrawView extends View{
 	}
 	
 	public byte getMapHeight(){
-		//Return the number of rows as the result of the division 
-		//between the height and the offset to find the height of the 2D array
+		//Return the number of rows  
+		//as the result of height/offset
 		if(base==0)
 			return 0;
 		else
