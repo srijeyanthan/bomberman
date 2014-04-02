@@ -1,0 +1,11 @@
+\beamer@endinputifotherversion {3.10pt}
+\beamer@sectionintoc {1}{Introduction}{3}{0}{1}
+\beamer@subsectionintoc {1}{1}{Introduction}{4}{0}{1}
+\beamer@sectionintoc {2}{Design Concepts}{5}{0}{2}
+\beamer@subsectionintoc {2}{1}{Announce/Listen model}{6}{0}{2}
+\beamer@subsectionintoc {2}{2}{Hierarchical Organisation}{9}{0}{2}
+\beamer@subsectionintoc {2}{3}{XML Service Descriptions}{10}{0}{2}
+\beamer@subsectionintoc {2}{4}{Privacy and Authentication}{11}{0}{2}
+\beamer@sectionintoc {3}{Architecture}{12}{0}{3}
+\beamer@sectionintoc {4}{Wide Area Support}{24}{0}{4}
+\beamer@subsectionintoc {4}{1}{Adaptive Server Hierrachy Management}{29}{0}{4}
