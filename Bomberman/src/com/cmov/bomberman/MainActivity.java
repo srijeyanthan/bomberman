@@ -4,24 +4,20 @@ import com.cmov.bomberman.R;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
+import android.util.DisplayMetrics;
 import android.view.Menu;
-import android.widget.GridView;
+import android.view.WindowManager;
 
 public class MainActivity extends Activity {
-	// DrawView drawView;
-
-	GridView gridView;
+	DrawView drawView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		drawView = new DrawView(this);
 		setContentView(R.layout.activity_main);
-		gridView = (GridView) findViewById(R.id.gridView1);
-
-		// Instance of ImageAdapter Class
-		gridView.setAdapter(new ImageAdapter(this));
-
 	}
 
 	@Override
