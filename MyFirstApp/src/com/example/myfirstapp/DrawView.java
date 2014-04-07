@@ -3,23 +3,32 @@ package com.example.myfirstapp;
 import java.math.BigInteger;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Paint.Style;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
+import com.example.myfirstapp.R;
 
 public class DrawView extends View{
-	private byte[][] state;
+	public byte[][] state;
 	public int base = 0;
 	Paint paint = new Paint();
-	public int cubeOffset = 50;
+	public int reqOffset = 50;
 	private int vHeight = 0;
 	private int vWidth = 0;
+	private Bitmap player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
+	
+	private Canvas canvas;
+	
+	//TODO: move these into a configuration class
+	private static byte OBSTACLE = 1;
+	private static byte BRICKS = 2;
+	private static byte PLAYER = 3;
+	private static byte BOMB = 4;
 
 	
 	public DrawView(Context context) {
@@ -29,77 +38,159 @@ public class DrawView extends View{
 	
 	public DrawView(Context context, AttributeSet attrs){
 		super(context,attrs);
-
 	}
 	
 	public void onDraw(Canvas canvas){
+		this.canvas = canvas;
 		vWidth = getWidth();
 		vHeight = getHeight();
 		
-		setDifficultyLevel((byte)3);
+		setDifficultyLevel((byte)3); //default level
 		
 		state = new byte[getMapHeight()][getMapWidth()];
-				
-		state[0][0] = 1;//1 => obstacle
-		state[1][1] = 1;
-		state[1][0] = 2;//2 => bricks
-		state[1][2] = 2;
-		state[3][4] = 1;
 		
+
+		//Populate grid with obstacles
 		for(int i=0;i<state.length;i++){
 			for(int j=0;j<state[i].length;j++){
-				if(state[i][j] == 1){
-					drawObstacle(i, j, canvas);
-				}
-				if(state[i][j] == 2){
-					drawBricks(i,j,canvas);
+				state[i][0] = OBSTACLE;
+				state[0][j] = OBSTACLE;
+				state[i][state.length-1] = OBSTACLE;
+				state[state.length-1][i] = OBSTACLE;
+				if(i % 2 == 1 && j % 2 == 1){
+					state[i][j] = OBSTACLE;
 				}
 			}
 		}
-
+		draw(state);
+		
+		//TESTING
+		drawBomb(2, 7);
+		drawExplosion(4,4, 3);
+		
 	}
 	
-	private void drawObstacle(int x, int y, Canvas canvas){
+	public void drawObstacle(int x, int y){
+		
 		paint.setColor(Color.GRAY);
 		paint.setStrokeWidth(0);
 		canvas.drawRect(
-				cubeOffset * (y+1), 
-				cubeOffset * x, 
-				cubeOffset * (y+2), 
-				cubeOffset * (x+1), paint);
+				(reqOffset * x)+1,
+				(reqOffset * y)+1,
+				reqOffset * (x+1)-1, 
+				reqOffset * (y+1)-1, paint);
 	}
 	
-	private void drawBricks(int x, int y, Canvas canvas){
-		paint.setColor(Color.BLACK);
-		canvas.drawRect(
-				cubeOffset * (y+1), 
-				cubeOffset * x, 
-				cubeOffset * (y+2), 
-				cubeOffset * (x+1), paint);
-		paint.setStrokeWidth(2);
-/* Figure out how to draw lines to actually create a real brick block
- * 		canvas.drawLine(
-				(cubeOffset * (y+1))+3,
-				(cubeOffset * x) +6, 
-				(cubeOffset * (y+2))-3, 
-				(cubeOffset * (x+1))-4, paint);
-*/
+	public void drawBricks(int x, int y){
+		if(state[x][y] == OBSTACLE){
+			return;
+		}
+		
 		paint.setColor(Color.RED);
 		paint.setStrokeWidth(1);
 		canvas.drawRect(
-				(cubeOffset * (y+1))+3, 
-				(cubeOffset * x)+3, 
-				(cubeOffset * (y+2))-3, 
-				(cubeOffset * (x+1))-3, paint);
-		
-		
+				(reqOffset * x)+1, 
+				(reqOffset * y)+1, 
+				reqOffset * (x+1)-1, 
+				reqOffset * (y+1)-1, paint);	
 	}
 	
-	private void drawPlayer(int x, int y, Canvas canvas){
-		//TODO: still to draw player
-		
+	public void drawPlayer(int x, int y){
+		if(state[x][y] == BRICKS || state[x][y] == OBSTACLE){
+			return;
+		}
+		paint.setStrokeWidth(1);
+		canvas.drawBitmap(getResizedBitmap(player, reqOffset, reqOffset), (reqOffset * x)+2, (reqOffset * x)+2, paint);
+		//TODO: use drawLine, drawCircle for a non-bitmap player
 	}
+	
+	public void drawBomb(int x, int y){
+		paint.setColor(Color.BLACK);
+		canvas.drawCircle((reqOffset * x)+reqOffset/2, (reqOffset * y)+reqOffset/2, reqOffset/3, paint);
+	}
+	
+	public void drawEmpty(int x, int y){
+		if(state[x][y] == OBSTACLE)
+			return;
+		state[x][y] = 0;
+		paint.setColor(Color.GREEN);
+		paint.setStrokeWidth(0);
+		canvas.drawRect(
+				(reqOffset * x)+1,
+				(reqOffset * y)+1,
+				reqOffset * (x+1)-1, 
+				reqOffset * (y+1)-1, paint);
+	}
+	
+	public void drawExplosion(int x, int y, int range){
 		
+		if(state[x][y] == OBSTACLE)
+			return;
+		
+		int uvr = 1;
+		int dvr = 1;
+		int lhr = 1;
+		int rhr = 1;
+		
+		//iterate and update individual ranges
+		for(int i = 0; i < range; i++){
+			if(y-i >= 0){
+				if(state[x][y-i] == OBSTACLE || ((y-i) % 2 == 0) && (i > 0)){
+					continue;
+				}
+				if(state[x][y-i] != OBSTACLE){
+					uvr += i;
+				}
+			}
+			
+			if(y+i < getMapHeight()){
+				if(state[x][y+i] == OBSTACLE || (((y + i) % 2 == 0) && (i > 0))){
+					continue;
+				}
+				
+				if(state[x][y+i] != OBSTACLE){
+					dvr += i;
+				}
+			}
+			
+			if(x-i >= 0){
+				if(state[x-i][y] == OBSTACLE || (((x - i) % 2 == 0) && (i > 0))){
+					continue;
+				}
+				
+				if(state[x-i][y] != OBSTACLE){
+					lhr += i;
+				}
+			}
+			
+			if(x+i <= getMapWidth()){
+				if(state[x+i][y] == OBSTACLE || (((x+i) % 2 == 0) && (i > 0))){
+					continue;
+				}
+				
+				if(state[x+i][y] != OBSTACLE){
+					rhr += i;
+				}
+			}
+		}
+		
+		paint.setStrokeWidth(10);
+		paint.setColor(Color.RED);
+		
+		//Drawing each direction's ranges
+		//UVR
+		canvas.drawLine((reqOffset*x)+reqOffset/2, reqOffset*(y-uvr), (reqOffset*x)+reqOffset/2, (reqOffset*y)+reqOffset, paint);
+		
+		//DVR
+		canvas.drawLine((reqOffset*x)+reqOffset/2, reqOffset*y, (reqOffset*x)+reqOffset/2, (reqOffset*(y+dvr))+reqOffset, paint);
+		
+		//LHR
+		canvas.drawLine(reqOffset*(x-lhr), (reqOffset*y)+reqOffset/2, (reqOffset*x)+reqOffset/2,(reqOffset*y)+reqOffset/2, paint);
+		
+		//RHR
+		canvas.drawLine((reqOffset*x)+reqOffset/2, (reqOffset*y)+reqOffset/2, reqOffset*(x+rhr)+reqOffset,(reqOffset*y)+reqOffset/2, paint);
+	}
+	
 	
 	@Override
 	protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec){
@@ -117,7 +208,6 @@ public class DrawView extends View{
 	    super.onMeasure(widthMeasureSpec, heightMeasureSpec);    
 	    }
 
-	
 	public void setDifficultyLevel(byte size){
 		//1 - small	TODO
 		//2 - medium TODO
@@ -135,7 +225,7 @@ public class DrawView extends View{
 			vWidth--;
 			base = BigInteger.valueOf(vHeight).gcd(BigInteger.valueOf(vWidth)).intValue();
 		}
-		cubeOffset = (int) Math.pow(base, size);	
+		reqOffset = (int) Math.pow(base, size);	
 	}
 	
 	public byte getMapWidth(){
@@ -144,7 +234,7 @@ public class DrawView extends View{
 		if(base==0)
 			return 0;
 		else
-			return (byte) (vWidth/cubeOffset);
+			return (byte) (vWidth/reqOffset);
 	}
 	
 	public byte getMapHeight(){
@@ -153,7 +243,50 @@ public class DrawView extends View{
 		if(base==0)
 			return 0;
 		else
-			return (byte) (vHeight/cubeOffset);
+			return (byte) (vHeight/reqOffset);
+	}
+	
+	public byte[][] getState(){
+		return state;
+	}
+	
+	public byte getCellType(int x, int y){
+		return state[x][y];
+	}
+	
+	private Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth){
+	    int width = bm.getWidth();
+	    int height = bm.getHeight();
+	    float scaleWidth = ((float) newWidth) / width;
+	    float scaleHeight = ((float) newHeight) / height;
+	    // create a matrix for the manipulation
+	    Matrix matrix = new Matrix();
+	    // resize the bit map
+	    matrix.postScale(scaleWidth, scaleHeight);
+	    // recreate the new Bitmap
+	    Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+	    return resizedBitmap;
+
+	}
+	
+	private void draw(byte[][]state){
+		for(int i=0;i<state.length;i++){
+			for(int j=0;j<state[i].length;j++){
+				if(state[i][j] == OBSTACLE){
+					drawObstacle(i, j);
+				}
+				if(state[i][j] == BRICKS){
+					drawBricks(i,j);
+				}
+				if(state[i][j] == PLAYER){
+					drawPlayer(i, j);
+				}
+				if(state[i][j] == BOMB){
+					drawBomb(i, j);
+				}
+			}
+		}
+		
 	}
 	
 }
