@@ -46,9 +46,9 @@ public class MainActivity extends Activity {
 		
 		Bitmap player = BitmapFactory.decodeResource(getResources(),R.drawable.sri);
         drawView = (com.cmov.bomberman.DrawView)findViewById(R.id.bckg);
-        RectRender rr = new RectRender(rows, cols);
-        rr.setPlayerBitMap(player);
-        drawView.setRenderer(rr);
+        RectRender rectrender = new RectRender(rows, cols);
+        rectrender.setPlayerBitMap(player);
+        drawView.setRenderer(rectrender);
        
         drawView.invalidate();
        
