@@ -9,7 +9,10 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.View;
@@ -17,8 +20,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 public class MainActivity extends Activity {
-	DrawView drawView;
-	
+	private DrawView drawView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,20 +36,32 @@ public class MainActivity extends Activity {
 		StandaloneGame game = new StandaloneGame();
 		game.joinGame("Cmove");
 		
-		final int x = ConfigReader.players.getXCor();
-		final int y = ConfigReader.players.getYCor();
+		final int m = ConfigReader.players.getXCor();
+		final int n = ConfigReader.players.getYCor();
+		final int cols = ConfigReader.getGameDim().column;
+		final int rows = ConfigReader.getGameDim().row;
 		
-		drawView = new DrawView(this);
+		System.out.println("row and col - "+cols +"|" +rows);
 		setContentView(R.layout.activity_main);
+		
+		Bitmap player = BitmapFactory.decodeResource(getResources(),R.drawable.sri);
+        drawView = (com.cmov.bomberman.DrawView)findViewById(R.id.bckg);
+        RectRender rr = new RectRender(rows, cols);
+        rr.setPlayerBitMap(player);
+        drawView.setRenderer(rr);
+       
+        drawView.invalidate();
+       
+        
 		final Button button = (Button) findViewById(R.id.btnBomb);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            	drawView.drawBomb(1,1);
-            	com.cmov.bomberman.DrawView mycanvas = (com.cmov.bomberman.DrawView)findViewById(R.id.bckg);
-            	 mycanvas.postInvalidate();
-               
-              
-              // v.invalidate();
+            	         
+            	CircleRender circlrender = new CircleRender(1,1);
+            	circlrender.setGridCor(rows,cols);
+        		drawView.setRenderer(circlrender);
+        		drawView.invalidate();
+            	
             }
         });
 		

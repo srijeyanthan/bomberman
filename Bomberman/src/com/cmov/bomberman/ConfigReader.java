@@ -149,8 +149,8 @@ public class ConfigReader {
 
 						grid[localrowcounter][localcolumncounter] = string
 								.getBytes()[0];
-						System.out.println("this is the out put "
-								+ grid[localrowcounter][localcolumncounter]);
+						//System.out.println("this is the out put "
+								//+ grid[localrowcounter][localcolumncounter]);
 						if (grid[localrowcounter][localcolumncounter] == '1') {
 							players= new Player();
 							players.setXCor(localrowcounter);
@@ -169,7 +169,7 @@ public class ConfigReader {
 						++localcolumncounter;
 					}
 					++localrowcounter;
-					System.out.println("name of of the tag " + sout);
+					///System.out.println("name of of the tag " + sout);
 				}
 			}
 				break;
@@ -177,6 +177,7 @@ public class ConfigReader {
 			}
 			event = parser.next();
 		}
+		///System.out.println("Total number of row " + localrowcounter);
 		gridlayout = grid;
 	}
 

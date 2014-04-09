@@ -313,7 +313,7 @@ public class DrawView extends View {
 
 
 
-package com.cmov.bomberman;
+/*package com.cmov.bomberman;
 
 import java.math.BigInteger;
 
@@ -342,6 +342,7 @@ public class DrawView extends View {
 			R.drawable.sri);
 
 	public  Canvas canvas;
+	public int state2 = 0;
 
 
 	public DrawView(Context context) {
@@ -355,6 +356,8 @@ public class DrawView extends View {
 	}
 
 	public void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+		
 		this.canvas = canvas;
 		vWidth = getWidth();
 		vHeight = getHeight();
@@ -498,15 +501,9 @@ public class DrawView extends View {
 
 	}
 
-	/*
-	 * private void draw(byte[][] state) { for (int i = 0; i < state.length;
-	 * i++) { for (int j = 0; j < state[i].length; j++) { if (state[i][j] ==
-	 * OBSTACLE) { drawObstacle(i, j); } if (state[i][j] == BRICKS) {
-	 * drawBricks(i, j); } if (state[i][j] == PLAYER) { drawPlayer(i, j); } if
-	 * (state[i][j] == BOMB) { drawBomb(i, j); } } }
-	 * 
-	 * }
-	 */
+	
+	 
+	 
 	private void draw(Byte[][] state) {
 		int cols = ConfigReader.getGameDim().column;
 		int rows = ConfigReader.getGameDim().row;
@@ -517,12 +514,74 @@ public class DrawView extends View {
 					drawBricks(y,x);
 				else if (state[x][y] == 'o')
 					drawObstacle(y,x);
-				/*else if (state[x][y] == '1')   // we will first draw only one palyer.
-					drawPlayer(x, y);*/
+				else if (state[x][y] == '1')   // we will first draw only one palyer.
+					drawPlayer(x, y);
 
 			}
 
 		}
 	}
 
+}
+*/
+package com.cmov.bomberman;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.util.AttributeSet;
+import android.view.View;
+
+
+public class DrawView extends View {
+
+    private Paint mPaint;
+    private ShapeRenderer mRenderer;
+    
+
+    public DrawView(Context context) {
+        super(context);
+        init();
+    }
+
+    public DrawView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    public DrawView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init();
+    }
+
+    private void init(){
+        mPaint = new Paint();
+    }
+
+    public void setPaintColor(int color){
+        mPaint.setColor(color);
+    }
+
+    public void setPaintStrokeWidth(float width){
+        mPaint.setStrokeWidth(width);
+    }
+
+    public void setRenderer(ShapeRenderer renderer) {
+        mRenderer = renderer;
+    }
+   
+    
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+       
+        if(mRenderer != null){
+        	
+            mRenderer.drawShape(canvas,mPaint);
+        }
+    }
+
+    public static interface ShapeRenderer{
+        public void drawShape(Canvas canvas, Paint paint);
+    }
 }
