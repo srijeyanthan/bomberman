@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map>
+    <description>
+	     Add some information here - cmove project 
+    </description> 
+    <board>
+        <maxplayers value="3"/>
+        <height        value="13"/>
+        <width     value="19"/>
+    </board>   
+    <field>
+        <row>w w w w w w w w w w w w w w w w w w w</row>
+        <row>W - 2 - - - - - R - - - - O - - - - W</row>
+        <row>W W O W - W - W - W - W - W - W - W W</row>
+        <row>W - O - - - - - - - - R - - - - - - W</row>
+        <row>W W O W O W - W - W - W - W O W - W W</row>
+        <row>W - - O - - - - - - - - O - R - - 3 W</row>
+    	<row>W W O W - W - W - W - W - W - W - W W</row>
+ 		<row>W - O O O O - - - 1 - - - - - - - O W</row>
+        <row>W W O W O W O W O W - W - W - W - W W</row>
+       	<row>W - - O O O O - - R - - O O O - - - W</row>
+ 		<row>W W - W - W O W O W - W O W O W O W W</row>
+ 		<row>W - - - - - - O O O - - O O O - O R W</row>
+ 	    <row>W W W W W W W W W W W W W W W W W W W</row>
+    </field>
+
+    <icons>
+        <wall file="brickWall"/>
+        <obstacle file="brickWall"/>
+        <robot file="brickWall"/>
+        <bomb file="brickWall"/>
+    </icons>
+    <gameconfig>
+        <gd value="30"/>
+        <et value="1"/>
+        <ed value="1"/>
+        <er value="1"/>
+        <rs value="1"/>
+        <pr value="300"/>
+        <po value="1000"/>
+    </gameconfig>
+</map>
