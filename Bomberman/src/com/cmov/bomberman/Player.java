@@ -113,7 +113,7 @@ public class Player extends Cell {
 		this.bombs.add(bomb);
 
 		this.game.getLogicalWorld().setElement(worldXCor, worldYCor, 0, bomb);
-		ConfigReader.gridlayout[worldXCor][worldYCor]='b';
+		
 	}
 
 	public void setGame(Game game) {

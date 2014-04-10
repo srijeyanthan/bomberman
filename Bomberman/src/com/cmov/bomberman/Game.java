@@ -3,15 +3,17 @@ package com.cmov.bomberman;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
+
 public class Game {
 	private String gameName = null;
 	private List<Player> players = new ArrayList<Player>();
 	private LogicalWorld logicalWorld;
 	private boolean running = false;
 
-	public Game(String name) {
+	public Game(String name,Activity activity) {
 		this.gameName = name;
-		this.logicalWorld = new LogicalWorld();
+		this.logicalWorld = new LogicalWorld(activity);
 	}
 
 	public boolean addPlayer(Player player) {
