@@ -13,6 +13,11 @@ public class RectRender implements DrawView.ShapeRenderer {
 	public int xOffset;
 	public int yOffset;
 	public Bitmap playermap;
+	private LogicalWorld logicalworld = null;
+
+	public void setLogicalWorld(LogicalWorld logicalworld) {
+		this.logicalworld = logicalworld;
+	}
 
 	public void setPlayerBitMap(Bitmap playermap) {
 		this.playermap = playermap;
@@ -62,7 +67,6 @@ public class RectRender implements DrawView.ShapeRenderer {
 
 		for (int x = 0; x < row; x++) {
 			for (int y = 0; y < column; y++) {
-				// System.out.println(state[x][y].toString());
 				if (grid[x][y] == 'w') {
 
 					paint.setColor(Color.LTGRAY);
@@ -70,22 +74,21 @@ public class RectRender implements DrawView.ShapeRenderer {
 					canvas.drawRect((yOffset * y), (xOffset * x), yOffset
 							* (y + 1), xOffset * (x + 1), paint);
 				}
-				else if (grid[x][y] == 'o') {
-
+				if (grid[x][y] == 'o') {
 					paint.setColor(Color.RED);
 					paint.setStrokeWidth(0);
 					canvas.drawRect((yOffset * y), (xOffset * x), yOffset
 							* (y + 1), xOffset * (x + 1), paint);
 				}
-				else if (grid[x][y] == '1') {
-					System.out.println("Sri is here ------ x"+x+"|"+y);
+				if (grid[x][y] == '1') {
+
 					drawPlayer(x, y, paint, canvas);
 				}
-				else if (grid[x][y] == 'b') {
-					System.out.println("bomb is here ------ x"+x+"|"+y);
+				if (grid[x][y] == 'b') {
 					paint.setColor(Color.BLACK);
 					canvas.drawCircle((yOffset * y) + yOffset / 2,
 							(xOffset * x) + xOffset / 2, xOffset / 3, paint);
+
 				}
 
 			}

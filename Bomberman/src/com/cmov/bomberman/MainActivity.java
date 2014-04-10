@@ -24,6 +24,9 @@ public class MainActivity extends Activity implements IExplodable{
 	private DrawView drawView;
 	final StandaloneGame standGame = new StandaloneGame();
 	final Bitmap player=null;
+	
+	private LogicalWorld logicalworld=null;
+	
 	public void Render(int rows , int cols,Bitmap player)
 	{
 		RectRender rectrender = new RectRender(rows, cols);
@@ -57,7 +60,7 @@ public class MainActivity extends Activity implements IExplodable{
 		
 		standGame.joinGame("Cmove",MainActivity.this);
 		
-		
+		logicalworld= standGame.getBombermanGame().getLogicalWorld();
 
 		final int m = ConfigReader.players.getXCor();
 		final int n = ConfigReader.players.getYCor();
@@ -99,7 +102,7 @@ public class MainActivity extends Activity implements IExplodable{
 				}else
 				{
 					List<Player> localPlayerList = standGame.getBombermanGame().getPlayers();
-					boolean ismoved = standGame.getBombermanGame().movePlayer(localPlayerList.get(0), -1, 0);
+					boolean ismoved = standGame.getBombermanGame().movePlayer(localPlayerList.get(0), 0,-1);
 					if(ismoved)
 						System.out.println("player has been moved.....");
 					
@@ -109,6 +112,65 @@ public class MainActivity extends Activity implements IExplodable{
 
 			}
 		});
+		
+		final Button rightbutton = (Button) findViewById(R.id.btnRight);
+		rightbutton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				if (standGame.getBombermanGame().getPlayers().size() == 0) {
+					System.out.println("Player list is null. Warning.");
+				}else
+				{
+					List<Player> localPlayerList = standGame.getBombermanGame().getPlayers();
+					boolean ismoved = standGame.getBombermanGame().movePlayer(localPlayerList.get(0), 0,1);
+					if(ismoved)
+						System.out.println("player has been moved.....");
+					
+					Render(rows,cols,player);
+				}
+				
+
+			}
+		});
+		
+		final Button upbutton = (Button) findViewById(R.id.btnUp);
+		upbutton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				if (standGame.getBombermanGame().getPlayers().size() == 0) {
+					System.out.println("Player list is null. Warning.");
+				}else
+				{
+					List<Player> localPlayerList = standGame.getBombermanGame().getPlayers();
+					boolean ismoved = standGame.getBombermanGame().movePlayer(localPlayerList.get(0), -1,0);
+					if(ismoved)
+						System.out.println("player has been moved.....");
+					
+					Render(rows,cols,player);
+				}
+				
+
+			}
+		});
+		
+		final Button downbutton = (Button) findViewById(R.id.btnDown);
+		downbutton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				if (standGame.getBombermanGame().getPlayers().size() == 0) {
+					System.out.println("Player list is null. Warning.");
+				}else
+				{
+					List<Player> localPlayerList = standGame.getBombermanGame().getPlayers();
+					boolean ismoved = standGame.getBombermanGame().movePlayer(localPlayerList.get(0), 1,0);
+					if(ismoved)
+						System.out.println("player has been moved.....");
+					
+					Render(rows,cols,player);
+				}
+				
+
+			}
+		});
+		
+		
 
 	}
 

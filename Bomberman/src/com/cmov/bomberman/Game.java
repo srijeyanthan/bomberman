@@ -60,8 +60,8 @@ public class Game {
 		int nx = player.getWorldXCor() + dx;
 		int ny = player.getWorldYCor() + dy;
 
-		if (nx < 0 || ny < 0 || this.logicalWorld.getWidth() <= nx
-				|| this.logicalWorld.getHeight() <= ny)
+		if (nx < 0 || ny < 0 || this.logicalWorld.getWidth() <= ny
+				|| this.logicalWorld.getHeight() <= nx)
 			return false;
 		// player can not move if there is wall or obstacle , have to add here.
 		Cell el = this.logicalWorld.getElement(nx, ny)[0];
