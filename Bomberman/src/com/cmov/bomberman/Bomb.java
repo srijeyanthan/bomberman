@@ -33,7 +33,6 @@ class Bomb extends Cell
       player.game.getLogicalWorld().setElement(worldXCor, worldYCor, 0, null);
       timer.cancel();
       // TO-DO: notify this explosion to front end , so that we can draw 
-    
     }
     catch(Exception ex)
     {
