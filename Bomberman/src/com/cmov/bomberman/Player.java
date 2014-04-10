@@ -3,6 +3,8 @@ package com.cmov.bomberman;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
+
 /*
  * Developer note - Group -2
  */
@@ -20,13 +22,16 @@ public class Player extends Cell {
 
 	protected int bombDistance = 1;
 	protected int bombCount = 1;
+	public Activity activity;
 
 	private MoveDirection lastMoveDirection = MoveDirection.DOWN;
 
-	public Player(Game game, String nickname) {
+	
+	public Player(Game game, String nickname,Activity activity) {
 		super(0, 0);
 		this.game = game;
 		this.nickname = nickname;
+		this.activity=activity;
 	}
 
 	public void raiseBombDistance() {
@@ -104,10 +109,11 @@ public class Player extends Cell {
 		System.out.println("User " + nickname + " place the bomb  " + worldXCor
 				+ "/" + worldYCor);
 
-		Bomb bomb = new Bomb(worldXCor, worldYCor, this);
+		Bomb bomb = new Bomb(worldXCor, worldYCor, this,activity);
 		this.bombs.add(bomb);
 
 		this.game.getLogicalWorld().setElement(worldXCor, worldYCor, 0, bomb);
+		ConfigReader.gridlayout[worldXCor][worldYCor]='b';
 	}
 
 	public void setGame(Game game) {

@@ -60,20 +60,22 @@ public class Game {
 		int nx = player.getWorldXCor() + dx;
 		int ny = player.getWorldYCor() + dy;
 
-		if (nx < 0 || ny < 0 || this.logicalWorld.getWidth() <= nx
-				|| this.logicalWorld.getHeight() <= ny)
+		if (nx < 0 || ny < 0 || this.logicalWorld.getWidth() <= ny
+				|| this.logicalWorld.getHeight() <= nx)
 			return false;
 		// player can not move if there is wall or obstacle , have to add here.
 		Cell el = this.logicalWorld.getElement(nx, ny)[0];
 		if (el == null) // oder Extra
 		{
 			// Set old position in Playground to null...
+			ConfigReader.gridlayout[player.getWorldXCor()][player.getWorldYCor()] ='-';
 			this.logicalWorld.setElement(player.getWorldXCor(),
 					player.getWorldYCor(), player.getID(), null);
 			// ...and set new position
 			player.move(dx, dy);
 			this.logicalWorld.setElement(player.getWorldXCor(),
 					player.getWorldYCor(), player.getID(), player);
+			ConfigReader.gridlayout[player.getWorldXCor()][player.getWorldYCor()] ='1';
 
 			return true;
 		} else

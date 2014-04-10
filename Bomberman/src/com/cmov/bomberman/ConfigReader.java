@@ -79,7 +79,7 @@ public class ConfigReader {
 	static InputStream stream = null;
 	private static int width = 0;
 	private static int height = 0;
-	private static Byte[][] gridlayout = null;
+	public static Byte[][] gridlayout = null;
 	private static Gameconfig gameconfig = null;
 	private static GameDim gameDim = null;
 	// We don't use namespaces
@@ -127,7 +127,7 @@ public class ConfigReader {
 		parser.setInput(in, null);
 		String sout = null;
 		String text = null;
-		int localrowcounter = 0;
+		int localycounter = 0;
 		
 		Byte[][] grid = new Byte[height][width];
 		while (event != XmlPullParser.END_DOCUMENT) {
@@ -140,21 +140,21 @@ public class ConfigReader {
 				break;
 			case XmlPullParser.END_TAG: 
 			{
-				int localcolumncounter = 0;
+				int localxcounter = 0;
 				if (name.equals("row")) {
 					sout = text;
 					String[] elements = sout.split(" ");
 
 					for (String string : elements) {
 
-						grid[localrowcounter][localcolumncounter] = string
+						grid[localycounter][localxcounter] = string
 								.getBytes()[0];
-						System.out.println("this is the out put "
-								+ grid[localrowcounter][localcolumncounter]);
-						if (grid[localrowcounter][localcolumncounter] == '1') {
+						//System.out.println("this is the out put "
+								//+ grid[localrowcounter][localcolumncounter]);
+						if (grid[localycounter][localxcounter] == '1') {
 							players= new Player();
-							players.setXCor(localrowcounter);
-							players.setYCor(localcolumncounter);
+							players.setXCor(localycounter);
+							players.setYCor(localxcounter);
 						}
 						/*if (grid[localrowcounter][localcolumncounter] == '2') {
 							players[1] = new Player();
@@ -166,10 +166,10 @@ public class ConfigReader {
 							players[2].setXCor(localrowcounter);
 							players[2].setYCor(localcolumncounter);
 						}*/
-						++localcolumncounter;
+						++localxcounter;
 					}
-					++localrowcounter;
-					System.out.println("name of of the tag " + sout);
+					++localycounter;
+					///System.out.println("name of of the tag " + sout);
 				}
 			}
 				break;
@@ -177,6 +177,7 @@ public class ConfigReader {
 			}
 			event = parser.next();
 		}
+		///System.out.println("Total number of row " + localrowcounter);
 		gridlayout = grid;
 	}
 
