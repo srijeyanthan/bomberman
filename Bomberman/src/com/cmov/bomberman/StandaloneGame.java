@@ -1,15 +1,22 @@
 package com.cmov.bomberman;
 
+import android.app.Activity;
+
 
 
 public class StandaloneGame {
 
-	public void joinGame(String gameName)
+	public Game mGame = null;
+	public void joinGame(String gameName,Activity activity)
 	  { 
-		Game game = new Game(gameName);
-	    Player player = new Player(null,"Sri");   
-	    if(!game.addPlayer(player))
+		mGame = new Game(gameName);
+	    Player player = new Player(null,"Sri",activity);   
+	    if(!mGame.addPlayer(player))
 	      return;
 	    
 	  }
+	public Game getBombermanGame()
+	{
+		return this.mGame;
+	}
 }

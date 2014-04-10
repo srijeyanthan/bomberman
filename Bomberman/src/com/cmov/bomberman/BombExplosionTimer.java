@@ -11,7 +11,8 @@ import java.util.TimerTask;
  * */
 
 class BombExplosionTimer extends TimerTask {
-	public static final int BOMB_TIME = ConfigReader.getGameConfig().explosiontimeout;
+	public static final int BOMB_TIME = 10000;
+			//ConfigReader.getGameConfig().explosiontimeout;
 
 	private Timer timer = new Timer();
 	private Bomb bomb;
@@ -25,7 +26,7 @@ class BombExplosionTimer extends TimerTask {
 	public void run() {
 		if (bomb.tick() >= 6) {
 			bomb.explode();
-			timer.cancel();
+			timer.cancel();	
 		}
 	}
 }

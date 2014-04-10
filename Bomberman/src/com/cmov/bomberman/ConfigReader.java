@@ -79,7 +79,7 @@ public class ConfigReader {
 	static InputStream stream = null;
 	private static int width = 0;
 	private static int height = 0;
-	private static Byte[][] gridlayout = null;
+	public static Byte[][] gridlayout = null;
 	private static Gameconfig gameconfig = null;
 	private static GameDim gameDim = null;
 	// We don't use namespaces

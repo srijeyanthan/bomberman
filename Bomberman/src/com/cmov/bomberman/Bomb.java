@@ -1,5 +1,9 @@
 package com.cmov.bomberman;
 
+import android.app.Activity;
+
+
+
 
 
 /*
@@ -12,26 +16,33 @@ package com.cmov.bomberman;
  * */
 class Bomb extends Cell
 {
-  
+  private IExplodable ExplodableActivity;
   private  Player    player;
   private  BombExplosionTimer timer;
-  
+  public boolean isExploded;
   private int stage = 1;
-  public Bomb(int x, int y, Player player)
+  public Activity activity;
+  public Bomb(int x, int y, Player player,Activity activity)
   {
     super(x, y);
     this.player = player;
     timer = new BombExplosionTimer(this);
+    isExploded=false;
+    
+    ExplodableActivity = (IExplodable)activity; 
   }
   
-  void explode()
+  public void explode()
   {
     try
     {
+      ExplodableActivity.Exploaded(worldXCor,worldYCor);
       System.out.println(this + " bomb has exploaded!");
       player.bombs.remove(this);
       player.game.getLogicalWorld().setElement(worldXCor, worldYCor, 0, null);
+      ConfigReader.gridlayout[worldXCor][worldYCor]= '-';
       timer.cancel();
+     // (player.game, gridX, gridY, player.bombDistance);
       // TO-DO: notify this explosion to front end , so that we can draw 
     
     }

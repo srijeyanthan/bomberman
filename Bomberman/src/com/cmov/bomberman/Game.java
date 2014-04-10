@@ -68,12 +68,14 @@ public class Game {
 		if (el == null) // oder Extra
 		{
 			// Set old position in Playground to null...
+			ConfigReader.gridlayout[player.getWorldXCor()][player.getWorldYCor()] ='-';
 			this.logicalWorld.setElement(player.getWorldXCor(),
 					player.getWorldYCor(), player.getID(), null);
 			// ...and set new position
 			player.move(dx, dy);
 			this.logicalWorld.setElement(player.getWorldXCor(),
 					player.getWorldYCor(), player.getID(), player);
+			ConfigReader.gridlayout[player.getWorldXCor()][player.getWorldYCor()] ='1';
 
 			return true;
 		} else

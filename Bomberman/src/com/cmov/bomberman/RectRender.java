@@ -14,7 +14,6 @@ public class RectRender implements DrawView.ShapeRenderer {
 	public int yOffset;
 	public Bitmap playermap;
 
-
 	public void setPlayerBitMap(Bitmap playermap) {
 		this.playermap = playermap;
 	}
@@ -35,7 +34,7 @@ public class RectRender implements DrawView.ShapeRenderer {
 
 		paint.setStrokeWidth(1);
 		canvas.drawBitmap(getResizedBitmap(playermap, xOffset, yOffset),
-				(yOffset * x), (xOffset * x), paint);
+				(yOffset * y), (xOffset * x), paint);
 
 		// TODO: use drawLine, drawCircle for a non-bitmap player
 	}
@@ -60,31 +59,38 @@ public class RectRender implements DrawView.ShapeRenderer {
 	public void drawShape(Canvas canvas, Paint paint) {
 		grid = ConfigReader.getGridLayout();
 		CalculateOffset(canvas.getHeight(), canvas.getHeight());
-		
-			for (int x = 0; x < row; x++) {
-				for (int y = 0; y < column; y++) {
-					// System.out.println(state[x][y].toString());
-					if (grid[x][y] == 'w') {
 
-						paint.setColor(Color.LTGRAY);
-						paint.setStrokeWidth(0);
-						canvas.drawRect((yOffset * y), (xOffset * x), yOffset
-								* (y + 1), xOffset * (x + 1), paint);
-					}
-					if (grid[x][y] == 'o') {
+		for (int x = 0; x < row; x++) {
+			for (int y = 0; y < column; y++) {
+				// System.out.println(state[x][y].toString());
+				if (grid[x][y] == 'w') {
 
-						paint.setColor(Color.RED);
-						paint.setStrokeWidth(0);
-						canvas.drawRect((yOffset * y), (xOffset * x), yOffset
-								* (y + 1), xOffset * (x + 1), paint);
-					}
-					if (grid[x][y] == '1') {
-						drawPlayer(x, y, paint, canvas);
-					}
+					paint.setColor(Color.LTGRAY);
+					paint.setStrokeWidth(0);
+					canvas.drawRect((yOffset * y), (xOffset * x), yOffset
+							* (y + 1), xOffset * (x + 1), paint);
+				}
+				else if (grid[x][y] == 'o') {
 
+					paint.setColor(Color.RED);
+					paint.setStrokeWidth(0);
+					canvas.drawRect((yOffset * y), (xOffset * x), yOffset
+							* (y + 1), xOffset * (x + 1), paint);
+				}
+				else if (grid[x][y] == '1') {
+					System.out.println("Sri is here ------ x"+x+"|"+y);
+					drawPlayer(x, y, paint, canvas);
+				}
+				else if (grid[x][y] == 'b') {
+					System.out.println("bomb is here ------ x"+x+"|"+y);
+					paint.setColor(Color.BLACK);
+					canvas.drawCircle((yOffset * y) + yOffset / 2,
+							(xOffset * x) + xOffset / 2, xOffset / 3, paint);
 				}
 
 			}
-			
+
+		}
+
 	}
 }

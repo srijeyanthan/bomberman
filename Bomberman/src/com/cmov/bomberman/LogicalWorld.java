@@ -6,10 +6,10 @@ public class LogicalWorld {
 
 	// This have to be get from config file or after we adjusted according scree
 	// size
-	;
+	
 	private static final int MAX_NUM_PLAYER = 3;
 
-	private Cell[][][] twoDWorld = null;
+	public  Cell[][][] twoDWorld = null;
 	private int cols, rows;
 
 	public LogicalWorld() {
@@ -25,15 +25,15 @@ public class LogicalWorld {
 			for (int y = 0; y < cols; y++) {
 
 				switch (entries[x][y]) {
-				case 'W': {
+				case 'w': {
 					this.twoDWorld[x][y][0] = new Wall(x, y);
 				}
 					break;
-				case 'O': {
+				case 'o': {
 					this.twoDWorld[x][y][0] = new Obstacle(x, y);
 				}
 					break;
-				case 'R': {
+				case 'r': {
 					// TODO load the robot here
 				}
 					break;
