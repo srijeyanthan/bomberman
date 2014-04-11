@@ -13,12 +13,7 @@ public class RectRender implements DrawView.ShapeRenderer {
 	public int xOffset;
 	public int yOffset;
 	public Bitmap playermap;
-	private LogicalWorld logicalworld = null;
-
-	public void setLogicalWorld(LogicalWorld logicalworld) {
-		this.logicalworld = logicalworld;
-	}
-
+	
 	public void setPlayerBitMap(Bitmap playermap) {
 		this.playermap = playermap;
 	}
@@ -74,21 +69,42 @@ public class RectRender implements DrawView.ShapeRenderer {
 					canvas.drawRect((yOffset * y), (xOffset * x), yOffset
 							* (y + 1), xOffset * (x + 1), paint);
 				}
-				if (grid[x][y] == 'o') {
+				else if (grid[x][y] == 'o') {
 					paint.setColor(Color.RED);
 					paint.setStrokeWidth(0);
 					canvas.drawRect((yOffset * y), (xOffset * x), yOffset
 							* (y + 1), xOffset * (x + 1), paint);
 				}
-				if (grid[x][y] == '1') {
-
+				else if (grid[x][y] == '1') {
 					drawPlayer(x, y, paint, canvas);
+					
+					
 				}
-				if (grid[x][y] == 'b') {
+				else if (grid[x][y] == 'b') {
 					paint.setColor(Color.BLACK);
 					canvas.drawCircle((yOffset * y) + yOffset / 2,
 							(xOffset * x) + xOffset / 2, xOffset / 3, paint);
 
+				}
+				else if(grid[x][y]=='r')
+				{
+						paint.setColor(Color.WHITE);
+						canvas.drawCircle((yOffset * y) + yOffset / 2,
+								(xOffset * x) + xOffset / 2, xOffset / 3, paint);
+				}
+				else if(grid[x][y]=='x')
+				{
+					drawPlayer(x, y, paint, canvas);
+					paint.setColor(Color.BLACK);
+					canvas.drawCircle((yOffset * y) + yOffset / 2,
+							(xOffset * x) + xOffset / 2, xOffset / 3, paint);
+				}
+				else if(grid[x][y]=='E')
+				{
+					paint.setColor(Color.GREEN);
+					paint.setStrokeWidth(0);
+					canvas.drawRect((yOffset * y), (xOffset * x), yOffset
+							* (y + 1), xOffset * (x + 1), paint);
 				}
 
 			}

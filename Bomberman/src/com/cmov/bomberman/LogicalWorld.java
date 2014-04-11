@@ -2,6 +2,8 @@ package com.cmov.bomberman;
 
 
 
+
+
 public class LogicalWorld {
 
 	// This have to be get from config file or after we adjusted according scree
@@ -11,6 +13,7 @@ public class LogicalWorld {
 
 	public  Cell[][][] twoDWorld = null;
 	private int cols, rows;
+	
 
 	public LogicalWorld() {
 		this.cols = ConfigReader.getGameDim().column;
@@ -34,7 +37,7 @@ public class LogicalWorld {
 				}
 					break;
 				case 'r': {
-					// TODO load the robot here
+					this.twoDWorld[x][y][0] = new Robot(x, y);
 				}
 					break;
 
@@ -60,6 +63,6 @@ public class LogicalWorld {
 	}
 
 	public void setElement(int x, int y, int layer, Cell e) {
-		this.twoDWorld[x][y][layer] = e;
+		this.twoDWorld[x][y][0] = e;
 	}
 }

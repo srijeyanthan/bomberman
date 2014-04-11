@@ -1,49 +1,130 @@
 package com.cmov.bomberman;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.res.AssetManager;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 
-public class MainActivity extends Activity implements IExplodable{
-	private DrawView drawView;
-	final StandaloneGame standGame = new StandaloneGame();
-	final Bitmap player=null;
-	
-	private LogicalWorld logicalworld=null;
-	
-	public void Render(int rows , int cols,Bitmap player)
-	{
-		RectRender rectrender = new RectRender(rows, cols);
-		rectrender.setPlayerBitMap(player);
-		drawView.setRenderer(rectrender);
-		drawView.invalidate();
-		
+public class MainActivity extends Activity implements IExplodable,
+		IMoveableRobot, IUpdatableScore {
+	private DrawView bomberManView;
+	private TextView bombermanelapsedTimeTextView;
+	private TextView bombermanusernameview;
+	private TextView bombermanNoOfPlayersview;
+	final StandaloneGame standAloneGame = new StandaloneGame();
+	private static Bitmap player = null;
+
+	private LogicalWorld logicalworld = null;
+
+	BroadcastReceiver elapsedBroadcastReciver;
+	private int bombermanGameDuration = 0;
+
+	/*note , this is tick timer , every minute it will reduced one minute from original game duration, actually we dont need
+	 *  per second based timer , this would be sort of inefficient */
+	@Override
+	public void onStart() {
+		super.onStart();
+		elapsedBroadcastReciver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context ctx, Intent intent) {
+				if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
+					if (bombermanGameDuration >= 0) {
+						--bombermanGameDuration;
+						bombermanelapsedTimeTextView.setText("00" + ":"
+								+ bombermanGameDuration);
+					}
+				}
+			}
+		};
+
+		registerReceiver(elapsedBroadcastReciver, new IntentFilter(
+				Intent.ACTION_TIME_TICK));
 	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		if (elapsedBroadcastReciver != null)
+			unregisterReceiver(elapsedBroadcastReciver);
+	}
+
 	
-	
-	public void Exploaded(int row , int col)
-	{
-		RectRender rectrender = new RectRender(13, 19);
+
+	public void Render() {
+		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
+				ConfigReader.getGameDim().column);
+		player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
 		rectrender.setPlayerBitMap(player);
-		drawView.setRenderer(rectrender);
-		drawView.postInvalidate();
-		
+		bomberManView.setRenderer(rectrender);
+		bomberManView.invalidate();
+
+	}
+
+	public void RobotMovedAtLogicalLayer() {
+		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
+				ConfigReader.getGameDim().column);
+		player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
+		rectrender.setPlayerBitMap(player);
+		bomberManView.setRenderer(rectrender);
+		bomberManView.postInvalidate();
+	}
+
+	public void Exploaded() {
+		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
+				ConfigReader.getGameDim().column);
+		player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
+		rectrender.setPlayerBitMap(player);
+		bomberManView.setRenderer(rectrender);
+		bombermanelapsedTimeTextView.setText("900");
+		/*
+		 * bomberManTextView.postInvalidate(); bomberManView.postInvalidate();
+		 */
+
+	}
+
+	public void UpdateScore() {
+		System.out
+				.println("This is not working ..^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		/*
+		 * bomberManTextView.setText("900"); bomberManTextView.postInvalidate();
+		 */
+		// update the score here. every time we kill the robot or player we will
+		// end up here
+	}
+
+	private void InitBomberManMap() {
+		player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
+		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
+				ConfigReader.getGameDim().column);
+		rectrender.setPlayerBitMap(player);
+		bomberManView.setRenderer(rectrender);
+		bomberManView.invalidate();
+
+	}
+
+	private void InitStartRobotThred(Activity activity) {
+		RobotThread robotThread = new RobotThread(
+				ConfigReader.getGameDim().row,
+				ConfigReader.getGameDim().column, activity);
+		robotThread.setLogicalWord(logicalworld);
+		robotThread.setRunning(true);
+		robotThread.start();
 	}
 
 	@Override
@@ -54,123 +135,129 @@ public class MainActivity extends Activity implements IExplodable{
 		try {
 			ConfigReader.InitConfigParser(mContext);
 		} catch (XmlPullParserException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		standGame.joinGame("Cmove",MainActivity.this);
-		
-		logicalworld= standGame.getBombermanGame().getLogicalWorld();
-
-		final int m = ConfigReader.players.getXCor();
-		final int n = ConfigReader.players.getYCor();
-		final int cols = ConfigReader.getGameDim().column;
-		final int rows = ConfigReader.getGameDim().row;
-
+		bombermanGameDuration = ConfigReader.getGameConfig().gameduration;
 		setContentView(R.layout.activity_main);
 
-		final Bitmap player = BitmapFactory.decodeResource(getResources(),
-				R.drawable.sri);
-		drawView = (com.cmov.bomberman.DrawView) findViewById(R.id.bckg);
-		RectRender rectrender = new RectRender(rows, cols);
-		rectrender.setPlayerBitMap(player);
-		drawView.setRenderer(rectrender);
+		standAloneGame.joinGame("Cmove", MainActivity.this);
+		logicalworld = standAloneGame.getBombermanGame().getLogicalWorld();
 
-		drawView.invalidate();
+		bomberManView = (com.cmov.bomberman.DrawView) findViewById(R.id.bckg);
+		bombermanelapsedTimeTextView = (TextView) findViewById(R.id.tleft);
+
+		bombermanusernameview  = (TextView)findViewById(R.id.uid);
+		bombermanNoOfPlayersview = (TextView)findViewById(R.id.no_players);
+		bombermanusernameview.setText("Group2");
+		bombermanNoOfPlayersview.setText("3");
+		bombermanelapsedTimeTextView.setText("00" + ":"
+				+ bombermanGameDuration);
+		InitBomberManMap();
+
+		
+
+		InitStartRobotThred(MainActivity.this);
 
 		final Button button = (Button) findViewById(R.id.btnBomb);
 		button.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				if (standGame.getBombermanGame().getPlayers().size() == 0) {
-					System.out.println("Player list is null. Warning.");
-				}else
-				{
-					List<Player> localPlayerList = standGame.getBombermanGame().getPlayers();
+				if (standAloneGame.getBombermanGame().getPlayers().size() == 0) {
+					ConfigReader.getLogger().log(
+							"Player list is null. Warning.");
+				} else {
+					List<Player> localPlayerList = standAloneGame
+							.getBombermanGame().getPlayers();
 					localPlayerList.get(0).placeBomb();
-					Render(rows,cols,player);
+					Render();
+
 				}
-				
 
 			}
 		});
-		
+
 		final Button leftbutton = (Button) findViewById(R.id.btnLeft);
 		leftbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				if (standGame.getBombermanGame().getPlayers().size() == 0) {
-					System.out.println("Player list is null. Warning.");
-				}else
-				{
-					List<Player> localPlayerList = standGame.getBombermanGame().getPlayers();
-					boolean ismoved = standGame.getBombermanGame().movePlayer(localPlayerList.get(0), 0,-1);
-					if(ismoved)
-						System.out.println("player has been moved.....");
-					
-					Render(rows,cols,player);
+				if (standAloneGame.getBombermanGame().getPlayers().size() == 0) {
+					ConfigReader.getLogger().log(
+							"Player list is null. Warning.");
+				} else {
+					List<Player> localPlayerList = standAloneGame
+							.getBombermanGame().getPlayers();
+					boolean ismoved = standAloneGame.getBombermanGame()
+							.movePlayer(localPlayerList.get(0), 0, -1);
+					if (ismoved)
+						ConfigReader.getLogger().log(
+								"plccayer has been moved.....");
+
+					Render();
 				}
-				
 
 			}
 		});
-		
+
 		final Button rightbutton = (Button) findViewById(R.id.btnRight);
 		rightbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				if (standGame.getBombermanGame().getPlayers().size() == 0) {
-					System.out.println("Player list is null. Warning.");
-				}else
-				{
-					List<Player> localPlayerList = standGame.getBombermanGame().getPlayers();
-					boolean ismoved = standGame.getBombermanGame().movePlayer(localPlayerList.get(0), 0,1);
-					if(ismoved)
-						System.out.println("player has been moved.....");
-					
-					Render(rows,cols,player);
+				if (standAloneGame.getBombermanGame().getPlayers().size() == 0) {
+					ConfigReader.getLogger().log(
+							"Player list is null. Warning.");
+				} else {
+					List<Player> localPlayerList = standAloneGame
+							.getBombermanGame().getPlayers();
+					boolean ismoved = standAloneGame.getBombermanGame()
+							.movePlayer(localPlayerList.get(0), 0, 1);
+					if (ismoved)
+						ConfigReader.getLogger().log(
+								"player has been moved.....");
+
+					Render();
 				}
-				
 
 			}
 		});
-		
+
 		final Button upbutton = (Button) findViewById(R.id.btnUp);
 		upbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				if (standGame.getBombermanGame().getPlayers().size() == 0) {
-					System.out.println("Player list is null. Warning.");
-				}else
-				{
-					List<Player> localPlayerList = standGame.getBombermanGame().getPlayers();
-					boolean ismoved = standGame.getBombermanGame().movePlayer(localPlayerList.get(0), -1,0);
-					if(ismoved)
-						System.out.println("player has been moved.....");
-					
-					Render(rows,cols,player);
+				if (standAloneGame.getBombermanGame().getPlayers().size() == 0) {
+					ConfigReader.getLogger().log(
+							"Player list is null. Warning.");
+				} else {
+					List<Player> localPlayerList = standAloneGame
+							.getBombermanGame().getPlayers();
+					boolean ismoved = standAloneGame.getBombermanGame()
+							.movePlayer(localPlayerList.get(0), -1, 0);
+					if (ismoved)
+						ConfigReader.getLogger().log(
+								"player has been moved.....");
+
+					Render();
 				}
-				
 
 			}
 		});
-		
+
 		final Button downbutton = (Button) findViewById(R.id.btnDown);
 		downbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				if (standGame.getBombermanGame().getPlayers().size() == 0) {
-					System.out.println("Player list is null. Warning.");
-				}else
-				{
-					List<Player> localPlayerList = standGame.getBombermanGame().getPlayers();
-					boolean ismoved = standGame.getBombermanGame().movePlayer(localPlayerList.get(0), 1,0);
-					if(ismoved)
-						System.out.println("player has been moved.....");
-					
-					Render(rows,cols,player);
+				if (standAloneGame.getBombermanGame().getPlayers().size() == 0) {
+					ConfigReader.getLogger().log(
+							"Player list is null. Warning.");
+				} else {
+					List<Player> localPlayerList = standAloneGame
+							.getBombermanGame().getPlayers();
+					boolean ismoved = standAloneGame.getBombermanGame()
+							.movePlayer(localPlayerList.get(0), 1, 0);
+					if (ismoved)
+						ConfigReader.getLogger().log(
+								"player has been moved.....");
+
+					Render();
 				}
-				
 
 			}
 		});
-		
-		
 
 	}
 
