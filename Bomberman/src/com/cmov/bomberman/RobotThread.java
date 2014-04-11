@@ -103,7 +103,7 @@ public class RobotThread extends Thread {
 				}
 				
 				for (Map.Entry<Integer, Integer> entry : updatedRobotPos.entrySet()) {
-					ConfigReader.gridlayout[entry.getKey()][entry.getValue()] = 'r';
+					ConfigReader.UpdateGridLayOutCell(entry.getKey(),entry.getValue(), (byte) 'r');
 					
 				}
 				updatedRobotPos.clear();

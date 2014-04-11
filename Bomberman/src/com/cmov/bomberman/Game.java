@@ -74,17 +74,17 @@ public class Game {
 			{
 				if(ConfigReader.gridlayout[player.getWorldXCor()][player.getWorldYCor()]=='x') // bomb is there
 				{
-				ConfigReader.gridlayout[player.bombs.get(0).getWorldXCor()][player.bombs
-						.get(0).getWorldYCor()] = 'b';
+					
+				ConfigReader.UpdateGridLayOutCell(player.bombs.get(0).getWorldXCor(),player.bombs
+						.get(0).getWorldYCor(),(byte) 'b');
 				}
 				else
 				{
-					ConfigReader.gridlayout[player.getWorldXCor()][player
-					                       						.getWorldYCor()] = '-';
-				}
+					ConfigReader.UpdateGridLayOutCell(player.getWorldXCor(),player
+					                       						.getWorldYCor(), (byte) '-');
+					}
 			} else {
-				ConfigReader.gridlayout[player.getWorldXCor()][player
-						.getWorldYCor()] = '-';
+				ConfigReader.UpdateGridLayOutCell(player.getWorldXCor(),player.getWorldYCor(),(byte) '-');
 			}
 			this.logicalWorld.setElement(player.getWorldXCor(),
 					player.getWorldYCor(), player.getID(), null);
@@ -92,8 +92,7 @@ public class Game {
 			player.move(dx, dy);
 			this.logicalWorld.setElement(player.getWorldXCor(),
 					player.getWorldYCor(), player.getID(), player);
-			ConfigReader.gridlayout[player.getWorldXCor()][player
-					.getWorldYCor()] = '1';
+			ConfigReader.UpdateGridLayOutCell(player.getWorldXCor(),player.getWorldYCor() ,(byte) '1');
 
 			return true;
 		} else

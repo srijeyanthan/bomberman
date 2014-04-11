@@ -36,9 +36,10 @@ class Bomb extends Cell {
 			player.bombs.remove(this);
 			player.game.getLogicalWorld().setElement(worldXCor, worldYCor, 0,
 					null);
-			ConfigReader.gridlayout[worldXCor][worldYCor] = '-';
+			ConfigReader.UpdateGridLayOutCell(worldXCor, worldYCor, (byte) '-');
 			int nx = worldXCor;
 			int ny = worldYCor;
+			int numberofElementsDied=0;
 			if (++nx < ConfigReader.getGameDim().row) {
 				Byte CellElement = ConfigReader.gridlayout[nx][worldYCor];
 				if (CellElement != 'w') // dont update , because we can not
@@ -50,9 +51,9 @@ class Bomb extends Cell {
 								0, null);
 
 					}
-					ConfigReader.gridlayout[nx][worldYCor] = '-';
-					/*if (CellElement == 'o')
-						UpdatableScore.UpdateScore();*/
+					ConfigReader.UpdateGridLayOutCell(nx, worldYCor, (byte) '-');
+					if (CellElement == 'r')
+						++numberofElementsDied;
 
 				}
 
@@ -66,9 +67,9 @@ class Bomb extends Cell {
 						player.game.getLogicalWorld().setElement(nx, worldYCor,
 								0, null);
 					}
-					ConfigReader.gridlayout[nx][worldYCor] = '-';
-					/*if (CellElement == 'o')
-						UpdatableScore.UpdateScore();*/
+					ConfigReader.UpdateGridLayOutCell(nx, worldYCor, (byte) '-');
+					if (CellElement == 'r')
+						++numberofElementsDied;
 
 				}
 
@@ -82,10 +83,9 @@ class Bomb extends Cell {
 								0, null);
 
 					}
-					ConfigReader.gridlayout[worldXCor][ny] = '-';
-					/*if (CellElement == 'o')
-						UpdatableScore.UpdateScore();*/
-
+					ConfigReader.UpdateGridLayOutCell(worldXCor, ny, (byte) '-');
+					if (CellElement == 'r')
+						++numberofElementsDied;
 				}
 
 			}
@@ -98,9 +98,11 @@ class Bomb extends Cell {
 								0, null);
 
 					}
-					ConfigReader.gridlayout[worldXCor][ny] = '-';
-					/*if (CellElement == 'o')
-						UpdatableScore.UpdateScore();*/
+					ConfigReader.UpdateGridLayOutCell(worldXCor, ny, (byte) '-');
+					//ConfigReader.gridlayout[worldXCor][ny] = '-';
+					if (CellElement == 'r')
+						++numberofElementsDied;
+						
 
 				}
 
@@ -108,7 +110,7 @@ class Bomb extends Cell {
 			timer.cancel();
 			// (player.game, gridX, gridY, player.bombDistance);
 			// TO-DO: notify this explosion to front end , so that we can draw
-
+			UpdatableScore.UpdateScore(numberofElementsDied);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

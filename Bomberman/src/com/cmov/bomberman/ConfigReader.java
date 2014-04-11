@@ -4,12 +4,13 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Xml;
 
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This class parses XML feeds from stackoverflow.com. Given an InputStream
@@ -18,6 +19,8 @@ import java.io.InputStream;
  */
 
 public class ConfigReader {
+
+	final static Lock lock = new ReentrantLock();
 
 	public static class Gameconfig {
 		public final int gameduration;
@@ -88,10 +91,10 @@ public class ConfigReader {
 	private static Logger logger = new Logger();
 	static AssetManager am;
 
-	public static Logger getLogger()
-	{
+	public static Logger getLogger() {
 		return logger;
 	}
+
 	public static void InitConfigParser(Context context)
 			throws XmlPullParserException {
 		mContext = context;
@@ -125,6 +128,16 @@ public class ConfigReader {
 
 	public static GameDim getGameDim() {
 		return gameDim;
+	}
+
+	public static void UpdateGridLayOutCell(int x, int y, Byte type) {
+		lock.lock();
+		try {
+			gridlayout[x][y] = type;
+		} finally {
+			lock.unlock();
+		}
+
 	}
 
 	public static void ReadGridLayout() throws XmlPullParserException,
