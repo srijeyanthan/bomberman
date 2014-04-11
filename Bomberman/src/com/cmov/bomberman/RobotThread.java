@@ -46,7 +46,7 @@ public class RobotThread extends Thread {
 				System.out
 						.println("cell is empty lets move the robot,, remove this sysout..");
 				ConfigReader.gridlayout[x][y] = '-';
-				this.logicalworld.setElement(entry.getKey(),entry.getValue(),0,null);
+				this.logicalworld.setElement(x,y,0,null);
 				updatedRobotPos.put(x, ny);
 				
 
