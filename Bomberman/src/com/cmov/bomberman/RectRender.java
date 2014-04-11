@@ -99,6 +99,13 @@ public class RectRender implements DrawView.ShapeRenderer {
 					canvas.drawCircle((yOffset * y) + yOffset / 2,
 							(xOffset * x) + xOffset / 2, xOffset / 3, paint);
 				}
+				else if(grid[x][y]=='E')
+				{
+					paint.setColor(Color.GREEN);
+					paint.setStrokeWidth(0);
+					canvas.drawRect((yOffset * y), (xOffset * x), yOffset
+							* (y + 1), xOffset * (x + 1), paint);
+				}
 
 			}
 

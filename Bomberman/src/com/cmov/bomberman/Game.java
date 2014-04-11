@@ -69,7 +69,7 @@ public class Game {
 		Cell el = this.logicalWorld.getElement(nx, ny)[0];
 		if (el == null) // oder Extra
 		{
-			// Set old position in Playground to null...
+			// Set old position in logical world to null...
 			if (player.bombs.size() != 0) // player has bomb
 			{
 				if(ConfigReader.gridlayout[player.getWorldXCor()][player.getWorldYCor()]=='x') // bomb is there

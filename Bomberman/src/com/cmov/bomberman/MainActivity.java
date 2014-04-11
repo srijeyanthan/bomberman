@@ -1,25 +1,70 @@
 package com.cmov.bomberman;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends Activity implements IExplodable,
-		IMoveableRobot {
+		IMoveableRobot, IUpdatableScore {
 	private DrawView bomberManView;
+	private TextView bombermanelapsedTimeTextView;
+	private TextView bombermanusernameview;
+	private TextView bombermanNoOfPlayersview;
 	final StandaloneGame standAloneGame = new StandaloneGame();
 	private static Bitmap player = null;
 
 	private LogicalWorld logicalworld = null;
+
+	BroadcastReceiver elapsedBroadcastReciver;
+	private int bombermanGameDuration = 0;
+
+	/*note , this is tick timer , every minute it will reduced one minute from original game duration, actually we dont need
+	 *  per second based timer , this would be sort of inefficient */
+	@Override
+	public void onStart() {
+		super.onStart();
+		elapsedBroadcastReciver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context ctx, Intent intent) {
+				if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
+					if (bombermanGameDuration >= 0) {
+						--bombermanGameDuration;
+						bombermanelapsedTimeTextView.setText("00" + ":"
+								+ bombermanGameDuration);
+					}
+				}
+			}
+		};
+
+		registerReceiver(elapsedBroadcastReciver, new IntentFilter(
+				Intent.ACTION_TIME_TICK));
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		if (elapsedBroadcastReciver != null)
+			unregisterReceiver(elapsedBroadcastReciver);
+	}
+
+	
 
 	public void Render() {
 		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
@@ -40,14 +85,27 @@ public class MainActivity extends Activity implements IExplodable,
 		bomberManView.postInvalidate();
 	}
 
-	public void Exploaded(int row, int col) {
+	public void Exploaded() {
 		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
 				ConfigReader.getGameDim().column);
 		player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
 		rectrender.setPlayerBitMap(player);
 		bomberManView.setRenderer(rectrender);
-		bomberManView.postInvalidate();
+		bombermanelapsedTimeTextView.setText("900");
+		/*
+		 * bomberManTextView.postInvalidate(); bomberManView.postInvalidate();
+		 */
 
+	}
+
+	public void UpdateScore() {
+		System.out
+				.println("This is not working ..^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		/*
+		 * bomberManTextView.setText("900"); bomberManTextView.postInvalidate();
+		 */
+		// update the score here. every time we kill the robot or player we will
+		// end up here
 	}
 
 	private void InitBomberManMap() {
@@ -79,15 +137,24 @@ public class MainActivity extends Activity implements IExplodable,
 		} catch (XmlPullParserException e) {
 			e.printStackTrace();
 		}
-
+		bombermanGameDuration = ConfigReader.getGameConfig().gameduration;
 		setContentView(R.layout.activity_main);
 
 		standAloneGame.joinGame("Cmove", MainActivity.this);
 		logicalworld = standAloneGame.getBombermanGame().getLogicalWorld();
 
 		bomberManView = (com.cmov.bomberman.DrawView) findViewById(R.id.bckg);
+		bombermanelapsedTimeTextView = (TextView) findViewById(R.id.tleft);
 
+		bombermanusernameview  = (TextView)findViewById(R.id.uid);
+		bombermanNoOfPlayersview = (TextView)findViewById(R.id.no_players);
+		bombermanusernameview.setText("Group2");
+		bombermanNoOfPlayersview.setText("3");
+		bombermanelapsedTimeTextView.setText("00" + ":"
+				+ bombermanGameDuration);
 		InitBomberManMap();
+
+		
 
 		InitStartRobotThred(MainActivity.this);
 
@@ -121,7 +188,7 @@ public class MainActivity extends Activity implements IExplodable,
 							.movePlayer(localPlayerList.get(0), 0, -1);
 					if (ismoved)
 						ConfigReader.getLogger().log(
-								"player has been moved.....");
+								"plccayer has been moved.....");
 
 					Render();
 				}

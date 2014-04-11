@@ -30,6 +30,9 @@
         <robot file="brickwall"/>
         <bomb file="brickwall"/>
     </icons>
+    <!-- the following game configurations are denotes gd - Game duraion, et- explosion timout
+     ed - explosion duratoin, er - explosion range rs - robot speed , pr-points per robots killed
+     po - points per opponent killed -->
     <gameconfig>
         <gd value="30"/>
         <et value="1"/>

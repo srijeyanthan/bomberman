@@ -1,14 +1,13 @@
 package com.cmov.bomberman;
 
-import java.util.Iterator;
+
 import java.util.Map;
 import java.util.HashMap;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 
 public class RobotThread extends Thread {
 
-	private boolean movingRight = true;
 	private IMoveableRobot robotActiviy;
 	public Activity activity;
 	private int row = 0;
@@ -16,6 +15,7 @@ public class RobotThread extends Thread {
 	private Byte[][] GridLayout = null;
 	private LogicalWorld logicalworld;
 	private boolean running = false;
+	@SuppressLint("UseSparseArrays")
 	private Map<Integer, Integer> updatedRobotPos = new HashMap<Integer, Integer>();
 
 	public RobotThread(int row, int col, Activity activity) {
@@ -46,6 +46,7 @@ public class RobotThread extends Thread {
 				System.out
 						.println("cell is empty lets move the robot,, remove this sysout..");
 				ConfigReader.gridlayout[x][y] = '-';
+				this.logicalworld.setElement(entry.getKey(),entry.getValue(),0,null);
 				updatedRobotPos.put(x, ny);
 				
 
@@ -103,7 +104,7 @@ public class RobotThread extends Thread {
 				
 				for (Map.Entry<Integer, Integer> entry : updatedRobotPos.entrySet()) {
 					ConfigReader.gridlayout[entry.getKey()][entry.getValue()] = 'r';
-				    
+					
 				}
 				updatedRobotPos.clear();
 				robotActiviy.RobotMovedAtLogicalLayer(); // so robot's new
