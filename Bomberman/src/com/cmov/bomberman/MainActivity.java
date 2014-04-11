@@ -1,14 +1,10 @@
 package com.cmov.bomberman;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -27,10 +23,11 @@ public class MainActivity extends Activity implements IExplodable,
 	private TextView bombermanelapsedTimeTextView;
 	private TextView bombermanusernameview;
 	private TextView bombermanNoOfPlayersview;
+	private TextView bombermanScoreView;
 	final StandaloneGame standAloneGame = new StandaloneGame();
 	private static Bitmap player = null;
-
 	private LogicalWorld logicalworld = null;
+	private static  int scoreOfThePlayer=0;
 
 	BroadcastReceiver elapsedBroadcastReciver;
 	private int bombermanGameDuration = 0;
@@ -48,6 +45,7 @@ public class MainActivity extends Activity implements IExplodable,
 						--bombermanGameDuration;
 						bombermanelapsedTimeTextView.setText("00" + ":"
 								+ bombermanGameDuration);
+						
 					}
 				}
 			}
@@ -64,7 +62,32 @@ public class MainActivity extends Activity implements IExplodable,
 			unregisterReceiver(elapsedBroadcastReciver);
 	}
 
-	
+	private void startingUp() {
+	    Thread timer = new Thread() { //new thread         
+	        public void run() {
+	            Boolean b = true;
+	            
+	                do {
+	                    try {
+							sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+
+	                    runOnUiThread(new Runnable() {  
+	                    @Override
+	                    public void run() {
+	                    	bombermanScoreView.setText(String.valueOf(scoreOfThePlayer));
+	                    }
+	                });
+	                }
+	                while (b == true);
+	            
+	            
+	        };
+	    };
+	    timer.start();
+	}
 
 	public void Render() {
 		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
@@ -91,21 +114,11 @@ public class MainActivity extends Activity implements IExplodable,
 		player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
 		rectrender.setPlayerBitMap(player);
 		bomberManView.setRenderer(rectrender);
-		bombermanelapsedTimeTextView.setText("900");
-		/*
-		 * bomberManTextView.postInvalidate(); bomberManView.postInvalidate();
-		 */
 
 	}
 
-	public void UpdateScore() {
-		System.out
-				.println("This is not working ..^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-		/*
-		 * bomberManTextView.setText("900"); bomberManTextView.postInvalidate();
-		 */
-		// update the score here. every time we kill the robot or player we will
-		// end up here
+	public void UpdateScore(int numberOfRobotDied) {
+		scoreOfThePlayer += ConfigReader.getGameConfig().pointperrobotkilled * numberOfRobotDied;
 	}
 
 	private void InitBomberManMap() {
@@ -148,6 +161,8 @@ public class MainActivity extends Activity implements IExplodable,
 
 		bombermanusernameview  = (TextView)findViewById(R.id.uid);
 		bombermanNoOfPlayersview = (TextView)findViewById(R.id.no_players);
+		bombermanScoreView = (TextView)findViewById(R.id.score);
+		
 		bombermanusernameview.setText("Group2");
 		bombermanNoOfPlayersview.setText("3");
 		bombermanelapsedTimeTextView.setText("00" + ":"
@@ -157,6 +172,9 @@ public class MainActivity extends Activity implements IExplodable,
 		
 
 		InitStartRobotThred(MainActivity.this);
+		startingUp();
+		
+		
 
 		final Button button = (Button) findViewById(R.id.btnBomb);
 		button.setOnClickListener(new View.OnClickListener() {

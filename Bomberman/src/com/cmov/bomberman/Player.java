@@ -110,7 +110,7 @@ public class Player extends Cell {
 
 		Bomb bomb = new Bomb(worldXCor, worldYCor, this,activity);
 		this.bombs.add(bomb);
-        ConfigReader.gridlayout[worldXCor][worldYCor]='x';  // initially bomberman plus bomb
+		ConfigReader.UpdateGridLayOutCell(worldXCor, worldYCor, (byte) 'x');
 		this.game.getLogicalWorld().setElement(worldXCor, worldYCor, 0, bomb);
 		
 	}
