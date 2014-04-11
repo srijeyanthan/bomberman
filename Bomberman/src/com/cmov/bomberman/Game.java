@@ -11,9 +11,9 @@ public class Game {
 	private LogicalWorld logicalWorld;
 	private boolean running = false;
 
-	public Game(String name,Activity activity) {
+	public Game(String name, Activity activity) {
 		this.gameName = name;
-		this.logicalWorld = new LogicalWorld(activity);
+		this.logicalWorld = new LogicalWorld();
 	}
 
 	public boolean addPlayer(Player player) {
@@ -22,8 +22,8 @@ public class Game {
 		// Adds player to playground view, set starting position
 		int x = ConfigReader.players.getXCor();
 		int y = ConfigReader.players.getYCor();
-		System.out.println("Player is going to insert in to map x "+ x +"|" + "y "+ y);
-		
+		System.out.println("Player is going to insert in to map x " + x + "|"
+				+ "y " + y);
 
 		this.logicalWorld.setElement(x, y, player.getID(), player);
 		player.setPosition(x, y);
@@ -70,14 +70,30 @@ public class Game {
 		if (el == null) // oder Extra
 		{
 			// Set old position in Playground to null...
-			ConfigReader.gridlayout[player.getWorldXCor()][player.getWorldYCor()] ='-';
+			if (player.bombs.size() != 0) // player has bomb
+			{
+				if(ConfigReader.gridlayout[player.getWorldXCor()][player.getWorldYCor()]=='x') // bomb is there
+				{
+				ConfigReader.gridlayout[player.bombs.get(0).getWorldXCor()][player.bombs
+						.get(0).getWorldYCor()] = 'b';
+				}
+				else
+				{
+					ConfigReader.gridlayout[player.getWorldXCor()][player
+					                       						.getWorldYCor()] = '-';
+				}
+			} else {
+				ConfigReader.gridlayout[player.getWorldXCor()][player
+						.getWorldYCor()] = '-';
+			}
 			this.logicalWorld.setElement(player.getWorldXCor(),
 					player.getWorldYCor(), player.getID(), null);
 			// ...and set new position
 			player.move(dx, dy);
 			this.logicalWorld.setElement(player.getWorldXCor(),
 					player.getWorldYCor(), player.getID(), player);
-			ConfigReader.gridlayout[player.getWorldXCor()][player.getWorldYCor()] ='1';
+			ConfigReader.gridlayout[player.getWorldXCor()][player
+					.getWorldYCor()] = '1';
 
 			return true;
 		} else

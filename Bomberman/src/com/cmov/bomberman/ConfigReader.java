@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Xml;
 
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -82,14 +83,19 @@ public class ConfigReader {
 	public static Byte[][] gridlayout = null;
 	private static Gameconfig gameconfig = null;
 	private static GameDim gameDim = null;
-	// We don't use namespaces
+
 	public static Player players = null;
+	private static Logger logger = new Logger();
 	static AssetManager am;
 
+	public static Logger getLogger()
+	{
+		return logger;
+	}
 	public static void InitConfigParser(Context context)
 			throws XmlPullParserException {
 		mContext = context;
-		 am = mContext.getAssets();
+		am = mContext.getAssets();
 		try {
 			stream = am.open("config.xml");
 			InitReaders(stream);
@@ -99,14 +105,16 @@ public class ConfigReader {
 		}
 
 	}
-    public static void InitReaders(InputStream in) throws XmlPullParserException, IOException
-    {
-    	
-    	ReadGameDim(in);
+
+	public static void InitReaders(InputStream in)
+			throws XmlPullParserException, IOException {
+
+		ReadGameDim(in);
 		ReadGridLayout();
 		ReadGameConfig();
-    	
-    }
+
+	}
+
 	public static Byte[][] getGridLayout() {
 		return gridlayout;
 	}
@@ -119,8 +127,8 @@ public class ConfigReader {
 		return gameDim;
 	}
 
-	public static void ReadGridLayout()
-			throws XmlPullParserException, IOException {
+	public static void ReadGridLayout() throws XmlPullParserException,
+			IOException {
 		XmlPullParser parser = Xml.newPullParser();
 		int event = parser.getEventType();
 		InputStream in = am.open("config.xml");
@@ -128,7 +136,7 @@ public class ConfigReader {
 		String sout = null;
 		String text = null;
 		int localycounter = 0;
-		
+
 		Byte[][] grid = new Byte[height][width];
 		while (event != XmlPullParser.END_DOCUMENT) {
 			String name = parser.getName();
@@ -138,8 +146,7 @@ public class ConfigReader {
 			case XmlPullParser.TEXT:
 				text = parser.getText();
 				break;
-			case XmlPullParser.END_TAG: 
-			{
+			case XmlPullParser.END_TAG: {
 				int localxcounter = 0;
 				if (name.equals("row")) {
 					sout = text;
@@ -147,29 +154,28 @@ public class ConfigReader {
 
 					for (String string : elements) {
 
-						grid[localycounter][localxcounter] = string
-								.getBytes()[0];
-						//System.out.println("this is the out put "
-								//+ grid[localrowcounter][localcolumncounter]);
+						grid[localycounter][localxcounter] = string.getBytes()[0];
+						// System.out.println("this is the out put "
+						// + grid[localrowcounter][localcolumncounter]);
 						if (grid[localycounter][localxcounter] == '1') {
-							players= new Player();
+							players = new Player();
 							players.setXCor(localycounter);
 							players.setYCor(localxcounter);
 						}
-						/*if (grid[localrowcounter][localcolumncounter] == '2') {
-							players[1] = new Player();
-							players[1].setXCor(localrowcounter);
-							players[1].setYCor(localcolumncounter);
-						}
-						if (grid[localrowcounter][localcolumncounter] == '3') {
-							players[2] = new Player();
-							players[2].setXCor(localrowcounter);
-							players[2].setYCor(localcolumncounter);
-						}*/
+						/*
+						 * if (grid[localrowcounter][localcolumncounter] == '2')
+						 * { players[1] = new Player();
+						 * players[1].setXCor(localrowcounter);
+						 * players[1].setYCor(localcolumncounter); } if
+						 * (grid[localrowcounter][localcolumncounter] == '3') {
+						 * players[2] = new Player();
+						 * players[2].setXCor(localrowcounter);
+						 * players[2].setYCor(localcolumncounter); }
+						 */
 						++localxcounter;
 					}
 					++localycounter;
-					///System.out.println("name of of the tag " + sout);
+					// /System.out.println("name of of the tag " + sout);
 				}
 			}
 				break;
@@ -177,7 +183,7 @@ public class ConfigReader {
 			}
 			event = parser.next();
 		}
-		///System.out.println("Total number of row " + localrowcounter);
+		// /System.out.println("Total number of row " + localrowcounter);
 		gridlayout = grid;
 	}
 
@@ -185,7 +191,7 @@ public class ConfigReader {
 			throws XmlPullParserException, IOException {
 		XmlPullParser parser = Xml.newPullParser();
 		int event = parser.getEventType();
-		
+
 		parser.setInput(in, null);
 
 		int maxplayer = 0;
@@ -219,8 +225,8 @@ public class ConfigReader {
 		gameDim = new GameDim(maxplayer, row, column);
 	}
 
-	public static void ReadGameConfig()
-			throws XmlPullParserException, IOException {
+	public static void ReadGameConfig() throws XmlPullParserException,
+			IOException {
 		int gd = 0;
 		int et = 0;
 		int ed = 0;

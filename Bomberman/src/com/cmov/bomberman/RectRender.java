@@ -13,12 +13,7 @@ public class RectRender implements DrawView.ShapeRenderer {
 	public int xOffset;
 	public int yOffset;
 	public Bitmap playermap;
-	private LogicalWorld logicalworld = null;
-
-	public void setLogicalWorld(LogicalWorld logicalworld) {
-		this.logicalworld = logicalworld;
-	}
-
+	
 	public void setPlayerBitMap(Bitmap playermap) {
 		this.playermap = playermap;
 	}
@@ -81,17 +76,9 @@ public class RectRender implements DrawView.ShapeRenderer {
 							* (y + 1), xOffset * (x + 1), paint);
 				}
 				else if (grid[x][y] == '1') {
-
 					drawPlayer(x, y, paint, canvas);
-					Player pl = (Player)logicalworld.getElement(x, y)[0];
 					
-					if(pl.bombs.size() !=0)  // bomb with human , we have to draw objects
-					{
-						paint.setColor(Color.BLACK);
-						canvas.drawCircle((yOffset * y) + yOffset / 2,
-								(xOffset * x) + xOffset / 2, xOffset / 3, paint);
-						ConfigReader.gridlayout[x][y]='b';
-					}
+					
 				}
 				else if (grid[x][y] == 'b') {
 					paint.setColor(Color.BLACK);
@@ -104,6 +91,13 @@ public class RectRender implements DrawView.ShapeRenderer {
 						paint.setColor(Color.WHITE);
 						canvas.drawCircle((yOffset * y) + yOffset / 2,
 								(xOffset * x) + xOffset / 2, xOffset / 3, paint);
+				}
+				else if(grid[x][y]=='x')
+				{
+					drawPlayer(x, y, paint, canvas);
+					paint.setColor(Color.BLACK);
+					canvas.drawCircle((yOffset * y) + yOffset / 2,
+							(xOffset * x) + xOffset / 2, xOffset / 3, paint);
 				}
 
 			}

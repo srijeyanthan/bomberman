@@ -72,7 +72,6 @@ public class Player extends Cell {
 		}
 
 		imgPath = imgPath + addition + ".png";
-        System.out.println("Player path is checking .... "+ imgPath);
 		return imgPath;
 	}
 
@@ -111,7 +110,7 @@ public class Player extends Cell {
 
 		Bomb bomb = new Bomb(worldXCor, worldYCor, this,activity);
 		this.bombs.add(bomb);
-
+        ConfigReader.gridlayout[worldXCor][worldYCor]='x';  // initially bomberman plus bomb
 		this.game.getLogicalWorld().setElement(worldXCor, worldYCor, 0, bomb);
 		
 	}

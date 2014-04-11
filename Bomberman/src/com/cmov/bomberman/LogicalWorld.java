@@ -1,6 +1,6 @@
 package com.cmov.bomberman;
 
-import android.app.Activity;
+
 
 
 
@@ -15,7 +15,7 @@ public class LogicalWorld {
 	private int cols, rows;
 	
 
-	public LogicalWorld(Activity activity) {
+	public LogicalWorld() {
 		this.cols = ConfigReader.getGameDim().column;
 		this.rows = ConfigReader.getGameDim().row;
 		this.twoDWorld = new Cell[rows][cols][MAX_NUM_PLAYER];
@@ -37,7 +37,7 @@ public class LogicalWorld {
 				}
 					break;
 				case 'r': {
-					//this.twoDWorld[x][y][0] = new Robot(x, y ,768,activity);
+					this.twoDWorld[x][y][0] = new Robot(x, y);
 				}
 					break;
 
