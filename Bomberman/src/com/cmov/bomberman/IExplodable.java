@@ -2,5 +2,5 @@ package com.cmov.bomberman;
 
 public interface IExplodable {
 
-	void Exploaded();
+	void Exploaded(boolean isPlayerDead);
 }

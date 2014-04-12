@@ -6,8 +6,10 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -29,6 +31,7 @@ public class MainActivity extends Activity implements IExplodable,
 	private LogicalWorld logicalworld = null;
 	private static int scoreOfThePlayer = 0;
 	private boolean isBombPlaced = false;
+	private boolean isPlayerDead =false;
 	Button bombButton = null;
 
 	BroadcastReceiver elapsedBroadcastReciver;
@@ -88,6 +91,28 @@ public class MainActivity extends Activity implements IExplodable,
 							{
 								bombButton.setText("Bomb");
 							}
+							if(isPlayerDead)
+							{
+								new AlertDialog.Builder(MainActivity.this)
+							    .setTitle("Game Over - you are dead")
+							    .setMessage("Are you sure you want to restart the game ?")
+							    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+							        public void onClick(DialogInterface dialog, int which) {
+							        	Intent i = getBaseContext().getPackageManager()
+							                    .getLaunchIntentForPackage( getBaseContext().getPackageName() );
+							       i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+							       startActivity(i);
+							        }
+							     })
+							    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+							        public void onClick(DialogInterface dialog, int which) { 
+							        	android.os.Process.killProcess(android.os.Process.myPid());
+							        }
+							     })
+							    .setIcon(R.drawable.alert)
+							     .show();
+								isPlayerDead =false;
+							}
 						}
 					});
 				} while (b == true);
@@ -116,7 +141,7 @@ public class MainActivity extends Activity implements IExplodable,
 		bomberManView.postInvalidate();
 	}
 
-	public void Exploaded() {
+	public void Exploaded(boolean isPlayerDeadinGame) {
 		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
 				ConfigReader.getGameDim().column);
 		player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
@@ -124,6 +149,7 @@ public class MainActivity extends Activity implements IExplodable,
 		bomberManView.setRenderer(rectrender);
 		bomberManView.postInvalidate();
 		isBombPlaced = false;
+		isPlayerDead = isPlayerDeadinGame;   /// this is only for test , 
 		
 
 	}
@@ -181,6 +207,7 @@ public class MainActivity extends Activity implements IExplodable,
 				.setText("00" + ":" + bombermanGameDuration);
 		InitBomberManMap();
 
+	
 		InitStartRobotThred(MainActivity.this);
 		startingUp();
 
