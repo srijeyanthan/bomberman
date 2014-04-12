@@ -6,8 +6,10 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -27,13 +29,19 @@ public class MainActivity extends Activity implements IExplodable,
 	final StandaloneGame standAloneGame = new StandaloneGame();
 	private static Bitmap player = null;
 	private LogicalWorld logicalworld = null;
-	private static  int scoreOfThePlayer=0;
+	private static int scoreOfThePlayer = 0;
+	private boolean isBombPlaced = false;
+	private boolean isPlayerDead =false;
+	Button bombButton = null;
 
 	BroadcastReceiver elapsedBroadcastReciver;
 	private int bombermanGameDuration = 0;
 
-	/*note , this is tick timer , every minute it will reduced one minute from original game duration, actually we dont need
-	 *  per second based timer , this would be sort of inefficient */
+	/*
+	 * note , this is tick timer , every minute it will reduced one minute from
+	 * original game duration, actually we dont need per second based timer ,
+	 * this would be sort of inefficient
+	 */
 	@Override
 	public void onStart() {
 		super.onStart();
@@ -45,7 +53,7 @@ public class MainActivity extends Activity implements IExplodable,
 						--bombermanGameDuration;
 						bombermanelapsedTimeTextView.setText("00" + ":"
 								+ bombermanGameDuration);
-						
+
 					}
 				}
 			}
@@ -63,36 +71,61 @@ public class MainActivity extends Activity implements IExplodable,
 	}
 
 	private void startingUp() {
-	    Thread timer = new Thread() { //new thread         
-	        public void run() {
-	            Boolean b = true;
-	            
-	                do {
-	                    try {
-							sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+		Thread timer = new Thread() { // new thread
+			public void run() {
+				Boolean b = true;
 
-	                    runOnUiThread(new Runnable() {  
-	                    @Override
-	                    public void run() {
-	                    	bombermanScoreView.setText(String.valueOf(scoreOfThePlayer));
-	                    }
-	                });
-	                }
-	                while (b == true);
-	            
-	            
-	        };
-	    };
-	    timer.start();
+				do {
+					try {
+						sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							bombermanScoreView.setText(String
+									.valueOf(scoreOfThePlayer));
+							if(!isBombPlaced)
+							{
+								bombButton.setText("Bomb");
+							}
+							if(isPlayerDead)
+							{
+								new AlertDialog.Builder(MainActivity.this)
+							    .setTitle("Game Over - you are dead")
+							    .setMessage("Are you sure you want to restart the game ?")
+							    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+							        public void onClick(DialogInterface dialog, int which) {
+							        	Intent i = getBaseContext().getPackageManager()
+							                    .getLaunchIntentForPackage( getBaseContext().getPackageName() );
+							       i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+							       startActivity(i);
+							        }
+							     })
+							    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+							        public void onClick(DialogInterface dialog, int which) { 
+							        	android.os.Process.killProcess(android.os.Process.myPid());
+							        }
+							     })
+							    .setIcon(R.drawable.alert)
+							     .show();
+								isPlayerDead =false;
+							}
+						}
+					});
+				} while (b == true);
+
+			};
+		};
+		timer.start();
 	}
 
 	public void Render() {
 		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
 				ConfigReader.getGameDim().column);
-		player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
+		player = BitmapFactory.decodeResource(getResources(), R.drawable.group2);
 		rectrender.setPlayerBitMap(player);
 		bomberManView.setRenderer(rectrender);
 		bomberManView.invalidate();
@@ -102,27 +135,32 @@ public class MainActivity extends Activity implements IExplodable,
 	public void RobotMovedAtLogicalLayer() {
 		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
 				ConfigReader.getGameDim().column);
-		player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
+		player = BitmapFactory.decodeResource(getResources(), R.drawable.group2);
 		rectrender.setPlayerBitMap(player);
 		bomberManView.setRenderer(rectrender);
 		bomberManView.postInvalidate();
 	}
 
-	public void Exploaded() {
+	public void Exploaded(boolean isPlayerDeadinGame) {
 		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
 				ConfigReader.getGameDim().column);
-		player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
+		player = BitmapFactory.decodeResource(getResources(), R.drawable.group2);
 		rectrender.setPlayerBitMap(player);
 		bomberManView.setRenderer(rectrender);
+		bomberManView.postInvalidate();
+		isBombPlaced = false;
+		isPlayerDead = isPlayerDeadinGame;   /// this is only for test , 
+		
 
 	}
 
 	public void UpdateScore(int numberOfRobotDied) {
-		scoreOfThePlayer += ConfigReader.getGameConfig().pointperrobotkilled * numberOfRobotDied;
+		scoreOfThePlayer += ConfigReader.getGameConfig().pointperrobotkilled
+				* numberOfRobotDied;
 	}
 
 	private void InitBomberManMap() {
-		player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
+		player = BitmapFactory.decodeResource(getResources(), R.drawable.group2);
 		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
 				ConfigReader.getGameDim().column);
 		rectrender.setPlayerBitMap(player);
@@ -159,25 +197,22 @@ public class MainActivity extends Activity implements IExplodable,
 		bomberManView = (com.cmov.bomberman.DrawView) findViewById(R.id.bckg);
 		bombermanelapsedTimeTextView = (TextView) findViewById(R.id.tleft);
 
-		bombermanusernameview  = (TextView)findViewById(R.id.uid);
-		bombermanNoOfPlayersview = (TextView)findViewById(R.id.no_players);
-		bombermanScoreView = (TextView)findViewById(R.id.score);
-		
+		bombermanusernameview = (TextView) findViewById(R.id.uid);
+		bombermanNoOfPlayersview = (TextView) findViewById(R.id.no_players);
+		bombermanScoreView = (TextView) findViewById(R.id.score);
+
 		bombermanusernameview.setText("Group2");
 		bombermanNoOfPlayersview.setText("3");
-		bombermanelapsedTimeTextView.setText("00" + ":"
-				+ bombermanGameDuration);
+		bombermanelapsedTimeTextView
+				.setText("00" + ":" + bombermanGameDuration);
 		InitBomberManMap();
 
-		
-
+	
 		InitStartRobotThred(MainActivity.this);
 		startingUp();
-		
-		
 
-		final Button button = (Button) findViewById(R.id.btnBomb);
-		button.setOnClickListener(new View.OnClickListener() {
+		bombButton = (Button) findViewById(R.id.btnBomb);
+		bombButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (standAloneGame.getBombermanGame().getPlayers().size() == 0) {
 					ConfigReader.getLogger().log(
@@ -186,6 +221,9 @@ public class MainActivity extends Activity implements IExplodable,
 					List<Player> localPlayerList = standAloneGame
 							.getBombermanGame().getPlayers();
 					localPlayerList.get(0).placeBomb();
+					if (!isBombPlaced)
+						bombButton.setText("Bombed");
+					isBombPlaced=true;
 					Render();
 
 				}

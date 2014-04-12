@@ -35,15 +35,16 @@ class Bomb extends Cell {
 
 	public void explode() {
 		try {
-			ExplodableActivity.Exploaded();
+
 			System.out.println(this + " bomb has exploaded!");
 			player.bombs.remove(this);
+			boolean isPlayerDead = false;
 			player.game.getLogicalWorld().setElement(worldXCor, worldYCor, 0,
 					null);
 			ConfigReader.UpdateGridLayOutCell(worldXCor, worldYCor, (byte) '-');
 			int nx = worldXCor;
 			int ny = worldYCor;
-			int numberofElementsDied=0;
+			int numberofElementsDied = 0;
 			if (++nx < ConfigReader.getGameDim().row) {
 				Byte CellElement = ConfigReader.gridlayout[nx][worldYCor];
 				if (CellElement != 'w') // dont update , because we can not
@@ -55,12 +56,14 @@ class Bomb extends Cell {
 								0, null);
 
 					}
-					ConfigReader.UpdateGridLayOutCell(nx, worldYCor, (byte) '-');
+					ConfigReader
+							.UpdateGridLayOutCell(nx, worldYCor, (byte) '-');
 					if (CellElement == 'r')
 						++numberofElementsDied;
 
 				}
-
+				if (CellElement == '1')
+					isPlayerDead = true;
 			}
 			nx = worldXCor;
 			if (--nx > 0) {
@@ -71,11 +74,14 @@ class Bomb extends Cell {
 						player.game.getLogicalWorld().setElement(nx, worldYCor,
 								0, null);
 					}
-					ConfigReader.UpdateGridLayOutCell(nx, worldYCor, (byte) '-');
+					ConfigReader
+							.UpdateGridLayOutCell(nx, worldYCor, (byte) '-');
 					if (CellElement == 'r')
 						++numberofElementsDied;
 
 				}
+				if (CellElement == '1')
+					isPlayerDead = true;
 
 			}
 			if (++ny < ConfigReader.getGameDim().column) {
@@ -87,11 +93,13 @@ class Bomb extends Cell {
 								0, null);
 
 					}
-					ConfigReader.UpdateGridLayOutCell(worldXCor, ny, (byte) '-');
+					ConfigReader
+							.UpdateGridLayOutCell(worldXCor, ny, (byte) '-');
 					if (CellElement == 'r')
 						++numberofElementsDied;
 				}
-
+				if (CellElement == '1')
+					isPlayerDead = true;
 			}
 			ny = worldYCor;
 			if (--ny > 0) {
@@ -102,18 +110,22 @@ class Bomb extends Cell {
 								0, null);
 
 					}
-					ConfigReader.UpdateGridLayOutCell(worldXCor, ny, (byte) '-');
-					//ConfigReader.gridlayout[worldXCor][ny] = '-';
+					ConfigReader
+							.UpdateGridLayOutCell(worldXCor, ny, (byte) '-');
+					// ConfigReader.gridlayout[worldXCor][ny] = '-';
 					if (CellElement == 'r')
 						++numberofElementsDied;
-						
 
 				}
+				if (CellElement == '1')
+					isPlayerDead = true;
 
 			}
 			timer.cancel();
 			// (player.game, gridX, gridY, player.bombDistance);
 			// TO-DO: notify this explosion to front end , so that we can draw
+			
+			ExplodableActivity.Exploaded(isPlayerDead);
 			UpdatableScore.UpdateScore(numberofElementsDied);
 		} catch (Exception ex) {
 			ex.printStackTrace();
