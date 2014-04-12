@@ -125,7 +125,7 @@ public class MainActivity extends Activity implements IExplodable,
 	public void Render() {
 		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
 				ConfigReader.getGameDim().column);
-		player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
+		player = BitmapFactory.decodeResource(getResources(), R.drawable.group2);
 		rectrender.setPlayerBitMap(player);
 		bomberManView.setRenderer(rectrender);
 		bomberManView.invalidate();
@@ -135,7 +135,7 @@ public class MainActivity extends Activity implements IExplodable,
 	public void RobotMovedAtLogicalLayer() {
 		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
 				ConfigReader.getGameDim().column);
-		player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
+		player = BitmapFactory.decodeResource(getResources(), R.drawable.group2);
 		rectrender.setPlayerBitMap(player);
 		bomberManView.setRenderer(rectrender);
 		bomberManView.postInvalidate();
@@ -144,7 +144,7 @@ public class MainActivity extends Activity implements IExplodable,
 	public void Exploaded(boolean isPlayerDeadinGame) {
 		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
 				ConfigReader.getGameDim().column);
-		player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
+		player = BitmapFactory.decodeResource(getResources(), R.drawable.group2);
 		rectrender.setPlayerBitMap(player);
 		bomberManView.setRenderer(rectrender);
 		bomberManView.postInvalidate();
@@ -160,7 +160,7 @@ public class MainActivity extends Activity implements IExplodable,
 	}
 
 	private void InitBomberManMap() {
-		player = BitmapFactory.decodeResource(getResources(), R.drawable.sri);
+		player = BitmapFactory.decodeResource(getResources(), R.drawable.group2);
 		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
 				ConfigReader.getGameDim().column);
 		rectrender.setPlayerBitMap(player);
