@@ -1,6 +1,5 @@
 package com.cmov.bomberman;
 
-
 import java.util.Map;
 import java.util.HashMap;
 import android.annotation.SuppressLint;
@@ -14,6 +13,8 @@ public class RobotThread extends Thread {
 	private int col = 0;
 	private Byte[][] GridLayout = null;
 	private LogicalWorld logicalworld;
+	private boolean movingRight = false;
+	private boolean movingUp = false;
 	private boolean running = false;
 	@SuppressLint("UseSparseArrays")
 	private Map<Integer, Integer> updatedRobotPos = new HashMap<Integer, Integer>();
@@ -33,25 +34,76 @@ public class RobotThread extends Thread {
 	}
 
 	private void move(int x, int y) {
-
 		int ny = y;
-		if (++ny < this.col) // go right
-		{
-
-			Cell cell = logicalworld.getElement(x, ny)[0]; // there is nothing
-															// in the cell so
-															// move the robot
-															// right side
-			if (cell == null) {
+		int nx = x; 
+		
+		if(movingRight)
+			ny++;
+		else
+			ny--;
+		if(movingUp)
+			nx++;
+		else
+			nx--;
+		
+		Cell cellx = logicalworld.getElement(nx, y)[0];
+		Cell celly = logicalworld.getElement(x, ny)[0];
+		if (ny > 0 && ny < this.col && nx > 0 && nx < this.row) {
+			
+			if (celly == null && cellx != null) {
 				System.out
 						.println("cell is empty lets move the robot,, remove this sysout..");
 				ConfigReader.gridlayout[x][y] = '-';
-				this.logicalworld.setElement(x,y,0,null);
+				this.logicalworld.setElement(x, y, 0, null);
 				updatedRobotPos.put(x, ny);
-				
-
+				movingRight = false;
+				movingUp = true;
+			} else if (cellx == null && celly != null) {
+				System.out
+						.println("cell is empty lets move the robot,, remove this sysout..");
+				ConfigReader.gridlayout[x][y] = '-';
+				this.logicalworld.setElement(x, y, 0, null);
+				updatedRobotPos.put(nx, y);
+				movingUp = false;
+				movingRight = true;
+			} else if (cellx == null && celly == null) {
+				System.out
+						.println("cell is empty lets move the robot,, remove this sysout..");
+				ConfigReader.gridlayout[x][y] = '-';
+				this.logicalworld.setElement(x, y, 0, null);
+				updatedRobotPos.put(x, ny);
+				movingUp = false;
+				movingRight = false;
 			}
-		}
+			else
+			{
+				movingRight = true;
+				movingUp = true;
+			}
+		} /*else if (ny >= 0) {
+			Cell cell = logicalworld.getElement(x, ny)[0];
+			if (cell == null) {
+				System.out
+						.println("cell is empty lets move the robot,, remove this sysout..");
+				ConfigReader.gridlayout[x][y--] = '-';
+				this.logicalworld.setElement(x, y, 0, null);
+				updatedRobotPos.put(x, ny);
+				movingRight = true;
+			}
+			else
+				movingRight = false; 
+		}*/
+
+		/*
+		 * int ny = y; if (++ny < this.col) // go right {
+		 * 
+		 * Cell cell = logicalworld.getElement(x, ny)[0]; // there is nothing //
+		 * in the cell so // move the robot // right side if (cell == null) {
+		 * System.out
+		 * .println("cell is empty lets move the robot,, remove this sysout..");
+		 * ConfigReader.gridlayout[x][y] = '-'; this.logicalworld.setElement(x,
+		 * y, 0, null); updatedRobotPos.put(x, ny); } }
+		 */
 	}
 
 	public void moveCircle() {
@@ -89,7 +141,7 @@ public class RobotThread extends Thread {
 		while (running) {
 
 			try {
-				Thread.sleep(10000);
+				Thread.sleep(200);
 				for (int x = 0; x < this.row; x++) {
 					for (int y = 0; y < this.col; y++) {
 
@@ -101,10 +153,12 @@ public class RobotThread extends Thread {
 						}
 					}
 				}
-				
-				for (Map.Entry<Integer, Integer> entry : updatedRobotPos.entrySet()) {
-					ConfigReader.UpdateGridLayOutCell(entry.getKey(),entry.getValue(), (byte) 'r');
-					
+
+				for (Map.Entry<Integer, Integer> entry : updatedRobotPos
+						.entrySet()) {
+					ConfigReader.UpdateGridLayOutCell(entry.getKey(),
+							entry.getValue(), (byte) 'r');
+
 				}
 				updatedRobotPos.clear();
 				robotActiviy.RobotMovedAtLogicalLayer(); // so robot's new
@@ -113,7 +167,7 @@ public class RobotThread extends Thread {
 															// fire front end to
 															// draw them .:)
 				System.out.println("thread is sleeping now.");
-				Thread.sleep(10000);
+				Thread.sleep(200);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
