@@ -13,8 +13,8 @@ public class RobotThread extends Thread {
 	private int col = 0;
 	private Byte[][] GridLayout = null;
 	private LogicalWorld logicalworld;
-	private boolean movingRight = false;
-	private boolean movingUp = false;
+	private boolean movingRight;
+	private boolean movingUp;
 	private boolean running = false;
 	@SuppressLint("UseSparseArrays")
 	private Map<Integer, Integer> updatedRobotPos = new HashMap<Integer, Integer>();
@@ -34,76 +34,74 @@ public class RobotThread extends Thread {
 	}
 
 	private void move(int x, int y) {
-		int ny = y;
-		int nx = x; 
 		
-		if(movingRight)
-			ny++;
-		else
-			ny--;
-		if(movingUp)
-			nx++;
-		else
-			nx--;
+		int nyr = y+1;
+		int nyl = y-1;
 		
-		Cell cellx = logicalworld.getElement(nx, y)[0];
-		Cell celly = logicalworld.getElement(x, ny)[0];
-		if (ny > 0 && ny < this.col && nx > 0 && nx < this.row) {
+		int nxu = x-1;
+		int nxd = x+1;
+		
+		Cell cellr = logicalworld.getElement(x, nyr)[0];
+		Cell celll = logicalworld.getElement(x, nyl)[0];
+		
+		Cell cellu = logicalworld.getElement(nxu, y)[0];
+		Cell celld = logicalworld.getElement(nxd, y)[0];
+		
+		if (nyl > 0 || nyr < this.col || nxu > 0 || nxd < this.row ) {
 			
-			if (celly == null && cellx != null) {
-				System.out
-						.println("cell is empty lets move the robot,, remove this sysout..");
-				ConfigReader.gridlayout[x][y] = '-';
-				this.logicalworld.setElement(x, y, 0, null);
-				updatedRobotPos.put(x, ny);
-				movingRight = false;
-				movingUp = true;
-			} else if (cellx == null && celly != null) {
-				System.out
-						.println("cell is empty lets move the robot,, remove this sysout..");
-				ConfigReader.gridlayout[x][y] = '-';
-				this.logicalworld.setElement(x, y, 0, null);
-				updatedRobotPos.put(nx, y);
-				movingUp = false;
+			if (cellr == null) {
 				movingRight = true;
-			} else if (cellx == null && celly == null) {
-				System.out
-						.println("cell is empty lets move the robot,, remove this sysout..");
-				ConfigReader.gridlayout[x][y] = '-';
-				this.logicalworld.setElement(x, y, 0, null);
-				updatedRobotPos.put(x, ny);
-				movingUp = false;
+			} else if(celll == null) {
 				movingRight = false;
 			}
-			else
-			{
-				movingRight = true;
+			else if(cellu == null)
 				movingUp = true;
-			}
-		} /*else if (ny >= 0) {
+			else if(celld == null)
+				movingUp = false;
+		}
+		
+		if (movingRight) {
+			System.out
+					.println("cell is empty lets move the robot,, remove this sysout..");
+			ConfigReader.gridlayout[x][y] = '-';
+			this.logicalworld.setElement(x, y, 0, null);
+			updatedRobotPos.put(x, nyr);
+			movingRight = false;
+		} else if (movingUp) {
+			System.out
+					.println("cell is empty lets move the robot,, remove this sysout..");
+			ConfigReader.gridlayout[x][y] = '-';
+			this.logicalworld.setElement(x, y, 0, null);
+			updatedRobotPos.put(nxu, y);
+			movingUp = false;
+		} else if (!movingRight) {
+			System.out
+					.println("cell is empty lets move the robot,, remove this sysout..");
+			ConfigReader.gridlayout[x][y] = '-';
+			this.logicalworld.setElement(x, y, 0, null);
+			updatedRobotPos.put(x, nyl);
+			movingRight = false;
+		}
+		else if (!movingUp) {
+			System.out
+					.println("cell is empty lets move the robot,, remove this sysout..");
+			ConfigReader.gridlayout[x][y] = '-';
+			this.logicalworld.setElement(x, y, 0, null);
+			updatedRobotPos.put(nxd, y);
+			movingUp = false;
+		}
+		
+		/* else if (++ny < this.col) {
 			Cell cell = logicalworld.getElement(x, ny)[0];
 			if (cell == null) {
 				System.out
 						.println("cell is empty lets move the robot,, remove this sysout..");
-				ConfigReader.gridlayout[x][y--] = '-';
+				ConfigReader.gridlayout[x][y] = '-';
 				this.logicalworld.setElement(x, y, 0, null);
 				updatedRobotPos.put(x, ny);
-				movingRight = true;
 			}
-			else
-				movingRight = false; 
 		}*/
-
-		/*
-		 * int ny = y; if (++ny < this.col) // go right {
-		 * 
-		 * Cell cell = logicalworld.getElement(x, ny)[0]; // there is nothing //
-		 * in the cell so // move the robot // right side if (cell == null) {
-		 * System.out
-		 * .println("cell is empty lets move the robot,, remove this sysout..");
-		 * ConfigReader.gridlayout[x][y] = '-'; this.logicalworld.setElement(x,
-		 * y, 0, null); updatedRobotPos.put(x, ny); } }
-		 */
+		 
 	}
 
 	public void moveCircle() {
