@@ -13,11 +13,19 @@ public class RectRender implements DrawView.ShapeRenderer {
 	public int xOffset;
 	public int yOffset;
 	public Bitmap playermap;
+	public Bitmap robotmap;
+	public Bitmap bomb;
 	
 	public void setPlayerBitMap(Bitmap playermap) {
 		this.playermap = playermap;
 	}
+	public void setRobotBitMap(Bitmap robotmap) {
+		this.robotmap = robotmap;
+	}
 
+	public void setBombBitMap(Bitmap bomb) {
+		this.bomb = bomb;
+	}
 	public RectRender(int gridrow, int gridcolumn) {
 		this.row = gridrow;
 		this.column = gridcolumn;
@@ -36,9 +44,22 @@ public class RectRender implements DrawView.ShapeRenderer {
 		canvas.drawBitmap(getResizedBitmap(playermap, xOffset, yOffset),
 				(yOffset * y), (xOffset * x), paint);
 
-		// TODO: use drawLine, drawCircle for a non-bitmap player
+	}
+	public void drawBomb(int x, int y, Paint paint, Canvas canvas) {
+
+		paint.setStrokeWidth(1);
+		canvas.drawBitmap(getResizedBitmap(bomb, xOffset, yOffset),
+				(yOffset * y), (xOffset * x), paint);
+
 	}
 
+	public void drawRobot(int x, int y, Paint paint, Canvas canvas) {
+
+		paint.setStrokeWidth(1);
+		canvas.drawBitmap(getResizedBitmap(robotmap, xOffset, yOffset),
+				(yOffset * y), (xOffset * x), paint);
+
+	}
 	private Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
 		int width = bm.getWidth();
 		int height = bm.getHeight();
@@ -57,6 +78,7 @@ public class RectRender implements DrawView.ShapeRenderer {
 
 	@Override
 	public void drawShape(Canvas canvas, Paint paint) {
+		ConfigReader.LockTheGrid();
 		grid = ConfigReader.getGridLayout();
 		CalculateOffset(canvas.getHeight(), canvas.getHeight());
 
@@ -81,23 +103,26 @@ public class RectRender implements DrawView.ShapeRenderer {
 					
 				}
 				else if (grid[x][y] == 'b') {
-					paint.setColor(Color.BLACK);
+					drawBomb(x, y, paint, canvas);
+					/*paint.setColor(Color.BLACK);
 					canvas.drawCircle((yOffset * y) + yOffset / 2,
-							(xOffset * x) + xOffset / 2, xOffset / 3, paint);
+							(xOffset * x) + xOffset / 2, xOffset / 3, paint);*/
 
 				}
 				else if(grid[x][y]=='r')
 				{
-						paint.setColor(Color.WHITE);
+					drawRobot(x,y,paint,canvas);
+						/*paint.setColor(Color.WHITE);
 						canvas.drawCircle((yOffset * y) + yOffset / 2,
-								(xOffset * x) + xOffset / 2, xOffset / 3, paint);
+								(xOffset * x) + xOffset / 2, xOffset / 3, paint);*/
 				}
 				else if(grid[x][y]=='x')
 				{
 					drawPlayer(x, y, paint, canvas);
-					paint.setColor(Color.BLACK);
+					drawBomb(x,y, paint, canvas);
+					/*paint.setColor(Color.BLACK);
 					canvas.drawCircle((yOffset * y) + yOffset / 2,
-							(xOffset * x) + xOffset / 2, xOffset / 3, paint);
+							(xOffset * x) + xOffset / 2, xOffset / 3, paint);*/
 				}
 				else if(grid[x][y]=='E')
 				{
@@ -110,6 +135,7 @@ public class RectRender implements DrawView.ShapeRenderer {
 			}
 
 		}
+		ConfigReader.UnlockTheGrid();
 
 	}
 }

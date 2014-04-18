@@ -28,11 +28,14 @@ public class MainActivity extends Activity implements IExplodable,
 	private TextView bombermanScoreView;
 	final StandaloneGame standAloneGame = new StandaloneGame();
 	private static Bitmap player = null;
+	private static Bitmap robot = null;
+	private static Bitmap bomb = null;
 	private LogicalWorld logicalworld = null;
 	private static int scoreOfThePlayer = 0;
 	private boolean isBombPlaced = false;
 	private boolean isPlayerDead =false;
 	Button bombButton = null;
+	private static RectRender rectrender = null;
 
 	BroadcastReceiver elapsedBroadcastReciver;
 	private int bombermanGameDuration = 0;
@@ -123,30 +126,23 @@ public class MainActivity extends Activity implements IExplodable,
 	}
 
 	public void Render() {
-		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
-				ConfigReader.getGameDim().column);
-		player = BitmapFactory.decodeResource(getResources(), R.drawable.group2);
-		rectrender.setPlayerBitMap(player);
-		bomberManView.setRenderer(rectrender);
+		
 		bomberManView.invalidate();
 
 	}
 
 	public void RobotMovedAtLogicalLayer() {
-		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
-				ConfigReader.getGameDim().column);
-		player = BitmapFactory.decodeResource(getResources(), R.drawable.group2);
-		rectrender.setPlayerBitMap(player);
-		bomberManView.setRenderer(rectrender);
 		bomberManView.postInvalidate();
 	}
 
 	public void Exploaded(boolean isPlayerDeadinGame) {
-		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
+		/*RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
 				ConfigReader.getGameDim().column);
 		player = BitmapFactory.decodeResource(getResources(), R.drawable.group2);
 		rectrender.setPlayerBitMap(player);
-		bomberManView.setRenderer(rectrender);
+		robot = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
+		rectrender.setRobotBitMap(robot);
+		bomberManView.setRenderer(rectrender);*/
 		bomberManView.postInvalidate();
 		isBombPlaced = false;
 		isPlayerDead = isPlayerDeadinGame;   /// this is only for test , 
@@ -160,11 +156,7 @@ public class MainActivity extends Activity implements IExplodable,
 	}
 
 	private void InitBomberManMap() {
-		player = BitmapFactory.decodeResource(getResources(), R.drawable.group2);
-		RectRender rectrender = new RectRender(ConfigReader.getGameDim().row,
-				ConfigReader.getGameDim().column);
-		rectrender.setPlayerBitMap(player);
-		bomberManView.setRenderer(rectrender);
+		
 		bomberManView.invalidate();
 
 	}
@@ -205,6 +197,21 @@ public class MainActivity extends Activity implements IExplodable,
 		bombermanNoOfPlayersview.setText("3");
 		bombermanelapsedTimeTextView
 				.setText("00" + ":" + bombermanGameDuration);
+		
+		
+	    rectrender = new RectRender(ConfigReader.getGameDim().row,
+				ConfigReader.getGameDim().column);
+		player = BitmapFactory.decodeResource(getResources(), R.drawable.group2);
+		rectrender.setPlayerBitMap(player);
+		robot = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
+		rectrender.setRobotBitMap(robot);
+		bomb  = BitmapFactory.decodeResource(getResources(), R.drawable.bomb);
+		rectrender.setBombBitMap(bomb);
+		bomberManView.setRenderer(rectrender);
+		
+		
+		
+		
 		InitBomberManMap();
 
 	
