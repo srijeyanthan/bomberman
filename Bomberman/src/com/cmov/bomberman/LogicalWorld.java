@@ -59,6 +59,7 @@ public class LogicalWorld {
 
 	public Cell[] getElement(int x, int y) {
 		try {
+			System.out.println("x- "+x+"|y="+y+"|="+this.twoDWorld[x][y][0]);
 			return this.twoDWorld[x][y];
 		} catch (ArrayIndexOutOfBoundsException ex) {
 			return null;

@@ -1,10 +1,16 @@
 package com.cmov.bomberman;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import com.cmov.bomberman.MainActivity.GameState;
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+
 
 public class RectRender implements DrawView.ShapeRenderer {
 	public Byte[][] grid;
@@ -15,10 +21,17 @@ public class RectRender implements DrawView.ShapeRenderer {
 	public Bitmap playermap;
 	public Bitmap robotmap;
 	public Bitmap bomb;
-	
+	public GameState state;
+	final static Lock lock = new ReentrantLock();
+
+	public void setGameState(GameState s) {
+		this.state = s;
+	}
+
 	public void setPlayerBitMap(Bitmap playermap) {
 		this.playermap = playermap;
 	}
+
 	public void setRobotBitMap(Bitmap robotmap) {
 		this.robotmap = robotmap;
 	}
@@ -26,6 +39,7 @@ public class RectRender implements DrawView.ShapeRenderer {
 	public void setBombBitMap(Bitmap bomb) {
 		this.bomb = bomb;
 	}
+
 	public RectRender(int gridrow, int gridcolumn) {
 		this.row = gridrow;
 		this.column = gridcolumn;
@@ -45,6 +59,7 @@ public class RectRender implements DrawView.ShapeRenderer {
 				(yOffset * y), (xOffset * x), paint);
 
 	}
+
 	public void drawBomb(int x, int y, Paint paint, Canvas canvas) {
 
 		paint.setStrokeWidth(1);
@@ -60,6 +75,7 @@ public class RectRender implements DrawView.ShapeRenderer {
 				(yOffset * y), (xOffset * x), paint);
 
 	}
+
 	private Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
 		int width = bm.getWidth();
 		int height = bm.getHeight();
@@ -78,64 +94,48 @@ public class RectRender implements DrawView.ShapeRenderer {
 
 	@Override
 	public void drawShape(Canvas canvas, Paint paint) {
-		ConfigReader.LockTheGrid();
-		grid = ConfigReader.getGridLayout();
-		CalculateOffset(canvas.getHeight(), canvas.getHeight());
+		if (this.state != GameState.PAUSE) {
+			//ConfigReader.LockTheGrid();
+			lock.lock();
+			grid = ConfigReader.getGridLayout();
+			CalculateOffset(canvas.getHeight(), canvas.getHeight());
 
-		for (int x = 0; x < row; x++) {
-			for (int y = 0; y < column; y++) {
-				if (grid[x][y] == 'w') {
+			for (int x = 0; x < row; x++) {
+				for (int y = 0; y < column; y++) {
+					if (grid[x][y] == 'w') {
 
-					paint.setColor(Color.LTGRAY);
-					paint.setStrokeWidth(0);
-					canvas.drawRect((yOffset * y), (xOffset * x), yOffset
-							* (y + 1), xOffset * (x + 1), paint);
-				}
-				else if (grid[x][y] == 'o') {
-					paint.setColor(Color.RED);
-					paint.setStrokeWidth(0);
-					canvas.drawRect((yOffset * y), (xOffset * x), yOffset
-							* (y + 1), xOffset * (x + 1), paint);
-				}
-				else if (grid[x][y] == '1') {
-					drawPlayer(x, y, paint, canvas);
-					
-					
-				}
-				else if (grid[x][y] == 'b') {
-					drawBomb(x, y, paint, canvas);
-					/*paint.setColor(Color.BLACK);
-					canvas.drawCircle((yOffset * y) + yOffset / 2,
-							(xOffset * x) + xOffset / 2, xOffset / 3, paint);*/
+						paint.setColor(Color.LTGRAY);
+						paint.setStrokeWidth(0);
+						canvas.drawRect((yOffset * y), (xOffset * x), yOffset
+								* (y + 1), xOffset * (x + 1), paint);
+					} else if (grid[x][y] == 'o') {
+						paint.setColor(Color.RED);
+						paint.setStrokeWidth(0);
+						canvas.drawRect((yOffset * y), (xOffset * x), yOffset
+								* (y + 1), xOffset * (x + 1), paint);
+					} else if (grid[x][y] == '1') {
+						drawPlayer(x, y, paint, canvas);
+					} else if (grid[x][y] == 'b') {
+						drawBomb(x, y, paint, canvas);
 
-				}
-				else if(grid[x][y]=='r')
-				{
-					drawRobot(x,y,paint,canvas);
-						/*paint.setColor(Color.WHITE);
-						canvas.drawCircle((yOffset * y) + yOffset / 2,
-								(xOffset * x) + xOffset / 2, xOffset / 3, paint);*/
-				}
-				else if(grid[x][y]=='x')
-				{
-					drawPlayer(x, y, paint, canvas);
-					drawBomb(x,y, paint, canvas);
-					/*paint.setColor(Color.BLACK);
-					canvas.drawCircle((yOffset * y) + yOffset / 2,
-							(xOffset * x) + xOffset / 2, xOffset / 3, paint);*/
-				}
-				else if(grid[x][y]=='E')
-				{
-					paint.setColor(Color.GREEN);
-					paint.setStrokeWidth(0);
-					canvas.drawRect((yOffset * y), (xOffset * x), yOffset
-							* (y + 1), xOffset * (x + 1), paint);
+					} else if (grid[x][y] == 'r') {
+						drawRobot(x, y, paint, canvas);
+					} else if (grid[x][y] == 'x') {
+						drawPlayer(x, y, paint, canvas);
+						drawBomb(x, y, paint, canvas);
+					} else if (grid[x][y] == 'E') {
+						paint.setColor(Color.GREEN);
+						paint.setStrokeWidth(0);
+						canvas.drawRect((yOffset * y), (xOffset * x), yOffset
+								* (y + 1), xOffset * (x + 1), paint);
+					}
+
 				}
 
 			}
+			//ConfigReader.UnlockTheGrid();
+			lock.unlock();
 
 		}
-		ConfigReader.UnlockTheGrid();
-
 	}
 }

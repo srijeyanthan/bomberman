@@ -70,29 +70,33 @@ public class Game {
 		if (el == null) // oder Extra
 		{
 			// Set old position in logical world to null...
-			if (player.bombs.size() != 0) // player has bomb
+			if (player.getBombCounter() !=0) // player has bomb
 			{
-				if(ConfigReader.gridlayout[player.getWorldXCor()][player.getWorldYCor()]=='x') // bomb is there
+				if (ConfigReader.gridlayout[player.getWorldXCor()][player
+						.getWorldYCor()] == 'x') // bomb is there
 				{
+
+					ConfigReader.UpdateGridLayOutCell(player.getWorldXCor(),player.getWorldYCor(), (byte) 'b');
 					
-				ConfigReader.UpdateGridLayOutCell(player.bombs.get(0).getWorldXCor(),player.bombs
-						.get(0).getWorldYCor(),(byte) 'b');
+				} else {
+					ConfigReader.UpdateGridLayOutCell(player.getWorldXCor(),
+							player.getWorldYCor(), (byte) '-');
+					this.logicalWorld.setElement(player.getWorldXCor(),
+							player.getWorldYCor(), player.getID(), null);
 				}
-				else
-				{
-					ConfigReader.UpdateGridLayOutCell(player.getWorldXCor(),player
-					                       						.getWorldYCor(), (byte) '-');
-					}
 			} else {
-				ConfigReader.UpdateGridLayOutCell(player.getWorldXCor(),player.getWorldYCor(),(byte) '-');
+				ConfigReader.UpdateGridLayOutCell(player.getWorldXCor(),
+						player.getWorldYCor(), (byte) '-');
+				this.logicalWorld.setElement(player.getWorldXCor(),
+						player.getWorldYCor(), player.getID(), null);
 			}
-			this.logicalWorld.setElement(player.getWorldXCor(),
-					player.getWorldYCor(), player.getID(), null);
+			
 			// ...and set new position
 			player.move(dx, dy);
 			this.logicalWorld.setElement(player.getWorldXCor(),
 					player.getWorldYCor(), player.getID(), player);
-			ConfigReader.UpdateGridLayOutCell(player.getWorldXCor(),player.getWorldYCor() ,(byte) '1');
+			ConfigReader.UpdateGridLayOutCell(player.getWorldXCor(),
+					player.getWorldYCor(), (byte) '1');
 
 			return true;
 		} else

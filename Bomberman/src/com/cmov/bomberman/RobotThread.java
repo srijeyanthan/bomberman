@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import com.cmov.bomberman.MainActivity.GameState;
 
 import android.R.integer;
 import android.annotation.SuppressLint;
@@ -32,6 +36,8 @@ public class RobotThread extends Thread {
 	@SuppressLint("UseSparseArrays")
 	private Map<Integer, RobotCor> updatedRobotPos = new HashMap<Integer, RobotCor>();
 	private Map<Integer, RobotCor> originalRbotPos = new HashMap<Integer, RobotCor>();
+	final static Lock lock = new ReentrantLock();
+	private GameState state = GameState.RUN;
 
 	public RobotThread(int row, int col, Activity activity) {
 		super();
@@ -54,6 +60,7 @@ public class RobotThread extends Thread {
 		this.logicalworld = logicalworld;
 	}
 
+	
 	private void move(int x, int y, int RobotCounter) {
 
 		randomGenerator = new Random();
@@ -103,7 +110,7 @@ public class RobotThread extends Thread {
 					{
 						// System.out.println("expected robot move - " + key);
 						Phirobotmovelist.add(key);
-						//this.logicalworld.setElement(x, y, 0, null);
+						// this.logicalworld.setElement(x, y, 0, null);
 						updatedRobotPos.get(RobotCounter).x = x;
 						updatedRobotPos.get(RobotCounter).y = nyr;
 						originalRbotPos.get(RobotCounter).x = x;
@@ -116,7 +123,7 @@ public class RobotThread extends Thread {
 					{
 						// System.out.println("expected robot move - " + key);
 						Phirobotmovelist.add(key);
-						//this.logicalworld.setElement(x, y, 0, null);
+						// this.logicalworld.setElement(x, y, 0, null);
 						updatedRobotPos.get(RobotCounter).x = x;
 						updatedRobotPos.get(RobotCounter).y = nyl;
 						originalRbotPos.get(RobotCounter).x = x;
@@ -130,7 +137,7 @@ public class RobotThread extends Thread {
 					{
 						// System.out.println("expected robot move - " + key);
 						Phirobotmovelist.add(key);
-						////this.logicalworld.setElement(x, y, 0, null);
+						// //this.logicalworld.setElement(x, y, 0, null);
 						updatedRobotPos.get(RobotCounter).x = nxu;
 						updatedRobotPos.get(RobotCounter).y = y;
 						originalRbotPos.get(RobotCounter).x = x;
@@ -144,7 +151,7 @@ public class RobotThread extends Thread {
 					{
 						// ystem.out.println("expected robot move - " + key);
 						Phirobotmovelist.add(key);
-						//this.logicalworld.setElement(x, y, 0, null);
+						// this.logicalworld.setElement(x, y, 0, null);
 						updatedRobotPos.get(RobotCounter).x = nxd;
 						updatedRobotPos.get(RobotCounter).y = y;
 						originalRbotPos.get(RobotCounter).x = x;
@@ -163,73 +170,87 @@ public class RobotThread extends Thread {
 		this.running = running;
 	}
 
+	public void setState(GameState state) {
+		this.state = state;
+	}
+
+	public GameState getGameState() {
+		return this.state;
+	}
+
 	public void run() {
 
 		while (running) {
+			if ((getGameState() == GameState.RUN)) {
+				try {
+					Thread.sleep(2000);
+					//ConfigReader.LockTheGrid();
+					lock.lock();
+					int RobotCounter = 0;
+					Byte[][] GridLayout = ConfigReader.getGridLayout();
+					for (int x = 0; x < this.row; x++) {
+						for (int y = 0; y < this.col; y++) {
+							if (GridLayout[x][y] == 'r') {
+								++RobotCounter;
+								move(x, y, RobotCounter);
 
-			try {
-				Thread.sleep(2000);
-				ConfigReader.LockTheGrid();
-				int RobotCounter = 0;
-				Byte[][] GridLayout = ConfigReader.getGridLayout();
-				for (int x = 0; x < this.row; x++) {
-					for (int y = 0; y < this.col; y++) {
-						if (GridLayout[x][y] == 'r') {
-							++RobotCounter;
-							move(x, y, RobotCounter);
-
+							}
 						}
 					}
-				}
 
-				int iter = 1;
-				for (Map.Entry<Integer, RobotCor> entry : updatedRobotPos
-						.entrySet()) {
-					if (updatedRobotPos.get(iter).x != -1
-							&& updatedRobotPos.get(iter).y != -1) {
-						int x = updatedRobotPos.get(iter).x;
-						int y = updatedRobotPos.get(iter).y;
-						System.out.println("Robot move pos - x - " + x
-								+ "|y = " + y);
-						ConfigReader.UpdateGridLayOutCell(x, y, (byte) 'r');
-						this.logicalworld.setElement(x, y, 0, new Robot(x, y));
-						updatedRobotPos.get(iter).x = -1;
-						updatedRobotPos.get(iter).y = -1;
+					int iter = 1;
+					for (Map.Entry<Integer, RobotCor> entry : updatedRobotPos
+							.entrySet()) {
+						if (updatedRobotPos.get(iter).x != -1
+								&& updatedRobotPos.get(iter).y != -1) {
+							int x = updatedRobotPos.get(iter).x;
+							int y = updatedRobotPos.get(iter).y;
+							System.out.println("Robot move pos - x - " + x
+									+ "|y = " + y);
+							ConfigReader.UpdateGridLayOutCell(x, y, (byte) 'r');
+							this.logicalworld.setElement(x, y, 0, new Robot(x,
+									y));
+							updatedRobotPos.get(iter).x = -1;
+							updatedRobotPos.get(iter).y = -1;
 
+						}
+						++iter;
 					}
-					++iter;
-				}
-				iter = 1;
-				for (Map.Entry<Integer, RobotCor> entry : originalRbotPos
-						.entrySet()) {
-					if (originalRbotPos.get(iter).x != -1
-							&& originalRbotPos.get(iter).y != -1) {
-						
-						int x = originalRbotPos.get(iter).x;
-						int y = originalRbotPos.get(iter).y;
-						System.out.println("Original pos - x - "+ x+ "|y = " + y);
-						originalRbotPos.get(iter).x = -1;
-						originalRbotPos.get(iter).y = -1;
-						ConfigReader.UpdateGridLayOutCell(x, y, (byte) '-');
-						this.logicalworld.setElement(x, y, 0, null);
+					iter = 1;
+					for (Map.Entry<Integer, RobotCor> entry : originalRbotPos
+							.entrySet()) {
+						if (originalRbotPos.get(iter).x != -1
+								&& originalRbotPos.get(iter).y != -1) {
+
+							int x = originalRbotPos.get(iter).x;
+							int y = originalRbotPos.get(iter).y;
+							System.out.println("Original pos - x - " + x
+									+ "|y = " + y);
+							originalRbotPos.get(iter).x = -1;
+							originalRbotPos.get(iter).y = -1;
+							ConfigReader.UpdateGridLayOutCell(x, y, (byte) '-');
+							this.logicalworld.setElement(x, y, 0, null);
+						}
+						++iter;
 					}
-					++iter;
+
+					Phirobotmovelist.clear();
+					robotActiviy.RobotMovedAtLogicalLayer(); // so robot's new
+																// position have
+																// been set,
+																// lets
+																// fire front
+																// end to
+																// draw them .:)
+					//ConfigReader.UnlockTheGrid();
+					lock.unlock();
+					System.out
+							.println("_____________ Robot thread is goin to sleep now ____________");
+					// Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-
-				Phirobotmovelist.clear();
-				robotActiviy.RobotMovedAtLogicalLayer(); // so robot's new
-															// position have
-															// been set, lets
-															// fire front end to
-															// draw them .:)
-				ConfigReader.UnlockTheGrid();
-
-				System.out
-						.println("_____________ Robot thread is goin to sleep now ____________");
-				// Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	}
