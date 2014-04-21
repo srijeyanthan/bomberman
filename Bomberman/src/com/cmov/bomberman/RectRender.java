@@ -98,7 +98,7 @@ public class RectRender implements DrawView.ShapeRenderer {
 			//ConfigReader.LockTheGrid();
 			lock.lock();
 			grid = ConfigReader.getGridLayout();
-			CalculateOffset(canvas.getHeight(), canvas.getHeight());
+			CalculateOffset(canvas.getHeight(), canvas.getWidth());
 
 			for (int x = 0; x < row; x++) {
 				for (int y = 0; y < column; y++) {
