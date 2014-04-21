@@ -23,8 +23,13 @@ class Bomb extends Cell {
 	private int stage = 1;
 	public Activity activity;
 
-	public Bomb(int x, int y, Player player, Activity activity) {
+	public Bomb(int x, int y) {
 		super(x, y);
+		
+	}
+
+	public void InitBomb( Player player, Activity activity)
+	{
 		this.player = player;
 		timer = new BombExplosionTimer(this);
 		isExploded = false;
@@ -32,21 +37,25 @@ class Bomb extends Cell {
 		ExplodableActivity = (IExplodable) activity;
 		UpdatableScore = (IUpdatableScore) activity;
 	}
-
 	public void explode() {
 		try {
 
 			System.out.println(this + " bomb has exploaded!");
-			player.bombs.remove(this);
+			player.setBombCounter(0);
 			boolean isPlayerDead = false;
+			Byte CellElement = '-';
 			player.game.getLogicalWorld().setElement(worldXCor, worldYCor, 0,
 					null);
+			ConfigReader.LockTheGrid();
+			CellElement = ConfigReader.gridlayout[worldXCor][worldYCor];
+			if (CellElement == 'x')
+				isPlayerDead = true;
 			ConfigReader.UpdateGridLayOutCell(worldXCor, worldYCor, (byte) '-');
 			int nx = worldXCor;
 			int ny = worldYCor;
 			int numberofElementsDied = 0;
 			if (++nx < ConfigReader.getGameDim().row) {
-				Byte CellElement = ConfigReader.gridlayout[nx][worldYCor];
+				CellElement = ConfigReader.gridlayout[nx][worldYCor];
 				if (CellElement != 'w') // dont update , because we can not
 										// break the wall :)
 				{
@@ -67,7 +76,7 @@ class Bomb extends Cell {
 			}
 			nx = worldXCor;
 			if (--nx > 0) {
-				Byte CellElement = ConfigReader.gridlayout[nx][worldYCor];
+				CellElement = ConfigReader.gridlayout[nx][worldYCor];
 
 				if (CellElement != 'w') {
 					if (CellElement == 'o' || CellElement == 'r') {
@@ -85,7 +94,7 @@ class Bomb extends Cell {
 
 			}
 			if (++ny < ConfigReader.getGameDim().column) {
-				Byte CellElement = ConfigReader.gridlayout[worldXCor][ny];
+				CellElement = ConfigReader.gridlayout[worldXCor][ny];
 
 				if (CellElement != 'w') {
 					if (CellElement == 'o' || CellElement == 'r') {
@@ -103,7 +112,7 @@ class Bomb extends Cell {
 			}
 			ny = worldYCor;
 			if (--ny > 0) {
-				Byte CellElement = ConfigReader.gridlayout[worldXCor][ny];
+				CellElement = ConfigReader.gridlayout[worldXCor][ny];
 				if (CellElement != 'w') {
 					if (CellElement == 'o' || CellElement == 'r') {
 						player.game.getLogicalWorld().setElement(worldXCor, ny,
@@ -124,9 +133,10 @@ class Bomb extends Cell {
 			timer.cancel();
 			// (player.game, gridX, gridY, player.bombDistance);
 			// TO-DO: notify this explosion to front end , so that we can draw
-			
+
 			ExplodableActivity.Exploaded(isPlayerDead);
 			UpdatableScore.UpdateScore(numberofElementsDied);
+			ConfigReader.UnlockTheGrid();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

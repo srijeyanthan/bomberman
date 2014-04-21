@@ -23,6 +23,21 @@
  		<row>w - - - - - - o o o - - o o o - o r w</row>
  	    <row>w w w w w w w w w w w w w w w w w w w</row>
     </field>
+    <!-- <field>
+        <row>w w w w w w w w w w w w w w w w w w w</row>
+        <row>w - 2 - - - - - w - - - - o - - - - w</row>
+        <row>w w o w - w - w - w - w - w - w - w w</row>
+        <row>w - o - - - - - - - - - - - - - - - w</row>
+        <row>w w o w o w - w - w - w - w o w - w w</row>
+        <row>w - - o - - - - - - - - o - - - - 3 w</row>
+    	<row>w w o w - w - w - w - w - w - w - w w</row>
+ 		<row>w - o o o o - - - 1 - - - - - - - o w</row>
+        <row>w w o w o w o w o w - w - w - w - w w</row>
+       	<row>w - - o o o o - - r - - o o o - - - w</row>
+ 		<row>w w - w - w o w o w - w o w o w o w w</row>
+ 		<row>w - - - - - - o o o - - o o o - o - w</row>
+ 	    <row>w w w w w w w w w w w w w w w w w w w</row>
+    </field>-->
 
     <icons>
         <wall file="brickwall"/>

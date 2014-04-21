@@ -119,7 +119,17 @@ public class ConfigReader {
 	}
 
 	public static Byte[][] getGridLayout() {
+
 		return gridlayout;
+
+	}
+
+	public static void LockTheGrid() {
+		lock.lock();
+	}
+
+	public static void UnlockTheGrid() {
+		lock.unlock();
 	}
 
 	public static Gameconfig getGameConfig() {

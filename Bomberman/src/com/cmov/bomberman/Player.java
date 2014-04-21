@@ -15,14 +15,14 @@ public class Player extends Cell {
 		UP, DOWN, LEFT, RIGHT, NONE, EXPLODING
 	}
 
-	protected List<Bomb> bombs = new ArrayList<Bomb>();
 	protected Game game;
 	protected String nickname;
-	protected int id;
+	protected int id=0;
 
 	protected int bombDistance = 1;
-	protected int bombCount = 1;
+	protected int bombCount = 0;
 	public Activity activity;
+	private final int ALLOWED_BOMB =1;
 
 	private MoveDirection lastMoveDirection = MoveDirection.DOWN;
 
@@ -101,17 +101,26 @@ public class Player extends Cell {
 		else if (dy > 0)
 			lastMoveDirection = MoveDirection.DOWN;
 	}
-
+    void setBombCounter(int counter)
+    {
+    	this.bombCount = counter;
+    }
+    int getBombCounter() { return this.bombCount;}
 	void placeBomb() {
-		if (bombs.size() >= this.bombCount)
+	         
+		++bombCount;
+		if(bombCount> ALLOWED_BOMB)
+		{
 			return;
+		}
+		
+		
 		System.out.println("User " + nickname + " place the bomb  " + worldXCor
 				+ "/" + worldYCor);
 
-		Bomb bomb = new Bomb(worldXCor, worldYCor, this,activity);
-		this.bombs.add(bomb);
 		ConfigReader.UpdateGridLayOutCell(worldXCor, worldYCor, (byte) 'x');
-		this.game.getLogicalWorld().setElement(worldXCor, worldYCor, 0, bomb);
+		this.game.getLogicalWorld().setElement(worldXCor, worldYCor, 0, new Bomb(worldXCor, worldYCor));
+		((Bomb)this.game.getLogicalWorld().getElement(worldXCor, worldYCor)[0]).InitBomb(this, activity);
 		
 	}
 

@@ -1,5 +1,8 @@
 package com.cmov.bomberman;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 
 
 
@@ -8,7 +11,7 @@ public class LogicalWorld {
 
 	// This have to be get from config file or after we adjusted according scree
 	// size
-	
+	final static Lock lock = new ReentrantLock();
 	private static final int MAX_NUM_PLAYER = 3;
 
 	public  Cell[][][] twoDWorld = null;
@@ -56,6 +59,7 @@ public class LogicalWorld {
 
 	public Cell[] getElement(int x, int y) {
 		try {
+			System.out.println("x- "+x+"|y="+y+"|="+this.twoDWorld[x][y][0]);
 			return this.twoDWorld[x][y];
 		} catch (ArrayIndexOutOfBoundsException ex) {
 			return null;
@@ -63,6 +67,12 @@ public class LogicalWorld {
 	}
 
 	public void setElement(int x, int y, int layer, Cell e) {
-		this.twoDWorld[x][y][0] = e;
+		lock.lock();
+		try {
+			this.twoDWorld[x][y][0] = e;
+		} finally {
+			lock.unlock();
+		}
+		
 	}
 }
