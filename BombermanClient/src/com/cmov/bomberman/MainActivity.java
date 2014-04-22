@@ -17,6 +17,7 @@ import android.graphics.BitmapFactory;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements IExplodable,
@@ -39,6 +40,10 @@ public class MainActivity extends Activity implements IExplodable,
 	Button pausebutton = null;
 	private static RectRender rectrender = null;
 	private RobotThread robotThread = null;
+	
+	private EditText textField;
+	private Button button;
+	private String message;
 
 	BroadcastReceiver elapsedBroadcastReciver;
 	private int bombermanGameDuration = 0;
@@ -54,7 +59,7 @@ public class MainActivity extends Activity implements IExplodable,
 	 * original game duration, actually we dont need per second based timer ,
 	 * this would be sort of inefficient
 	 */
-	@Override
+	/*@Override
 	public void onStart() {
 		super.onStart();
 		elapsedBroadcastReciver = new BroadcastReceiver() {
@@ -72,8 +77,8 @@ public class MainActivity extends Activity implements IExplodable,
 		};
 
 		registerReceiver(elapsedBroadcastReciver, new IntentFilter(
-				Intent.ACTION_TIME_TICK));
-	}
+				Intent.ACTION_TIME_TICK)); 
+	}*/
 
 	
 	@Override
@@ -244,9 +249,20 @@ public class MainActivity extends Activity implements IExplodable,
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState);	
+		setContentView(R.layout.activity_main);
+		textField = (EditText) findViewById(R.id.editText1);
+		button = (Button) findViewById(R.id.button1);
+		// Button press event listener
+		button.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				message = textField.getText().toString();
+				textField.setText("");
+				new BombermanClient().execute(message);
+			}
+		});
 
-		Context mContext = MainActivity.this;
+		/*Context mContext = MainActivity.this;
 		try {
 			ConfigReader.InitConfigParser(mContext);
 		} catch (XmlPullParserException e) {
@@ -417,7 +433,7 @@ public class MainActivity extends Activity implements IExplodable,
 			}
 		});
 
-	}
+	*/}
 
 	@Override
 	protected void onDestroy() {

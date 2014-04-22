@@ -17,7 +17,7 @@ public class BombermanClient extends AsyncTask<String, Void, Integer> {
 	
 	String hostName = "10.0.2.2";
 	int portNumber = 4444;
-	String userName = "Gureaya";
+	String userName;
 
 	@Override
 	protected Integer doInBackground(String... strings) {
@@ -32,7 +32,8 @@ public class BombermanClient extends AsyncTask<String, Void, Integer> {
 			printwriter = new PrintWriter(client.getOutputStream(), true);
 			in = new BufferedReader(
 	                new InputStreamReader(client.getInputStream()));
-			boolean isConnected = true;
+			userName=strings[0];
+			isConnected = true;
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			System.err.println("Don't know about host " + hostName);

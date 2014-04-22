@@ -14,5 +14,7 @@
     <string name="button_bomb">Bomb</string>
     <string name="button_pause">Pause</string>
     <string name="button_quit">Quit</string>
+    <string name="join">Join</string>
+    <string name="enter_username">Enter A Username to join the game</string>
 
 </resources>
