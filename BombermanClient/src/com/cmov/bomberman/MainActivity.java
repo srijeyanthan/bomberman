@@ -249,25 +249,15 @@ public class MainActivity extends Activity implements IExplodable,
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);	
-		setContentView(R.layout.activity_main);
-		textField = (EditText) findViewById(R.id.editText1);
-		button = (Button) findViewById(R.id.button1);
-		// Button press event listener
-		button.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				message = textField.getText().toString();
-				textField.setText("");
-				new BombermanClient().execute(message);
-			}
-		});
-
-		/*Context mContext = MainActivity.this;
+		super.onCreate(savedInstanceState);
+		Context mContext = MainActivity.this;
 		try {
 			ConfigReader.InitConfigParser(mContext);
 		} catch (XmlPullParserException e) {
 			e.printStackTrace();
 		}
+		Intent myIntent = getIntent();
+		String userName = myIntent.getStringExtra("userName");
 		bombermanGameDuration = ConfigReader.getGameConfig().gameduration;
 		setContentView(R.layout.activity_main);
 
@@ -281,7 +271,7 @@ public class MainActivity extends Activity implements IExplodable,
 		bombermanNoOfPlayersview = (TextView) findViewById(R.id.no_players);
 		bombermanScoreView = (TextView) findViewById(R.id.score);
 
-		bombermanusernameview.setText("Group2");
+		bombermanusernameview.setText(userName);
 		bombermanNoOfPlayersview.setText("3");
 		bombermanelapsedTimeTextView
 				.setText("00" + ":" + bombermanGameDuration);
@@ -433,7 +423,7 @@ public class MainActivity extends Activity implements IExplodable,
 			}
 		});
 
-	*/}
+	}
 
 	@Override
 	protected void onDestroy() {

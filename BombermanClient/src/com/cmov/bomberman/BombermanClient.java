@@ -15,9 +15,17 @@ public class BombermanClient extends AsyncTask<String, Void, Integer> {
 	private PrintWriter printwriter;
 	private BufferedReader in;
 	
-	String hostName = "10.0.2.2";
-	int portNumber = 4444;
-	String userName;
+	String hostName;
+	int portNumber;
+	String msgType;
+	
+	public BombermanClient(String hostName, int portNumber, String msgType)
+	{
+		//initialize clients constants
+		this.hostName = hostName;
+		this.portNumber = portNumber;
+		this.msgType = msgType;
+	}
 
 	@Override
 	protected Integer doInBackground(String... strings) {
@@ -26,13 +34,14 @@ public class BombermanClient extends AsyncTask<String, Void, Integer> {
 		if (strings.length <= 0) {
 			return 0;
 		}
-		// connect to the server and send the message
+		// connect to the server and process incoming messages
 		try {
 			client = new Socket(hostName, portNumber);
 			printwriter = new PrintWriter(client.getOutputStream(), true);
 			in = new BufferedReader(
 	                new InputStreamReader(client.getInputStream()));
-			userName=strings[0];
+			if(msgType.equals("J"))
+				sendJoinMsg(strings[0]);	
 			isConnected = true;
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -44,31 +53,33 @@ public class BombermanClient extends AsyncTask<String, Void, Integer> {
 	                hostName);
 	            System.exit(1);
 		}
-		
-		if(isConnected)
-		{
-			String msg = constructLoginMsg();
-			printwriter.write(msg);
-			printwriter.flush();
-			printwriter.close();
-			try {
-				client.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 		return 0;
+	}
+
+	private void sendJoinMsg(String userName) {
+		// TODO Auto-generated method stub
+		String msg = constructLoginMsg(userName);
+		printwriter.write(msg);
+		printwriter.flush();
+		printwriter.close();
+		try {
+			client.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	protected void onPostExecute(Long result) {
 		return;
 	}
 	
-	protected String constructLoginMsg()
+	protected String constructLoginMsg(String userName)
 	{
-		String loginMsg = '<' + BombermanProtocol.MESSAGE_TYPE + '=' + BombermanProtocol.JOIN_MESSAGE + BombermanProtocol.USER_NAME +
-				 '=' + userName + '>';
-		return loginMsg;
+		String testMsg = "<1=J|2=" + userName + '>';
+		//String loginMsg = '<' + BombermanProtocol.MESSAGE_TYPE + '=' + BombermanProtocol.JOIN_MESSAGE + BombermanProtocol.USER_NAME +
+		//		 '=' + userName + '>';
+		return testMsg;
 	}
 }
