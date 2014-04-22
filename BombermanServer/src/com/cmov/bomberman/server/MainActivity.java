@@ -1,9 +1,14 @@
-package com.cmov.bomberman;
+package com.cmov.bomberman.server;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import com.cmov.bomberman.server.R;
+
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,7 +25,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements IExplodable,
-		IMoveableRobot, IUpdatableScore {
+		IUpdatableScore {
 	private DrawView bomberManView;
 	private TextView bombermanelapsedTimeTextView;
 	private TextView bombermanusernameview;
@@ -32,7 +37,7 @@ public class MainActivity extends Activity implements IExplodable,
 	private static Bitmap bomb = null;
 	private LogicalWorld logicalworld = null;
 	private static int scoreOfThePlayer = 0;
-	private static int numberofRobotkilled =0;
+	private static int numberofRobotkilled = 0;
 	private boolean isBombPlaced = false;
 	private boolean isPlayerDead = false;
 	Button bombButton = null;
@@ -48,6 +53,28 @@ public class MainActivity extends Activity implements IExplodable,
 	}
 
 	private GameState state = GameState.RUN;
+
+	Runnable runnable = new Runnable() {
+		public void run() {
+
+			try {
+				new Server(null, ConfigReader.serverPort, logicalworld);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			long endTime = System.currentTimeMillis() + 20 * 1000;
+
+			while (System.currentTimeMillis() < endTime) {
+				synchronized (this) {
+					try {
+						wait(endTime - System.currentTimeMillis());
+					} catch (Exception e) {
+					}
+				}
+			}
+		}
+	};
 
 	/*
 	 * note , this is tick timer , every minute it will reduced one minute from
@@ -103,27 +130,32 @@ public class MainActivity extends Activity implements IExplodable,
 								bombButton.setText("Bomb");
 							}
 							if (isPlayerDead) {
-								
-								String message = "No of Robots killed - "+Integer.toString(numberofRobotkilled)+"\n"+"Total Score - "+Integer.toString(scoreOfThePlayer);
+
+								String message = "No of Robots killed - "
+										+ Integer.toString(numberofRobotkilled)
+										+ "\n" + "Total Score - "
+										+ Integer.toString(scoreOfThePlayer);
 								new AlertDialog.Builder(MainActivity.this)
-								.setTitle("Game over - Game stat")
-								.setMessage(message)
-								.setPositiveButton(android.R.string.yes,
-										new DialogInterface.OnClickListener() {
-											public void onClick(DialogInterface dialog,
-													int which) {
-												
-												Intent i = getBaseContext()
-														.getPackageManager()
-														.getLaunchIntentForPackage(
-																getBaseContext()
-																		.getPackageName());
-												i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-												startActivity(i);
-											}
-											
-										})
-								.setIcon(R.drawable.bomberman).show();
+										.setTitle("Game over - Game stat")
+										.setMessage(message)
+										.setPositiveButton(
+												android.R.string.yes,
+												new DialogInterface.OnClickListener() {
+													public void onClick(
+															DialogInterface dialog,
+															int which) {
+
+														Intent i = getBaseContext()
+																.getPackageManager()
+																.getLaunchIntentForPackage(
+																		getBaseContext()
+																				.getPackageName());
+														i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+														startActivity(i);
+													}
+
+												})
+										.setIcon(R.drawable.bomberman).show();
 								isPlayerDead = false;
 							}
 						}
@@ -141,9 +173,24 @@ public class MainActivity extends Activity implements IExplodable,
 
 	}
 
-	public void RobotMovedAtLogicalLayer() {
-		bomberManView.postInvalidate();
-	}
+	public String getIpAddr() {
+		   WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+		   WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+		   int ip = wifiInfo.getIpAddress();
+
+		   String ipString = String.format(
+		   "%d.%d.%d.%d",
+		   (ip & 0xff),
+		   (ip >> 8 & 0xff),
+		   (ip >> 16 & 0xff),
+		   (ip >> 24 & 0xff));
+
+		   return ipString;
+		}
+	/*
+	 * public void RobotMovedAtLogicalLayer() { bomberManView.postInvalidate();
+	 * }
+	 */
 
 	public void Exploaded(boolean isPlayerDeadinGame) {
 		bomberManView.postInvalidate();
@@ -164,13 +211,13 @@ public class MainActivity extends Activity implements IExplodable,
 
 	}
 
-	private void InitStartRobotThred(Activity activity) {
-		robotThread = new RobotThread(ConfigReader.getGameDim().row,
-				ConfigReader.getGameDim().column, activity);
-		robotThread.setLogicalWord(logicalworld);
-		robotThread.setRunning(true);
-		robotThread.start();
-	}
+	/*
+	 * private void InitStartRobotThred(Activity activity) { robotThread = new
+	 * RobotThread(ConfigReader.getGameDim().row,
+	 * ConfigReader.getGameDim().column);
+	 * robotThread.setLogicalWord(logicalworld); robotThread.setRunning(true);
+	 * robotThread.start(); }
+	 */
 
 	public void Close(String title, String messageboxcontent,
 			final boolean isRestart) {
@@ -224,8 +271,7 @@ public class MainActivity extends Activity implements IExplodable,
 			this.state = GameState.PAUSE;
 			robotThread.setState(GameState.PAUSE);
 			pausebutton.setText("Resume");
-		}else
-		{
+		} else {
 			this.state = GameState.RUN;
 			robotThread.setState(GameState.RUN);
 			pausebutton.setText("Pause");
@@ -239,6 +285,13 @@ public class MainActivity extends Activity implements IExplodable,
 
 		// get the resource
 
+	}
+
+	public void serverModeMessage() {
+		String serverMsg = "Server Listening on - "+getIpAddr()+":"+ConfigReader.serverPort;
+		new AlertDialog.Builder(MainActivity.this)
+				.setTitle("Server mode enabled")
+				.setMessage(serverMsg).setIcon(R.drawable.bomberman).show();
 	}
 
 	@Override
@@ -257,7 +310,7 @@ public class MainActivity extends Activity implements IExplodable,
 		standAloneGame.joinGame("Cmove", MainActivity.this);
 		logicalworld = standAloneGame.getBombermanGame().getLogicalWorld();
 
-		bomberManView = (com.cmov.bomberman.DrawView) findViewById(R.id.bckg);
+		bomberManView = (com.cmov.bomberman.server.DrawView) findViewById(R.id.bckg);
 		bombermanelapsedTimeTextView = (TextView) findViewById(R.id.tleft);
 
 		bombermanusernameview = (TextView) findViewById(R.id.uid);
@@ -283,9 +336,13 @@ public class MainActivity extends Activity implements IExplodable,
 
 		InitBomberManMap();
 
-		InitStartRobotThred(MainActivity.this);
-		startingUp();
+		Thread bombermanserverThread = new Thread(runnable);
+		bombermanserverThread.start();
 
+		// InitStartRobotThred(MainActivity.this);
+		// startingUp();
+
+		serverModeMessage();
 		bombButton = (Button) findViewById(R.id.btnBomb);
 		bombButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {

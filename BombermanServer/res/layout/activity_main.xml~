@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context=".MainActivity" >
+    
+    <LinearLayout
+        android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:id="@+id/upprBoard"
+    	android:layout_alignParentTop="True">
+    	
+    	<TextView
+    	    android:id="@+id/uid"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content" 
+    	    android:text="uname"
+    	    android:textSize="20sp"
+    	    android:gravity="center"
+    	    android:layout_weight="1"
+    	     />
+    	<View
+    	    android:layout_below="@+id/upprBoard"
+    	    android:layout_height="fill_parent"
+    	    android:layout_width="1dp"
+    	    android:background="@android:color/darker_gray"/>
+    	
+    	<TextView
+    	    android:id="@+id/score"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content" 
+    	    android:textSize="20sp"
+    	    android:text="3949"
+    	    android:gravity="center"
+    	    android:layout_weight="1"
+    	     />
+    	<View
+        android:layout_below="@+id/upprBoard"
+        android:layout_height="fill_parent"
+        android:layout_width="1dp"
+        android:background="@android:color/darker_gray"/>
+
+		<TextView
+    	    android:id="@+id/tleft"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content" 
+    	    android:textSize="20sp"
+    	    android:text="40:30"
+    	    android:gravity="center"
+    	    android:layout_weight="1"
+    	     />
+		<View
+        android:layout_below="@+id/upprBoard"
+        android:layout_height="fill_parent"
+        android:layout_width="1dp"
+        android:background="@android:color/darker_gray"/>
+		
+		<TextView
+    	    android:id="@+id/no_players"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content" 
+    	    android:textSize="20sp"
+    	    android:text="4"
+    	    android:gravity="center"
+    	    android:layout_weight="1"
+    	     />
+    	    
+    	    </LinearLayout>
+		
+		    <View
+        android:id="@+id/upprSeparator"
+        android:layout_below="@+id/upprBoard"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
+		    
+		    <com.cmov.bomberman.DrawView
+		        android:id="@+id/bckg"
+		        android:layout_below="@+id/upprSeparator" 
+		        android:background="#336600"
+		        android:layout_width="fill_parent"
+		        android:layout_height="fill_parent"
+		        android:layout_above="@+id/lowerSeparator"
+		        />
+		    
+        <Button
+        android:id="@+id/btnBomb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+	    android:layout_alignParentRight="true"
+	    android:layout_below="@+id/lowerSeparator" 
+	    android:text="@string/button_bomb"
+        />
+    
+    <Button
+        android:id="@+id/btnPause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true" 
+	    android:layout_below="@+id/lowerSeparator" 
+	    android:text="@string/button_pause"
+        />
+    
+    <Button
+        android:id="@+id/btnQuit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true" 
+	    android:layout_below="@+id/btnPause" 
+	    android:text="@string/button_quit"
+        />
+    <View
+        android:id="@+id/lowerSeparator"
+        android:layout_above="@+id/btnUp"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
+   
+    <Button 
+        android:id="@+id/btnUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_up"
+        android:layout_above="@+id/btnDown"
+        android:layout_centerHorizontal="true"
+         />
+    
+    <Button
+        android:id="@+id/btnDown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:layout_centerHorizontal="true" 
+	    android:text="@string/button_down"
+        />
+    
+
+     <Button
+        android:id="@+id/btnLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/btnDown"
+        android:layout_alignParentBottom="True"
+        android:text="@string/button_left"
+        />   
+        
+     <Button
+        android:id="@+id/btnRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btnDown"
+        android:layout_alignParentBottom="True"
+        android:text="@string/button_right"
+         />
+     
+</RelativeLayout>
