@@ -32,7 +32,6 @@ public class RobotThread extends Thread {
 
 	private LogicalWorld logicalworld;
 	private boolean running = false;
-	private boolean isPlayerDead = false;
 	private List<String> Phirobotmovelist = new ArrayList<String>();
 	@SuppressLint("UseSparseArrays")
 	private Map<Integer, RobotCor> updatedRobotPos = new HashMap<Integer, RobotCor>();
@@ -277,7 +276,7 @@ public class RobotThread extends Thread {
 					}
 
 					int iter = 1;
-					for (Map.Entry<Integer, RobotCor> entry : updatedRobotPos
+					for (@SuppressWarnings("unused") Map.Entry<Integer, RobotCor> entry : updatedRobotPos
 							.entrySet()) {
 						if (updatedRobotPos.get(iter).x != -1
 								&& updatedRobotPos.get(iter).y != -1) {
@@ -297,7 +296,7 @@ public class RobotThread extends Thread {
 						++iter;
 					}
 					iter = 1;
-					for (Map.Entry<Integer, RobotCor> entry : originalRbotPos
+					for (@SuppressWarnings("unused") Map.Entry<Integer, RobotCor> entry : originalRbotPos
 							.entrySet()) {
 						if (originalRbotPos.get(iter).x != -1
 								&& originalRbotPos.get(iter).y != -1) {
