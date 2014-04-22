@@ -67,7 +67,7 @@ public class Server implements IMoveableRobot {
 				continue; // nothing to do
 			}
 			// wakeup to work on selected keys
-			Iterator keys = this.selector.selectedKeys().iterator();
+			Iterator<SelectionKey> keys = this.selector.selectedKeys().iterator();
 			while (keys.hasNext()) {
 				SelectionKey key = (SelectionKey) keys.next();
 
@@ -129,6 +129,7 @@ public class Server implements IMoveableRobot {
 
 		String Sessoinstring = channel.socket().getRemoteSocketAddress()
 				.toString();
+		@SuppressWarnings("unused")
 		int count = 0;
 
 		int numRead = -1;
