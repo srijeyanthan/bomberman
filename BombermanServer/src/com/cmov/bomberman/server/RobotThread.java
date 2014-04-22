@@ -1,5 +1,4 @@
-package com.cmov.bomberman;
-
+package com.cmov.bomberman.server;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +7,7 @@ import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.cmov.bomberman.MainActivity.GameState;
+import com.cmov.bomberman.server.MainActivity.GameState;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -32,7 +31,6 @@ public class RobotThread extends Thread {
 
 	private LogicalWorld logicalworld;
 	private boolean running = false;
-	private boolean isPlayerDead = false;
 	private List<String> Phirobotmovelist = new ArrayList<String>();
 	@SuppressLint("UseSparseArrays")
 	private Map<Integer, RobotCor> updatedRobotPos = new HashMap<Integer, RobotCor>();
@@ -41,7 +39,7 @@ public class RobotThread extends Thread {
 	private GameState state = GameState.RUN;
 	private IExplodable ExplodableActivity;
 
-	public RobotThread(int row, int col, Activity activity) {
+	public RobotThread(int row, int col,Server server) {
 		super();
 
 		for (int i = 1; i <= 5; ++i) {
@@ -54,7 +52,7 @@ public class RobotThread extends Thread {
 		}
 		this.row = row;
 		this.col = col;
-		robotActiviy = (IMoveableRobot) activity;
+		robotActiviy = (IMoveableRobot) server;
 		ExplodableActivity = (IExplodable) activity;
 
 	}
@@ -76,9 +74,9 @@ public class RobotThread extends Thread {
 
 		if (nyl > 0 || nyr < this.col || nxu > 0 || nxd < this.row) {
 
-			System.out.println("(x-" + x + ",nyr-" + nyr + ")" + "(x-" + x
+			/*System.out.println("(x-" + x + ",nyr-" + nyr + ")" + "(x-" + x
 					+ ",nyl-" + nyl + ")" + "(nxu-" + nxu + ",y-" + y + ")"
-					+ "(nxd-" + nxd + ",y-" + y + ")");
+					+ "(nxd-" + nxd + ",y-" + y + ")");*/
 			if (logicalworld.getElement(x, nyr) != null) {
 				// Move right = 1
 				if (logicalworld.getElement(x, nyr)[0] == null)
@@ -276,6 +274,10 @@ public class RobotThread extends Thread {
 						}
 					}
 
+					String Robotmovementbuffer = new String();
+					Robotmovementbuffer = BombermanServerDef.MESSAGE_TYPE + "="
+							+ BombermanServerDef.ROBOT_PLACEMET_MESSAGE + "|"
+							+ BombermanServerDef.ROBOT_NEW_PLACE + "=";
 					int iter = 1;
 					for (Map.Entry<Integer, RobotCor> entry : updatedRobotPos
 							.entrySet()) {
@@ -283,18 +285,25 @@ public class RobotThread extends Thread {
 								&& updatedRobotPos.get(iter).y != -1) {
 							int x = updatedRobotPos.get(iter).x;
 							int y = updatedRobotPos.get(iter).y;
-							System.out.println("Robot move pos - x - " + x
-									+ "|y = " + y);
-							if(this.logicalworld.getElement(x, y)[0] instanceof Player)
-								ExplodableActivity.Exploaded(true);
+							/*System.out.println("Robot move pos - x - " + x
+									+ "|y = " + y);*/
+							//if(this.logicalworld.getElement(x, y)[0] instanceof Player)
+								///ExplodableActivity.Exploaded(true);
 							ConfigReader.UpdateGridLayOutCell(x, y, (byte) 'r');
 							this.logicalworld.setElement(x, y, 0, new Robot(x,
 									y));
+							Robotmovementbuffer += "(" + x + "," + y + ").";
 							updatedRobotPos.get(iter).x = -1;
 							updatedRobotPos.get(iter).y = -1;
 
 						}
 						++iter;
+					}
+					
+					if (Robotmovementbuffer
+							.charAt(Robotmovementbuffer.length() - 1) == '.') {
+						Robotmovementbuffer = Robotmovementbuffer.replaceFirst(
+								".$", "");
 					}
 					iter = 1;
 					for (Map.Entry<Integer, RobotCor> entry : originalRbotPos
@@ -304,8 +313,9 @@ public class RobotThread extends Thread {
 
 							int x = originalRbotPos.get(iter).x;
 							int y = originalRbotPos.get(iter).y;
-							System.out.println("Original pos - x - " + x
-									+ "|y = " + y);
+							/*System.out.println("Original pos - x - " + x
+									+ "|y = " + y);*/
+							Robotmovementbuffer += "(" + x + "," + y + ").";
 							originalRbotPos.get(iter).x = -1;
 							originalRbotPos.get(iter).y = -1;
 							ConfigReader.UpdateGridLayOutCell(x, y, (byte) '-');
@@ -314,14 +324,16 @@ public class RobotThread extends Thread {
 						++iter;
 					}
 
+					if (Robotmovementbuffer
+							.charAt(Robotmovementbuffer.length() - 1) == '.') {
+						Robotmovementbuffer = Robotmovementbuffer.replaceFirst(
+								".$", "");
+					}
 					Phirobotmovelist.clear();
-					robotActiviy.RobotMovedAtLogicalLayer(); // so robot's new
-																// position have
-																// been set,
-																// lets
-																// fire front
-																// end to
-																// draw them .:)
+					System.out.println("Robot movement buffer is ready - "
+							+ Robotmovementbuffer);
+					robotActiviy.RobotMovedAtLogicalLayer(Robotmovementbuffer);
+				
 					//ConfigReader.UnlockTheGrid();
 					lock.unlock();
 					System.out
