@@ -5,7 +5,6 @@ import java.util.List;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;

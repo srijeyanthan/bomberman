@@ -10,7 +10,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import com.cmov.bomberman.MainActivity.GameState;
 
-import android.R.integer;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 
@@ -23,6 +22,7 @@ public class RobotThread extends Thread {
 	}
 
 	List<Integer> moveablepos = new ArrayList<Integer>();
+	List<Integer> moveableAI = new ArrayList<Integer>();
 	private Random randomGenerator;
 
 	private IMoveableRobot robotActiviy;
@@ -38,6 +38,7 @@ public class RobotThread extends Thread {
 	private Map<Integer, RobotCor> originalRbotPos = new HashMap<Integer, RobotCor>();
 	final static Lock lock = new ReentrantLock();
 	private GameState state = GameState.RUN;
+	private IExplodable ExplodableActivity;
 
 	public RobotThread(int row, int col, Activity activity) {
 		super();
@@ -53,6 +54,7 @@ public class RobotThread extends Thread {
 		this.row = row;
 		this.col = col;
 		robotActiviy = (IMoveableRobot) activity;
+		ExplodableActivity = (IExplodable) activity;
 
 	}
 
@@ -80,24 +82,96 @@ public class RobotThread extends Thread {
 				// Move right = 1
 				if (logicalworld.getElement(x, nyr)[0] == null)
 					moveablepos.add(1);
+				if(logicalworld.getElement(x, nyr)[0] instanceof Player)
+					moveableAI.add(1);
+				
 			}
 			if (logicalworld.getElement(x, nyl) != null) {
 				// Move left = 2
 				if (logicalworld.getElement(x, nyl)[0] == null)
 					moveablepos.add(2);
+				if(logicalworld.getElement(x, nyl)[0] instanceof Player)
+					moveableAI.add(2);
 			}
 			if (logicalworld.getElement(nxu, y) != null) {
 				// Move up = 3
 				if (logicalworld.getElement(nxu, y)[0] == null)
 					moveablepos.add(3);
+				if(logicalworld.getElement(nxu, y)[0] instanceof Player)
+					moveableAI.add(3);
 			}
 
 			if (logicalworld.getElement(nxd, y) != null) {
 				// Move down = 4
 				if (logicalworld.getElement(nxd, y)[0] == null)
 					moveablepos.add(4);
+				if(logicalworld.getElement(nxd, y)[0] instanceof Player)
+					moveableAI.add(1);
 			}
+			
+			int indexAI = 0;
+			if(!(moveableAI.size() == 0)){
+				indexAI = randomGenerator.nextInt(moveableAI.size());
+				int pos = moveableAI.get(indexAI);
+                System.out.println("expected robot movement:" + pos);
+				if (pos == 1) {
 
+					String key = Integer.toString(x) + Integer.toString(nyr);
+					if (!Phirobotmovelist.contains(key)) // contains key
+					{
+						// System.out.println("expected robot move - " + key);
+						Phirobotmovelist.add(key);
+						// this.logicalworld.setElement(x, y, 0, null);
+						updatedRobotPos.get(RobotCounter).x = x;
+						updatedRobotPos.get(RobotCounter).y = nyr;
+						originalRbotPos.get(RobotCounter).x = x;
+						originalRbotPos.get(RobotCounter).y = y;
+					}
+
+				} else if (pos == 2) {
+					String key = Integer.toString(x) + Integer.toString(nyl);
+					if (!Phirobotmovelist.contains(key)) // contains key
+					{
+						// System.out.println("expected robot move - " + key);
+						Phirobotmovelist.add(key);
+						// this.logicalworld.setElement(x, y, 0, null);
+						updatedRobotPos.get(RobotCounter).x = x;
+						updatedRobotPos.get(RobotCounter).y = nyl;
+						originalRbotPos.get(RobotCounter).x = x;
+						originalRbotPos.get(RobotCounter).y = y;
+					}
+
+				} else if (pos == 3) {
+
+					String key = Integer.toString(nxu) + Integer.toString(y);
+					if (!Phirobotmovelist.contains(key)) // contains key
+					{
+						// System.out.println("expected robot move - " + key);
+						Phirobotmovelist.add(key);
+						// //this.logicalworld.setElement(x, y, 0, null);
+						updatedRobotPos.get(RobotCounter).x = nxu;
+						updatedRobotPos.get(RobotCounter).y = y;
+						originalRbotPos.get(RobotCounter).x = x;
+						originalRbotPos.get(RobotCounter).y = y;
+					}
+
+				} else if (pos == 4) {
+					String key = Integer.toString(nxd) + Integer.toString(y);
+
+					if (!Phirobotmovelist.contains(key)) // contains key
+					{
+						// ystem.out.println("expected robot move - " + key);
+						Phirobotmovelist.add(key);
+						// this.logicalworld.setElement(x, y, 0, null);
+						updatedRobotPos.get(RobotCounter).x = nxd;
+						updatedRobotPos.get(RobotCounter).y = y;
+						originalRbotPos.get(RobotCounter).x = x;
+						originalRbotPos.get(RobotCounter).y = y;
+					}
+				}
+			}
+				
+			else {
 			int index = 0;
 			if (!(moveablepos.size() == 0)) {
 				index = randomGenerator.nextInt(moveablepos.size());
@@ -161,7 +235,10 @@ public class RobotThread extends Thread {
 			} else {
 				return;
 			}
+			
+		}
 			moveablepos.clear();
+			moveableAI.clear();
 		}
 
 	}
@@ -199,7 +276,7 @@ public class RobotThread extends Thread {
 					}
 
 					int iter = 1;
-					for (Map.Entry<Integer, RobotCor> entry : updatedRobotPos
+					for (@SuppressWarnings("unused") Map.Entry<Integer, RobotCor> entry : updatedRobotPos
 							.entrySet()) {
 						if (updatedRobotPos.get(iter).x != -1
 								&& updatedRobotPos.get(iter).y != -1) {
@@ -207,6 +284,8 @@ public class RobotThread extends Thread {
 							int y = updatedRobotPos.get(iter).y;
 							System.out.println("Robot move pos - x - " + x
 									+ "|y = " + y);
+							if(this.logicalworld.getElement(x, y)[0] instanceof Player)
+								ExplodableActivity.Exploaded(true);
 							ConfigReader.UpdateGridLayOutCell(x, y, (byte) 'r');
 							this.logicalworld.setElement(x, y, 0, new Robot(x,
 									y));
@@ -217,7 +296,7 @@ public class RobotThread extends Thread {
 						++iter;
 					}
 					iter = 1;
-					for (Map.Entry<Integer, RobotCor> entry : originalRbotPos
+					for (@SuppressWarnings("unused") Map.Entry<Integer, RobotCor> entry : originalRbotPos
 							.entrySet()) {
 						if (originalRbotPos.get(iter).x != -1
 								&& originalRbotPos.get(iter).y != -1) {

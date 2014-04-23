@@ -1,7 +1,5 @@
 package com.cmov.bomberman;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import android.app.Activity;
 

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map>
+    <description>
+	     Add some information here - cmove project 
+    </description> 
+    <board>
+        <maxplayers value="3"/>
+        <height        value="13"/>
+        <width     value="19"/>
+    </board>   
+    <field>
+        <row>w w w w w w w w w w w w w w w w w w w</row>
+        <row>w - 2 - - - - - r - - - - o - - - - w</row>
+        <row>w w o w - w - w - w - w - w - w - w w</row>
+        <row>w - o - - - - - - - - r - - - - - - w</row>
+        <row>w w o w o w - w - w - w - w o w - w w</row>
+        <row>w - - o - - - - - - - - o - r - - 3 w</row>
+    	<row>w w o w - w - w - w - w - w - w - w w</row>
+ 		<row>w - o o o o - - - 1 - - - - - - - o w</row>
+        <row>w w o w o w o w o w - w - w - w - w w</row>
+       	<row>w - - o o o o - - r - - o o o - - - w</row>
+ 		<row>w w - w - w o w o w - w o w o w o w w</row>
+ 		<row>w - - - - - - o o o - - o o o - o r w</row>
+ 	    <row>w w w w w w w w w w w w w w w w w w w</row>
+    </field>
+    <!-- <field>
+        <row>w w w w w w w w w w w w w w w w w w w</row>
+        <row>w - 2 - - - - - w - - - - o - - - - w</row>
+        <row>w w o w - w - w - w - w - w - w - w w</row>
+        <row>w - o - - - - - - - - - - - - - - - w</row>
+        <row>w w o w o w - w - w - w - w o w - w w</row>
+        <row>w - - o - - - - - - - - o - - - - 3 w</row>
+    	<row>w w o w - w - w - w - w - w - w - w w</row>
+ 		<row>w - o o o o - - - 1 - - - - - - - o w</row>
+        <row>w w o w o w o w o w - w - w - w - w w</row>
+       	<row>w - - o o o o - - r - - o o o - - - w</row>
+ 		<row>w w - w - w o w o w - w o w o w o w w</row>
+ 		<row>w - - - - - - o o o - - o o o - o - w</row>
+ 	    <row>w w w w w w w w w w w w w w w w w w w</row>
+    </field>-->
+
+    <icons>
+        <wall file="brickwall"/>
+        <obstacle file="brickwall"/>
+        <robot file="brickwall"/>
+        <bomb file="brickwall"/>
+    </icons>
+    <!-- the following game configurations are denotes gd - Game duraion, et- explosion timout
+     ed - explosion duratoin, er - explosion range rs - robot speed , pr-points per robots killed
+     po - points per opponent killed -->
+    <gameconfig>
+        <gd value="30"/>
+        <et value="1"/>
+        <ed value="1"/>
+        <er value="1"/>
+        <rs value="1"/>
+        <pr value="300"/>
+        <po value="1000"/>
+    </gameconfig>
+</map>
