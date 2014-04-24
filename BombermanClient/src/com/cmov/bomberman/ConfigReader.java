@@ -91,6 +91,17 @@ public class ConfigReader {
 	private static Logger logger = new Logger();
 	static AssetManager am;
 
+	private static boolean mapdataready = false;
+	
+	private static void setmapdataready(boolean readyornot)
+	{
+		mapdataready = readyornot;
+	}
+	
+	public static boolean isMapDataReady()
+	{
+		return mapdataready;
+	}
 	public static Logger getLogger() {
 		return logger;
 	}
@@ -113,7 +124,7 @@ public class ConfigReader {
 			throws XmlPullParserException, IOException {
 
 		ReadGameDim(in);
-		ReadGridLayout();
+		//ReadGridLayout();
 		ReadGameConfig();
 
 	}
@@ -150,6 +161,32 @@ public class ConfigReader {
 
 	}
 
+	public static void InitializeTheGridFromServer(int row , int column , byte[] servermapbytearray)
+	{
+		gridlayout  = new Byte[row][column];
+		int rowoffset =0;
+		int columnoffset=0;
+		System.out.println("Map message received from server - "+new String(servermapbytearray));
+		for ( int i =0; i < servermapbytearray.length ; ++i)
+		{
+			
+			gridlayout[rowoffset][columnoffset] = servermapbytearray[i];
+			if (gridlayout[rowoffset][columnoffset] == '1') {
+				players = new Player();
+				players.setXCor(rowoffset);
+				players.setYCor(columnoffset);
+			}
+			++columnoffset;
+			if(columnoffset==column)
+			{
+				++rowoffset;
+				columnoffset=0;
+			}
+			
+		}
+		
+		setmapdataready(true);
+	}
 	public static void ReadGridLayout() throws XmlPullParserException,
 			IOException {
 		XmlPullParser parser = Xml.newPullParser();

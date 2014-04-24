@@ -25,7 +25,7 @@ public class RobotThread extends Thread {
 	List<Integer> moveableAI = new ArrayList<Integer>();
 	private Random randomGenerator;
 
-	private IMoveableRobot robotActiviy;
+	
 	public Activity activity;
 	private int row = 0;
 	private int col = 0;
@@ -39,6 +39,7 @@ public class RobotThread extends Thread {
 	final static Lock lock = new ReentrantLock();
 	private GameState state = GameState.RUN;
 	private IExplodable ExplodableActivity;
+	private IMoveableRobot robotActiviy;
 
 	public RobotThread(int row, int col, Activity activity) {
 		super();

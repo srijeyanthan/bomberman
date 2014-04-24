@@ -258,9 +258,10 @@ public class MainActivity extends Activity implements IExplodable,
 		}
 		Intent myIntent = getIntent();
 		String userName = myIntent.getStringExtra("userName");
-		bombermanGameDuration = ConfigReader.getGameConfig().gameduration;
+		//bombermanGameDuration = ConfigReader.getGameConfig().gameduration;
 		setContentView(R.layout.activity_main);
 
+		
 		standAloneGame.joinGame("Cmove", MainActivity.this);
 		logicalworld = standAloneGame.getBombermanGame().getLogicalWorld();
 
@@ -290,7 +291,8 @@ public class MainActivity extends Activity implements IExplodable,
 
 		InitBomberManMap();
 
-		InitStartRobotThred(MainActivity.this);
+		RspHandler.setBombermanview(bomberManView);
+		//InitStartRobotThred(MainActivity.this);
 		startingUp();
 
 		bombButton = (Button) findViewById(R.id.btnBomb);
