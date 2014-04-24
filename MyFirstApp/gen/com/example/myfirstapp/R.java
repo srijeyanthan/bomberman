@@ -24,14 +24,15 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f08000e;
-        public static final int btnBomb=0x7f080006;
-        public static final int btnDown=0x7f08000b;
-        public static final int btnLeft=0x7f08000c;
-        public static final int btnPause=0x7f080008;
-        public static final int btnQuit=0x7f080009;
-        public static final int btnRight=0x7f08000d;
-        public static final int btnUp=0x7f08000a;
+        public static final int action_settings=0x7f08000f;
+        public static final int bckg=0x7f080006;
+        public static final int btnBomb=0x7f080008;
+        public static final int btnDown=0x7f08000c;
+        public static final int btnLeft=0x7f08000d;
+        public static final int btnPause=0x7f080009;
+        public static final int btnQuit=0x7f08000a;
+        public static final int btnRight=0x7f08000e;
+        public static final int btnUp=0x7f08000b;
         public static final int lowerSeparator=0x7f080007;
         public static final int no_players=0x7f080004;
         public static final int score=0x7f080002;

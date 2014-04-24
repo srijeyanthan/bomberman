@@ -1,7 +1,6 @@
 package com.cmov.bomberman;
 
 import android.app.Activity;
-
 /*
  * Developer note - Group -2
  *  Please refer the Cell class for detail 
@@ -18,6 +17,7 @@ class Bomb extends Cell {
 	public boolean isExploded;
 	private int stage = 1;
 	public Activity activity;
+	private int range = 3; //ConfigReader.getGameConfig().explosionrange;
 
 	public Bomb(int x, int y) {
 		super(x, y);
@@ -50,82 +50,82 @@ class Bomb extends Cell {
 			int nx = worldXCor;
 			int ny = worldYCor;
 			int numberofElementsDied = 0;
-			if (++nx < ConfigReader.getGameDim().row) {
-				CellElement = ConfigReader.gridlayout[nx][worldYCor];
-				if (CellElement != 'w') // dont update , because we can not
-										// break the wall :)
-				{
-
-					if (CellElement == 'o' || CellElement == 'r') {
-						player.game.getLogicalWorld().setElement(nx, worldYCor,
-								0, null);
-
+			
+			for(int i = 1; i <= range; i++){
+				if ((nx + i) < ConfigReader.getGameDim().row) {
+					nx +=i;
+					CellElement = ConfigReader.gridlayout[nx][worldYCor];
+					if (CellElement != 'w') // dont update , because we can not
+											// break the wall :)
+					{
+						if (CellElement == 'o' || CellElement == 'r') {
+							player.game.getLogicalWorld().setElement(nx, worldYCor,
+									0, null);
+						}
+						ConfigReader
+								.UpdateGridLayOutCell(nx, worldYCor, (byte) '-');
+						if (CellElement == 'r')
+							++numberofElementsDied;
 					}
-					ConfigReader
-							.UpdateGridLayOutCell(nx, worldYCor, (byte) '-');
-					if (CellElement == 'r')
-						++numberofElementsDied;
-
+					if (CellElement == '1')
+						isPlayerDead = true;
 				}
-				if (CellElement == '1')
-					isPlayerDead = true;
-			}
-			nx = worldXCor;
-			if (--nx > 0) {
-				CellElement = ConfigReader.gridlayout[nx][worldYCor];
+				nx = worldXCor;
+				if ((nx - i) > 0) {
+					nx -= i;
+					CellElement = ConfigReader.gridlayout[nx][worldYCor];
 
-				if (CellElement != 'w') {
-					if (CellElement == 'o' || CellElement == 'r') {
-						player.game.getLogicalWorld().setElement(nx, worldYCor,
-								0, null);
+					if (CellElement != 'w') {
+						if (CellElement == 'o' || CellElement == 'r') {
+							player.game.getLogicalWorld().setElement(nx, worldYCor,
+									0, null);
+						}
+						ConfigReader
+								.UpdateGridLayOutCell(nx, worldYCor, (byte) '-');
+						if (CellElement == 'r')
+							++numberofElementsDied;
 					}
-					ConfigReader
-							.UpdateGridLayOutCell(nx, worldYCor, (byte) '-');
-					if (CellElement == 'r')
-						++numberofElementsDied;
-
+					if (CellElement == '1')
+						isPlayerDead = true;
 				}
-				if (CellElement == '1')
-					isPlayerDead = true;
+				if ((ny + i) < ConfigReader.getGameDim().column) {
+					ny += i;
+					CellElement = ConfigReader.gridlayout[worldXCor][ny];
 
-			}
-			if (++ny < ConfigReader.getGameDim().column) {
-				CellElement = ConfigReader.gridlayout[worldXCor][ny];
-
-				if (CellElement != 'w') {
-					if (CellElement == 'o' || CellElement == 'r') {
-						player.game.getLogicalWorld().setElement(worldXCor, ny,
-								0, null);
-
+					if (CellElement != 'w') {
+						if (CellElement == 'o' || CellElement == 'r') {
+							player.game.getLogicalWorld().setElement(worldXCor, ny,
+									0, null);
+						}
+						ConfigReader
+								.UpdateGridLayOutCell(worldXCor, ny, (byte) '-');
+						if (CellElement == 'r')
+							++numberofElementsDied;
 					}
-					ConfigReader
-							.UpdateGridLayOutCell(worldXCor, ny, (byte) '-');
-					if (CellElement == 'r')
-						++numberofElementsDied;
+					if (CellElement == '1')
+						isPlayerDead = true;
 				}
-				if (CellElement == '1')
-					isPlayerDead = true;
-			}
-			ny = worldYCor;
-			if (--ny > 0) {
-				CellElement = ConfigReader.gridlayout[worldXCor][ny];
-				if (CellElement != 'w') {
-					if (CellElement == 'o' || CellElement == 'r') {
-						player.game.getLogicalWorld().setElement(worldXCor, ny,
-								0, null);
-
+				ny = worldYCor;
+				if ((ny-i) > 0) {
+					ny -= i;
+					CellElement = ConfigReader.gridlayout[worldXCor][ny];
+					if (CellElement != 'w') {
+						if (CellElement == 'o' || CellElement == 'r') {
+							player.game.getLogicalWorld().setElement(worldXCor, ny,
+									0, null);
+						}
+						ConfigReader
+								.UpdateGridLayOutCell(worldXCor, ny, (byte) '-');
+						// ConfigReader.gridlayout[worldXCor][ny] = '-';
+						if (CellElement == 'r')
+							++numberofElementsDied;
 					}
-					ConfigReader
-							.UpdateGridLayOutCell(worldXCor, ny, (byte) '-');
-					// ConfigReader.gridlayout[worldXCor][ny] = '-';
-					if (CellElement == 'r')
-						++numberofElementsDied;
-
+					if (CellElement == '1')
+						isPlayerDead = true;
 				}
-				if (CellElement == '1')
-					isPlayerDead = true;
-
 			}
+
+
 			timer.cancel();
 			// (player.game, gridX, gridY, player.bombDistance);
 			// TO-DO: notify this explosion to front end , so that we can draw
