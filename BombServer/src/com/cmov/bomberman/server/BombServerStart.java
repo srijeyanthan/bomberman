@@ -11,7 +11,9 @@ public class BombServerStart {
 		public void run() {
 
 			try {
+				
 				server = new Server(null, 9090, logicalworld);
+				
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

@@ -259,7 +259,7 @@ public class RobotThread extends Thread {
 		while (running) {
 			/* if ((getGameState() == GameState.RUN)) { */
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(6000);
 				// ConfigReader.LockTheGrid();
 				lock.lock();
 				int RobotCounter = 0;

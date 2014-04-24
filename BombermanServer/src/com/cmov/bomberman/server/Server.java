@@ -275,7 +275,7 @@ public class Server implements IMoveableRobot {
 		mapmessage = BombermanServerDef.MESSAGE_TYPE + "="
 				+ BombermanServerDef.GRID_MESSAGE + "|"
 				+ BombermanServerDef.GRID_ROW + "=" + row + "|"
-				+ BombermanServerDef.GRID_COLUMN + "=" + column
+				+ BombermanServerDef.GRID_COLUMN + "=" + column +"|"
 				+ BombermanServerDef.GRID_ELEMENTS + "=";
 		Byte[][] GridLayout = ConfigReader.getGridLayout();
 		for (int i = 0; i < row; ++i) {

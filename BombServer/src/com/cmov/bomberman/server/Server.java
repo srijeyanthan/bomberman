@@ -74,6 +74,7 @@ public class Server implements IMoveableRobot, IExplodable, IUpdatableScore {
 		serverChannel.socket().bind(listenAddr);
 		serverChannel.register(this.selector, SelectionKey.OP_ACCEPT);
 
+		System.out.println("********* Bomberman listening on 9090 ****************");
 		log("Bomberman server is ready  Ctrl-C to stop.");
 
 		// processing
@@ -278,13 +279,13 @@ public class Server implements IMoveableRobot, IExplodable, IUpdatableScore {
 				.getRemoteSocketAddress().toString(), true);
 		// // number of clients has reaced two, so lets start the robot movement
 		// and send the data to client
-		// if (Session.size() >= 2) {
+		if (Session.size() >= 2) {
 		robotThread = new RobotThread(ConfigReader.getGameDim().row,
 				ConfigReader.getGameDim().column, this);
 		robotThread.setLogicalWord(this.logicalworld);
 		robotThread.setRunning(true);
 		robotThread.start();
-		//}
+		}
 	}
 
 	private String BuildGridLayout() {

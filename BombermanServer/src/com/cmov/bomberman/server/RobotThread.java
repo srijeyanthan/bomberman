@@ -305,6 +305,7 @@ public class RobotThread extends Thread {
 						Robotmovementbuffer = Robotmovementbuffer.replaceFirst(
 								".$", "");
 					}
+					Robotmovementbuffer += "|"+ BombermanServerDef.ROBOT_ORIGINAL_PLACE + "=";
 					iter = 1;
 					for (Map.Entry<Integer, RobotCor> entry : originalRbotPos
 							.entrySet()) {
