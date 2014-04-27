@@ -101,7 +101,7 @@
 %	TITLE PAGE
 %----------------------------------------------------------------------------------------
 
-\title[SSDS]{An Architecture for a Secure Service Discovery Service} % The short title appears at the bottom of every slide, the full title is only on the title page
+\title[Secure Service Discovery Service]{An Architecture for a Secure Service Discovery Service} % The short title appears at the bottom of every slide, the full title is only on the title page
 
 \author{Steven E. Czerwinski, Ben Y. Zhao, Todd D. Hodes, Anthony D. Joseph, Randy H. Katz} % Your name
 \institute[UC Berkeley] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
@@ -127,78 +127,44 @@ University of California, Berkeley \\ % Your institution for the title page
 %	PRESENTATION SLIDES
 %----------------------------------------------------------------------------------------
 
+\section{Introduction}
+\subsection{Motivation}
+\begin{frame}
+\frametitle{Motivation}
+\begin{itemize}
+\item Large scale deployment of networks and devices
+\item Cheaper networks and network-enabled devices 
+\end{itemize}
+\end{frame}
 %------------------------------------------------
-\section{Introduction} % Sections can be created in order to organize your presentation into discrete blocks, all sections and subsections are automatically printed in the table of contents as an overview of the talk
+\subsection{Goals} % Sections can be created in order to organize your presentation into discrete blocks, all sections and subsections are automatically printed in the table of contents as an overview of the talk
 %------------------------------------------------
-
-\subsection{Introduction} % A subsection can be created just before a set of slides with a common theme to further break down your presentation into chunks
 
 \begin{frame}
-\frametitle{Introduction}
+\frametitle{Goals}
 \begin{itemize} 
-\item Large scale deployment of networks and devices
-\item Challenge: locate a service for a task out of thousands
+\item Locate a service out of thousands
 \item Secure and trusted services with minimum client intervention
-\item Ninja SDS: scalable, fault-tolerant and secure repository
-\item Repository: description of services and existing, running, services
-\item Hierarchical load-balancing and application level query routing
+\item Repository of (running) service descriptions
+\item Hierarchical load-balancing and recovery
 \end{itemize}
 \end{frame}
 
 %------------------------------------------------
 \section{Design Concepts} 
-\subsection{Announce/Listen model} 
 
 \begin{frame}
-\frametitle{Announcement-based Information Dissemination}
+\frametitle{Design Concepts}
 \begin{itemize}
-\item \alert<+>{Failure does not require a separate service} \hfill \\
-It's sufficient to listen to the periodic multicast announcements to update the cache/database
-\item \alert<+>{Bootstrapping} \hfill \\
-Clients discover an SDS server by listening to a multicast address. Client can solicit asynchronous announcements
-\item \alert<+>{Eventual Consistency} \hfill \\
-Eventual consistency vs. transactional semantic
+\item \alert<+>{Annoucement-based Information Dissemination} \hfill \\
+Use of perodic multicast annoucements for recovery, bootstrapping and updating. Suitable for eventual consistency.
+\item \alert<+>{Hierarchical Organisation} \hfill \\
+If a server is overloaded a child node is started. Downwards cascading recovery for several server failures.
+\item \alert<+>{XML Service Descriptions} \hfill \\
+Flexibility, validation ability and backward compatibility.
+\item \alert<+>{Privacy and Authentication} \hfill \\
+Hybrid cryptography: symmetric and asymmetric cryptography. Principals and component's public keys assure authentication.
 \end{itemize}
-\end{frame}
-
-%------------------------------------------------
-\subsection{Hierarchical Organisation}
-\begin{frame}
-\frametitle{Hierarchical Organisation}
-\begin{block}{SDS server hierarchy}
-\begin{itemize}
-\item under heavy load, a child is spawned - shares load with parent
-\item the domain of an SDS server (fractional subnet, etc) is the network extent it covers
-\end{itemize}
-\end{block}
-\end{frame}
-
-%------------------------------------------------
-\subsection{XML Service Descriptions}
-%------------------------------------------------
-\begin{frame}
-\frametitle{XML Service Descriptions}
-\begin{block}{XML Service Descriptions}
-\begin{enumerate}
-\item More flexible than <key,value> pairs
-\item Service description validation against a set schema
-\item Database schema vs. DTD: flexibility, backward-compatibility
-\end{enumerate}
-\end{block}
-\end{frame}
-
-%------------------------------------------------
-\subsection{Privacy and Authentication}
-%------------------------------------------------
-
-\begin{frame}
-\frametitle{Privacy and Authentication}
-\begin{block}{Contents}
-\begin{itemize}
-\item Hybrid symmetric and asymmetric cryptography used 
-\item Each component has a public key and a principal name
-\end{itemize}
-\end{block}
 \end{frame}
 
 %------------------------------------------------
@@ -206,7 +172,7 @@ Eventual consistency vs. transactional semantic
 \begin{frame}
 \frametitle{SDS Server}
 \begin{itemize}
-\item Global multicast channel to send authenticated messages
+\item Global multicasts authenticated messages
 \item Authenticated advertisements contain:
 \begin{itemize}
 \item Certificate Authority and Capabilities Manager contact
@@ -214,8 +180,9 @@ Eventual consistency vs. transactional semantic
 \item Service annoucement rate
 \end{itemize}
 \item Aggregate rate set by administrators
-\item Should several servers fail, recovery is cascading from the top
-\item Privacy and authentication assured by the {\it secure one-way service broadcast}
+\item Overloaded servers reaching a given threshold start another server
+\item Failure handled individually or cascading through the hierarchical organisation
+\item Privacy and authentication possible through the {\it secure one-way service broadcast}
 \end{itemize}
 \end{frame}
 
@@ -225,8 +192,20 @@ Eventual consistency vs. transactional semantic
 \frametitle{Services}
 \begin{enumerate}
 \item \alert<+>{Continously listen on the global multicast channel for SDS server announcements}
-\item \alert<+>{Multicast its service descriptions to the proper channel/frequency}
+\item \alert<+>{Multicast its service descriptions to the appropriate channel/frequency}
 \item \alert<+>{Set appropriate capabilities by contacting the Capabilities Manager}
+\end{enumerate}
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame} % Need to use the fragile option when verbatim is used in the slide
+\frametitle{Certificate Authority}
+\begin{enumerate}
+\item \alert<+>{Clients contact CAs for retrieving the principal's certificate}
+\item \alert<+>{Stores encryption key certificates and the principal's certificates}
+\item \alert<+>{The CA's public key is public}
+\item \alert<+>{The encryption key certificate is used by the client to communicate with the principal}
 \end{enumerate}
 \end{frame}
 
@@ -236,8 +215,8 @@ Eventual consistency vs. transactional semantic
 \frametitle{Capabilities Manager}
 \begin{enumerate}
 \item \alert<+>{Contacted by services}
-\item \alert<+>{Specifies an access control list}
-\item \alert<+>{Generates and stores appropriate capabilities}
+\item \alert<+>{Services specify an ACL for principals principals}
+\item \alert<+>{Generates, stores and distributes appropriate capabilities}
 \end{enumerate}
 \end{frame}
 
@@ -246,9 +225,16 @@ Eventual consistency vs. transactional semantic
 \stepcounter{beamerpauses}
 \frametitle{Secure Communications}
 \begin{itemize}[<+->]
-\item Authenticated Server Annoucements 
-\item Secure One-Way Service Description Annoucements
-\item Authenticated RMI
+\item {\bf Authenticated Server Annoucements}
+\begin{itemize}
+\item Readable by all clients
+\item Non-forgeable 
+\item Reply attack resistant (timestamps)
+\end{itemize}
+\item {\bf Secure One-Way Service Description Annoucements}\\
+Hybrid public/symmetric key system: a packet is sufficient for describing a service which will be decrypted by the SDS server
+\item {\bf Authenticated RMI}\\
+A handshake establishes the symmetric key for the session between client and SDS servers and between pairs of SDS servers
 \end{itemize}
 \end{frame}
 
@@ -258,19 +244,109 @@ Eventual consistency vs. transactional semantic
 \stepcounter{beamerpauses}
 \frametitle{Wide Area Support}
 \begin{enumerate}[<+->]
-\item Lorem Ipsum   
-\item Lorem Ipsum
-\item Lorem Ipsum
+\item {\bf Hierarchies built based upon query criteria}: \\
+\begin{itemize}
+\item Administrative domain
+\item Network topology
+\item Physical location
+\end{itemize}
+\item {\bf Aggregate service description (lossy)}
+\item {\bf Use aggregation tables for routing queries}
 \end{enumerate}
 \end{frame}
 %------------------------------------------------
-
-\subsection{Adaptive Server Hierrachy Management}
-\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
-\frametitle{Alternatives}
+\begin{frame}
+\frametitle{Lossy aggregation \& query routing}
+\begin{itemize}
+\item Hash values of tag subsets of service descriptions used as summary
+\item Algorithm:
+\begin{enumerate}
+\item When adding: compute description tag subset, insert into Bloom Filter table
+\item When querying: compute tag subsets, examine corresponding entries in Bloom Filter table for possible matches
+\end{enumerate}
+\item Limitations:
+\begin{itemize}
+\item Computation required: fewer subset hashes
+\item Space required: use bloom filters
+\end{itemize}
+\end{itemize}
 \end{frame}
 
 %------------------------------------------------
+
+\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
+\frametitle{Bloom filters}
+\begin{figure}
+\includegraphics[scale=0.4]{bloom}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
+\frametitle{Index aggregation \& routing}
+\begin{figure}
+\includegraphics[scale=0.4]{d3}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
+\frametitle{Index aggregation \& routing}
+\begin{figure}
+\includegraphics[scale=0.4]{d4}
+\end{figure}
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
+\frametitle{System Performance}
+\begin{figure}
+\includegraphics[scale=0.2]{t1}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
+\frametitle{System Performance}
+\begin{figure}
+\includegraphics[scale=0.2]{t2}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
+\frametitle{System Performance}
+\begin{figure}
+\includegraphics[scale=0.2]{t3}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
+\frametitle{System Performance}
+\begin{figure}
+\includegraphics[scale=0.2]{t4}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
+\frametitle{Related Work}
+\begin{itemize}
+\item {\bf DNS \& Globe}
+\item {\bf Condor Classads}
+\item {\bf JINI}
+\item {\bf Service Location Protocol}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
+\frametitle{Conclusion}
+Work still needed on: 
+\begin{itemize}
+\item {\bf Wide area implementation }
+\item {\bf Benchmarking }
+\item {\bf Ninja infrastructure necessary to evaluate}
+\end{itemize}
+\end{frame}
+
 
 \begin{frame}
 \Huge{\centerline{Questions ?}}

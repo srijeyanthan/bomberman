@@ -13,7 +13,7 @@ class Bomb extends Cell {
 	private IExplodable ExplodableActivity;
 	private IUpdatableScore UpdatableScore;
 	private Player player;
-	private BombExplosionTimer timer;
+	private BombTimer timer;
 	public boolean isExploded;
 	private int stage = 1;
 	public Activity activity;
@@ -27,7 +27,7 @@ class Bomb extends Cell {
 	public void InitBomb( Player player, Activity activity)
 	{
 		this.player = player;
-		timer = new BombExplosionTimer(this);
+		timer = new BombTimer(this);
 		isExploded = false;
 
 		ExplodableActivity = (IExplodable) activity;
@@ -35,7 +35,6 @@ class Bomb extends Cell {
 	}
 	public void explode() {
 		try {
-
 			System.out.println(this + " bomb has exploaded!");
 			player.setBombCounter(0);
 			boolean isPlayerDead = false;

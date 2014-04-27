@@ -1,1 +1,7 @@
-\frametitle {Alternatives}
+\frametitle {Conclusion}
+Work still needed on:
+\begin{itemize}
+\item {\bf Wide area implementation }
+\item {\bf Benchmarking }
+\item {\bf Ninja infrastructure necessary to evaluate}
+\end{itemize}

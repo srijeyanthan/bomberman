@@ -31,6 +31,9 @@ public class LogicalWorld {
 			for (int y = 0; y < cols; y++) {
 
 				switch (entries[x][y]) {
+				case 'z': {
+					this.twoDWorld[x][y][0] = new Explosion(x, y);
+				}
 				case 'w': {
 					this.twoDWorld[x][y][0] = new Wall(x, y);
 				}
