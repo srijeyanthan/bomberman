@@ -1,7 +1,5 @@
 package com.cmov.bomberman.server;
 
-import android.annotation.SuppressLint;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
@@ -20,7 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import com.cmov.bomberman.server.BombermanServerDef;
 
-public class Server implements IMoveableRobot {
+public class Server implements IMoveableRobot, IExplodable, IUpdatableScore {
 	private InetAddress addr;
 	private int port;
 	private Selector selector;
@@ -43,6 +41,26 @@ public class Server implements IMoveableRobot {
 		startServer();
 	}
 
+	public void Exploaded(boolean isPlayerDeadinGame) {
+		// bomberManView.postInvalidate();
+		// isBombPlaced = false;
+		// isPlayerDead = isPlayerDeadinGame; // / this is only for test ,
+
+	}
+
+	public void UpdateScore(int numberOfRobotDied) {
+		/*
+		 * scoreOfThePlayer += ConfigReader.getGameConfig().pointperrobotkilled
+		 * numberOfRobotDied; numberofRobotkilled += numberOfRobotDied;
+		 */
+	}
+
+	private void InitBomberManMap() {
+
+		// bomberManView.invalidate();
+
+	}
+
 	private void startServer() throws IOException {
 		// create selector and channel
 		this.selector = Selector.open();
@@ -56,6 +74,7 @@ public class Server implements IMoveableRobot {
 		serverChannel.socket().bind(listenAddr);
 		serverChannel.register(this.selector, SelectionKey.OP_ACCEPT);
 
+		System.out.println("********* Bomberman listening on 9090 ****************");
 		log("Bomberman server is ready  Ctrl-C to stop.");
 
 		// processing
@@ -67,7 +86,8 @@ public class Server implements IMoveableRobot {
 				continue; // nothing to do
 			}
 			// wakeup to work on selected keys
-			Iterator<SelectionKey> keys = this.selector.selectedKeys().iterator();
+			Iterator<SelectionKey> keys = this.selector.selectedKeys()
+					.iterator();
 			while (keys.hasNext()) {
 				SelectionKey key = (SelectionKey) keys.next();
 
@@ -80,14 +100,14 @@ public class Server implements IMoveableRobot {
 				}
 
 				if (key.isAcceptable()) {
-					System.out
-							.println("accept method has been fired ---" + key);
+					/*System.out
+							.println("accept method has been fired ---" + key);*/
 					this.accept(key);
 				} else if (key.isReadable()) {
-					System.out.println("readable key ---" + key);
+					//System.out.println("readable key ---" + key);
 					this.read(key);
 				} else if (key.isWritable()) {
-					System.out.println("write metho  ---" + key);
+					//System.out.println("write metho  ---" + key);
 					this.write(key);
 				}
 			}
@@ -111,8 +131,8 @@ public class Server implements IMoveableRobot {
 			Socket socket = channel.socket();
 			socket.close();
 		} else {
-			channel.write(ByteBuffer.wrap("Welcome to Bomberman server \r\n"
-					.getBytes("US-ASCII")));
+			/*channel.write(ByteBuffer.wrap("Welcome to Bomberman server \r\n"
+					.getBytes("US-ASCII")));*/
 			Socket socket = channel.socket();
 			SocketAddress remoteAddr = socket.getRemoteSocketAddress();
 			log("Connected to: " + remoteAddr);
@@ -167,8 +187,10 @@ public class Server implements IMoveableRobot {
 			byte[] item = items.next();
 			items.remove();
 			channel.write(ByteBuffer.wrap(item));
+
 		}
-		key.interestOps(SelectionKey.OP_READ);
+		key.interestOps(SelectionKey.OP_WRITE);
+		//key.interestOps(SelectionKey.OP_READ);
 	}
 
 	private void doSendToClient(SelectionKey key, byte[] data) {
@@ -183,7 +205,6 @@ public class Server implements IMoveableRobot {
 		System.out.println(s);
 	}
 
-	@SuppressLint("UseSparseArrays")
 	private List<Map<Integer, String>> processIndividualMessage(String message) {
 		// <message1><message2>... // this is out message structure
 		List<Map<Integer, String>> processedtokens = new ArrayList<Map<Integer, String>>();
@@ -248,8 +269,7 @@ public class Server implements IMoveableRobot {
 				fieldmap.get(BombermanServerDef.USER_NAME)) == null) {
 			System.out.println("usernmae has been sucefully inserted ...");
 		} else {
-			System.out
-					.println("user name is already added ...");
+			System.out.println("user name is already added ...");
 		}
 
 		String mapmsg = BuildGridLayout();
@@ -260,11 +280,11 @@ public class Server implements IMoveableRobot {
 		// // number of clients has reaced two, so lets start the robot movement
 		// and send the data to client
 		if (Session.size() >= 2) {
-			robotThread = new RobotThread(ConfigReader.getGameDim().row,
-					ConfigReader.getGameDim().column, this);
-			robotThread.setLogicalWord(this.logicalworld);
-			robotThread.setRunning(true);
-			robotThread.start();
+		robotThread = new RobotThread(ConfigReader.getGameDim().row,
+				ConfigReader.getGameDim().column, this);
+		robotThread.setLogicalWord(this.logicalworld);
+		robotThread.setRunning(true);
+		robotThread.start();
 		}
 	}
 
@@ -275,7 +295,7 @@ public class Server implements IMoveableRobot {
 		mapmessage = BombermanServerDef.MESSAGE_TYPE + "="
 				+ BombermanServerDef.GRID_MESSAGE + "|"
 				+ BombermanServerDef.GRID_ROW + "=" + row + "|"
-				+ BombermanServerDef.GRID_COLUMN + "=" + column +"|"
+				+ BombermanServerDef.GRID_COLUMN + "=" + column + "|"
 				+ BombermanServerDef.GRID_ELEMENTS + "=";
 		Byte[][] GridLayout = ConfigReader.getGridLayout();
 		for (int i = 0; i < row; ++i) {
