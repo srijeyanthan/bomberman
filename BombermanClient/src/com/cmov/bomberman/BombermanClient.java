@@ -250,7 +250,7 @@ public class BombermanClient implements Runnable {
 	public static  void startBombermanClient()
 	{
 		try {
-			BombermanClient client = new BombermanClient(InetAddress.getByName("10.1.1.9"), 9090);
+			BombermanClient client = new BombermanClient(InetAddress.getByName("192.168.1.9"), 9090);
 			Thread t = new Thread(client);
 			t.setDaemon(true);
 			t.start();
@@ -261,7 +261,7 @@ public class BombermanClient implements Runnable {
 			while(true)
 			{
 				handler.waitForResponse();
-			   // Thread.sleep(1000);
+			    Thread.sleep(3000);
 			}
 			/*handler.waitForResponse();
 			handler.waitForResponse();*/

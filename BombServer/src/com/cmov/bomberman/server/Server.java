@@ -279,20 +279,20 @@ public class Server implements IMoveableRobot, IExplodable, IUpdatableScore {
 				.getRemoteSocketAddress().toString(), true);
 		// // number of clients has reaced two, so lets start the robot movement
 		// and send the data to client
-		if (Session.size() >= 2) {
+		//if (Session.size() >= 2) {
 		robotThread = new RobotThread(ConfigReader.getGameDim().row,
 				ConfigReader.getGameDim().column, this);
 		robotThread.setLogicalWord(this.logicalworld);
 		robotThread.setRunning(true);
 		robotThread.start();
-		}
+		//}
 	}
 
 	private String BuildGridLayout() {
 		String mapmessage = "";
 		int row = ConfigReader.getGameDim().row;
 		int column = ConfigReader.getGameDim().column;
-		mapmessage = BombermanServerDef.MESSAGE_TYPE + "="
+		mapmessage = "<"+BombermanServerDef.MESSAGE_TYPE + "="
 				+ BombermanServerDef.GRID_MESSAGE + "|"
 				+ BombermanServerDef.GRID_ROW + "=" + row + "|"
 				+ BombermanServerDef.GRID_COLUMN + "=" + column + "|"
@@ -312,6 +312,7 @@ public class Server implements IMoveableRobot, IExplodable, IUpdatableScore {
 			}
 			mapmessage += strfrombyte;
 		}
+		mapmessage+=">";
 		System.out.println("Grid message is generated - " + mapmessage);
 		return mapmessage;
 	}
