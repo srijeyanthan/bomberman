@@ -1,15 +1,9 @@
 package com.cmov.bomberman;
 
-import android.app.Activity;
 
 public class RspHandler {
 	private byte[] rsp = null;
-	private static IMoveableRobot robotActiviy;
 	private static DrawView bomberManView1;
-	public static void setMainActivity(Activity activity)
-	{
-		robotActiviy = (IMoveableRobot) activity;
-	}
 	public synchronized boolean handleResponse(byte[] rsp) {
 		this.rsp = rsp;
 		this.notify();
@@ -59,12 +53,12 @@ public class RspHandler {
 			// this is initial map message
 			
 		
-			if ((byte)Integer.parseInt(messagetypesplitted[1]) == BombermanServerDef.GRID_MESSAGE) {
+			if ((byte)Integer.parseInt(messagetypesplitted[1]) == BombermanProtocol.GRID_MESSAGE) {
 				String map = splitresponse[3];
 				String[] mapsplitted = map.split("=");
 				ConfigReader.InitializeTheGridFromServer(13, 19, mapsplitted[1].getBytes());
 			}
-			if ((byte)Integer.parseInt(messagetypesplitted[1]) == BombermanServerDef.ROBOT_PLACEMET_MESSAGE) {
+			if ((byte)Integer.parseInt(messagetypesplitted[1]) == BombermanProtocol.ROBOT_PLACEMET_MESSAGE) {
 				String newrobotpos = splitresponse[1];
 				String originalpos = splitresponse[2];
 				
