@@ -4,7 +4,6 @@ package com.cmov.bomberman;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -52,6 +51,7 @@ public class BombermanClient implements Runnable {
 		
 		// And queue the data we want written
 		synchronized (this.pendingData) {
+			@SuppressWarnings("unchecked")
 			List<ByteBuffer> queue = (List<ByteBuffer>) this.pendingData.get(socket);
 			if (queue == null) {
 				queue = new ArrayList<ByteBuffer>();
@@ -61,7 +61,6 @@ public class BombermanClient implements Runnable {
 		}
 
 		// Finally, wake up our selecting thread so it can make the required changes
-		System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ::::::::" +this.selector);
 		this.selector.wakeup();
 	}
 
@@ -142,10 +141,6 @@ public class BombermanClient implements Runnable {
 			
 		}
 		
-		/*byte[] rspData = new byte[numRead];
-		System.arraycopy( this.readBuffer.array(), 0, rspData, 0, numRead);
-		System.out.println("Receive the response from the server - "+ new String(rspData));
-		this.readBuffer.clear()*/;
 
 		
 		
@@ -255,7 +250,7 @@ public class BombermanClient implements Runnable {
 	public static  void startBombermanClient()
 	{
 		try {
-			BombermanClient client = new BombermanClient(InetAddress.getByName("10.1.1.9"), 9090);
+			BombermanClient client = new BombermanClient(InetAddress.getByName("192.168.1.9"), 9090);
 			Thread t = new Thread(client);
 			t.setDaemon(true);
 			t.start();
@@ -266,7 +261,7 @@ public class BombermanClient implements Runnable {
 			while(true)
 			{
 				handler.waitForResponse();
-			   // Thread.sleep(1000);
+			    Thread.sleep(3000);
 			}
 			/*handler.waitForResponse();
 			handler.waitForResponse();*/

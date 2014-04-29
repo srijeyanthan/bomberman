@@ -1,6 +1,7 @@
 package com.cmov.bomberman;
 
 public class BombermanProtocol {
+
 	public static final int MESSAGE_TYPE = 1;
 	public static final int USER_NAME = 2;
 	public static final int BOMB_PLACEMENT = 3;
@@ -16,5 +17,4 @@ public class BombermanProtocol {
 	public static final byte BOMP_PLACEMET_MESSAGE = 'B';
 	public static final byte ROBOT_PLACEMET_MESSAGE = 'R';
 	public static final byte GRID_MESSAGE = 'M';
-
 }

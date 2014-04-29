@@ -275,7 +275,7 @@ public class RobotThread extends Thread {
 				}
 
 				String Robotmovementbuffer = new String();
-				Robotmovementbuffer = BombermanServerDef.MESSAGE_TYPE + "="
+				Robotmovementbuffer = "<"+BombermanServerDef.MESSAGE_TYPE + "="
 						+ BombermanServerDef.ROBOT_PLACEMET_MESSAGE + "|"
 						+ BombermanServerDef.ROBOT_NEW_PLACE + "=";
 				int iter = 1;
@@ -336,6 +336,7 @@ public class RobotThread extends Thread {
 							".$", "");
 				}
 				Phirobotmovelist.clear();
+				Robotmovementbuffer+=">";
 				System.out.println("Robot movement buffer is ready - "
 						+ Robotmovementbuffer);
 				robotActiviy.RobotMovedAtLogicalLayer(Robotmovementbuffer);

@@ -1,6 +1,5 @@
 package com.cmov.bomberman;
 
-import java.util.List;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -11,27 +10,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
-public class MainActivity extends Activity implements IExplodable,
-		IMoveableRobot, IUpdatableScore {
+public class MainActivity extends Activity {
 	private DrawView bomberManView;
 	private TextView bombermanelapsedTimeTextView;
 	private TextView bombermanusernameview;
 	private TextView bombermanNoOfPlayersview;
 	private TextView bombermanScoreView;
-	final StandaloneGame standAloneGame = new StandaloneGame();
 	private static Bitmap player = null;
 	private static Bitmap robot = null;
 	private static Bitmap bomb = null;
-	private LogicalWorld logicalworld = null;
 	private static int scoreOfThePlayer = 0;
 	private static int numberofRobotkilled =0;
 	private boolean isBombPlaced = false;
@@ -39,11 +33,7 @@ public class MainActivity extends Activity implements IExplodable,
 	Button bombButton = null;
 	Button pausebutton = null;
 	private static RectRender rectrender = null;
-	private RobotThread robotThread = null;
 	
-	private EditText textField;
-	private Button button;
-	private String message;
 
 	BroadcastReceiver elapsedBroadcastReciver;
 	private int bombermanGameDuration = 0;
@@ -54,32 +44,7 @@ public class MainActivity extends Activity implements IExplodable,
 
 	private GameState state = GameState.RUN;
 
-	/*
-	 * note , this is tick timer , every minute it will reduced one minute from
-	 * original game duration, actually we dont need per second based timer ,
-	 * this would be sort of inefficient
-	 */
-	/*@Override
-	public void onStart() {
-		super.onStart();
-		elapsedBroadcastReciver = new BroadcastReceiver() {
-			@Override
-			public void onReceive(Context ctx, Intent intent) {
-				if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
-					if (bombermanGameDuration >= 0) {
-						--bombermanGameDuration;
-						bombermanelapsedTimeTextView.setText("00" + ":"
-								+ bombermanGameDuration);
-
-					}
-				}
-			}
-		};
-
-		registerReceiver(elapsedBroadcastReciver, new IntentFilter(
-				Intent.ACTION_TIME_TICK)); 
-	}*/
-
+	
 	
 	@Override
 	public void onStop() {
@@ -170,13 +135,6 @@ public class MainActivity extends Activity implements IExplodable,
 
 	}
 
-	private void InitStartRobotThred(Activity activity) {
-		robotThread = new RobotThread(ConfigReader.getGameDim().row,
-				ConfigReader.getGameDim().column, activity);
-		robotThread.setLogicalWord(logicalworld);
-		robotThread.setRunning(true);
-		robotThread.start();
-	}
 
 	public void Close(String title, String messageboxcontent,
 			final boolean isRestart) {
@@ -228,12 +186,10 @@ public class MainActivity extends Activity implements IExplodable,
 		super.onPause(); // Always call the superclass method first
 		if (state == GameState.RUN) {
 			this.state = GameState.PAUSE;
-			robotThread.setState(GameState.PAUSE);
 			pausebutton.setText("Resume");
 		}else
 		{
 			this.state = GameState.RUN;
-			robotThread.setState(GameState.RUN);
 			pausebutton.setText("Pause");
 		}
 
@@ -262,8 +218,6 @@ public class MainActivity extends Activity implements IExplodable,
 		setContentView(R.layout.activity_main);
 
 		
-		standAloneGame.joinGame("Cmove", MainActivity.this);
-		logicalworld = standAloneGame.getBombermanGame().getLogicalWorld();
 
 		bomberManView = (com.cmov.bomberman.DrawView) findViewById(R.id.bckg);
 		bombermanelapsedTimeTextView = (TextView) findViewById(R.id.tleft);
@@ -292,26 +246,20 @@ public class MainActivity extends Activity implements IExplodable,
 		InitBomberManMap();
 
 		RspHandler.setBombermanview(bomberManView);
-		//InitStartRobotThred(MainActivity.this);
 		startingUp();
 
 		bombButton = (Button) findViewById(R.id.btnBomb);
 		bombButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
-					if (standAloneGame.getBombermanGame().getPlayers().size() == 0) {
-						ConfigReader.getLogger().log(
-								"Player list is null. Warning.");
-					} else {
-						List<Player> localPlayerList = standAloneGame
-								.getBombermanGame().getPlayers();
-						localPlayerList.get(0).placeBomb();
+					
+					// send bomb placed message to server
 						if (!isBombPlaced)
 							bombButton.setText("Bombed");
 						isBombPlaced = true;
-						Render();
+						
 
-					}
+					
 				}
 
 			}
@@ -321,21 +269,12 @@ public class MainActivity extends Activity implements IExplodable,
 		leftbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
-					if (standAloneGame.getBombermanGame().getPlayers().size() == 0) {
-						ConfigReader.getLogger().log(
-								"Player list is null. Warning.");
-					} else {
-						List<Player> localPlayerList = standAloneGame
-								.getBombermanGame().getPlayers();
-						boolean ismoved = standAloneGame.getBombermanGame()
-								.movePlayer(localPlayerList.get(0), 0, -1);
-						if (ismoved)
-							ConfigReader.getLogger().log(
-									"plccayer has been moved.....");
+					
+						  // send moved msg to server and wait  0, -1
+					//bombermanclient.sendplayermoveleft();
 
-						Render();
 					}
-				}
+				
 			}
 		});
 
@@ -343,20 +282,9 @@ public class MainActivity extends Activity implements IExplodable,
 		rightbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
-					if (standAloneGame.getBombermanGame().getPlayers().size() == 0) {
-						ConfigReader.getLogger().log(
-								"Player list is null. Warning.");
-					} else {
-						List<Player> localPlayerList = standAloneGame
-								.getBombermanGame().getPlayers();
-						boolean ismoved = standAloneGame.getBombermanGame()
-								.movePlayer(localPlayerList.get(0), 0, 1);
-						if (ismoved)
-							ConfigReader.getLogger().log(
-									"player has been moved.....");
-
-						Render();
-					}
+					
+					  // send moved msg to server and wait  0, 1
+					//bombermanclient.sendplayermoveright();
 				}
 			}
 		});
@@ -365,21 +293,10 @@ public class MainActivity extends Activity implements IExplodable,
 		upbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
-					if (standAloneGame.getBombermanGame().getPlayers().size() == 0) {
-						ConfigReader.getLogger().log(
-								"Player list is null. Warning.");
-					} else {
-						List<Player> localPlayerList = standAloneGame
-								.getBombermanGame().getPlayers();
-						boolean ismoved = standAloneGame.getBombermanGame()
-								.movePlayer(localPlayerList.get(0), -1, 0);
-						if (ismoved)
-							ConfigReader.getLogger().log(
-									"player has been moved.....");
-
-						Render();
+					  // send moved msg to server and wait  -1,0
+					//bombermanclient.sendplayermoveup();
 					}
-				}
+				
 			}
 		});
 
@@ -387,20 +304,9 @@ public class MainActivity extends Activity implements IExplodable,
 		downbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
-					if (standAloneGame.getBombermanGame().getPlayers().size() == 0) {
-						ConfigReader.getLogger().log(
-								"Player list is null. Warning.");
-					} else {
-						List<Player> localPlayerList = standAloneGame
-								.getBombermanGame().getPlayers();
-						boolean ismoved = standAloneGame.getBombermanGame()
-								.movePlayer(localPlayerList.get(0), 1, 0);
-						if (ismoved)
-							ConfigReader.getLogger().log(
-									"player has been moved.....");
-
-						Render();
-					}
+					
+					 // send moved msg to server and wait  1,0
+					//bombermanclient.sendplayermovedown();
 				}
 			}
 		});
@@ -411,9 +317,8 @@ public class MainActivity extends Activity implements IExplodable,
 				if (state == GameState.RUN) {
 					Close("Closing..",
 							"Are you sure you want to quite the game ?", false);
-					// finish();
-					// android.os.Process.killProcess(android.os.Process.myPid());
-					// onDestroy();
+					//send client leave message to server, so that server won't send any data
+					
 				}
 			}
 		});
