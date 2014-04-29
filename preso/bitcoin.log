@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=latex 2013.7.30)  27 APR 2014 20:23
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=pdflatex 2013.7.30)  30 APR 2014 00:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -85,7 +85,7 @@ Package: geometry 2010/09/12 v5.6 Page Geometry
 
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifpdf.sty
 Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
-Package ifpdf Info: pdfTeX in PDF mode is not detected.
+Package ifpdf Info: pdfTeX in PDF mode is detected.
 )
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifvtex.sty
 Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
@@ -123,10 +123,18 @@ Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
 (/usr/share/texlive/texmf-dist/tex/latex/latexconfig/graphics.cfg
 File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
 )
-Package graphics Info: Driver file: dvips.def on input line 91.
+Package graphics Info: Driver file: pdftex.def on input line 91.
 
-(/usr/share/texlive/texmf-dist/tex/latex/graphics/dvips.def
-File: dvips.def 1999/02/16 v3.0i Driver-dependant file (DPC,SPQR)
+(/usr/share/texlive/texmf-dist/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+)
+\Gread@gobject=\count105
 ))
 \Gin@req@height=\dimen127
 \Gin@req@width=\dimen128
@@ -165,22 +173,21 @@ Package: pgfsys 2010/06/30 v2.10 (rcs-revision 1.37)
 \pgf@yc=\dimen136
 \w@pgf@writea=\write3
 \r@pgf@reada=\read1
-\c@pgf@counta=\count105
-\c@pgf@countb=\count106
-\c@pgf@countc=\count107
-\c@pgf@countd=\count108
+\c@pgf@counta=\count106
+\c@pgf@countb=\count107
+\c@pgf@countc=\count108
+\c@pgf@countd=\count109
 
 (/usr/share/texmf/tex/generic/pgf/systemlayer/pgf.cfg
 File: pgf.cfg 2008/05/14  (rcs-revision 1.7)
 )
-Package pgfsys Info: Driver file for pgf: pgfsys-dvips.def on input line 900.
+Package pgfsys Info: Driver file for pgf: pgfsys-pdftex.def on input line 900.
 
-(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys-dvips.def
-File: pgfsys-dvips.def 2008/04/03  (rcs-revision 1.20)
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys-pdftex.def
+File: pgfsys-pdftex.def 2009/05/22  (rcs-revision 1.26)
 
-(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys-common-postscript.def
-File: pgfsys-common-postscript.def 2008/10/01  (rcs-revision 1.22)
-\pgf@objectcount=\count109
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys-common-pdf.def
+File: pgfsys-common-pdf.def 2008/05/19  (rcs-revision 1.10)
 )))
 (/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsyssoftpath.code.tex
 File: pgfsyssoftpath.code.tex 2008/07/18  (rcs-revision 1.7)
@@ -196,8 +203,9 @@ Package: xcolor 2007/01/21 v2.11 LaTeX color extensions (UK)
 (/usr/share/texlive/texmf-dist/tex/latex/latexconfig/color.cfg
 File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
 )
-Package xcolor Info: Driver file: dvips.def on input line 225.
+Package xcolor Info: Driver file: pdftex.def on input line 225.
 Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1337.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1341.
 Package xcolor Info: Model `RGB' extended on input line 1353.
 Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1355.
 Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1356.
@@ -323,8 +331,8 @@ Package: hobsub-hyperref 2012/05/28 v1.13 Bundle oberdiek, subset hyperref (HO)
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty
 Package: hobsub-generic 2012/05/28 v1.13 Bundle oberdiek, subset generic (HO)
 Package: hobsub 2012/05/28 v1.13 Construct package bundles (HO)
-Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
-Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+Package hobsub Info: Skipping package `infwarerr' (already loaded).
+Package hobsub Info: Skipping package `ltxcmds' (already loaded).
 Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
 Package ifluatex Info: LuaTeX not detected.
 Package hobsub Info: Skipping package `ifvtex' (already loaded).
@@ -342,7 +350,7 @@ Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
 Package pdftexcmds Info: LuaTeX not detected.
 Package pdftexcmds Info: \pdf@primitive is available.
 Package pdftexcmds Info: \pdf@ifprimitive is available.
-Package pdftexcmds Info: \pdfdraftmode is ignored in DVI mode.
+Package pdftexcmds Info: \pdfdraftmode found.
 Package: pdfescape 2011/11/25 v1.13 Implements pdfTeX's escape features (HO)
 Package: bigintcalc 2012/04/08 v1.3 Expandable calculations on big integers (HO
 )
@@ -410,17 +418,10 @@ Package hyperref Message: Stopped early.
 
 )
 
-Package hyperref Message: Driver (default): hdvips.
+Package hyperref Message: Driver (autodetected): hpdftex.
 
-(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hdvips.def
-File: hdvips.def 2012/05/13 v6.82q Hyperref driver for dvips
-
-(/usr/share/texlive/texmf-dist/tex/latex/hyperref/pdfmark.def
-File: pdfmark.def 2012/05/13 v6.82q Hyperref definitions for pdfmark specials
-\pdf@docset=\toks23
-\pdf@box=\box40
-\pdf@toks=\toks24
-\pdf@defaulttoks=\toks25
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hpdftex.def
+File: hpdftex.def 2012/05/13 v6.82q Hyperref driver for pdfTeX
 \Fld@listcount=\count124
 \c@bookmark@seq@number=\count125
 
@@ -428,7 +429,7 @@ File: pdfmark.def 2012/05/13 v6.82q Hyperref definitions for pdfmark specials
 Package: rerunfilecheck 2011/04/15 v1.7 Rerun checks for auxiliary files (HO)
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 82.
-)))
+))
 (/usr/share/texmf/tex/latex/beamer/base/beamerbaserequires.sty
 Package: beamerbaserequires 2010/05/01  (rcs-revision efa082c6111d)
 
@@ -443,7 +444,7 @@ Package: amssymb 2009/06/22 v3.00
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amsfonts.sty
 Package: amsfonts 2009/06/22 v3.00 Basic AMSFonts support
-\@emptytoks=\toks26
+\@emptytoks=\toks23
 \symAMSa=\mathgroup4
 \symAMSb=\mathgroup5
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
@@ -481,9 +482,9 @@ Package: beamerbasesection 2010/06/17  (rcs-revision e0d9401bb743)
 )
 (/usr/share/texmf/tex/latex/beamer/base/beamerbaseframe.sty
 Package: beamerbaseframe 2010/06/06  (rcs-revision bff0a9294b45)
-\beamer@framebox=\box41
-\beamer@frametitlebox=\box42
-\beamer@zoombox=\box43
+\beamer@framebox=\box40
+\beamer@frametitlebox=\box41
+\beamer@zoombox=\box42
 \beamer@zoomcount=\count133
 \beamer@zoomframecount=\count134
 \beamer@frametextheight=\dimen164
@@ -492,7 +493,7 @@ Package: beamerbaseframe 2010/06/06  (rcs-revision bff0a9294b45)
 \beamer@framebottomskip=\skip46
 \beamer@frametopskipautobreak=\skip47
 \beamer@framebottomskipautobreak=\skip48
-\beamer@envbody=\toks27
+\beamer@envbody=\toks24
 \c@framenumber=\count136
 )
 (/usr/share/texmf/tex/latex/beamer/base/beamerbaseverbatim.sty
@@ -501,40 +502,40 @@ Package: beamerbaseverbatim 2010/05/01  (rcs-revision efa082c6111d)
 )
 (/usr/share/texmf/tex/latex/beamer/base/beamerbaseframesize.sty
 Package: beamerbaseframesize 2010/06/27  (rcs-revision 6baa2d92e6f1)
-\beamer@splitbox=\box44
+\beamer@splitbox=\box43
 \beamer@autobreakcount=\count137
 \beamer@autobreaklastheight=\dimen165
-\beamer@frametitletoks=\toks28
-\beamer@framesubtitletoks=\toks29
+\beamer@frametitletoks=\toks25
+\beamer@framesubtitletoks=\toks26
 )
 (/usr/share/texmf/tex/latex/beamer/base/beamerbaseframecomponents.sty
 Package: beamerbaseframecomponents 2010/07/12  (rcs-revision 09e82992d9b1)
-\beamer@footins=\box45
+\beamer@footins=\box44
 )
 (/usr/share/texmf/tex/latex/beamer/base/beamerbasecolor.sty
 Package: beamerbasecolor 2010/06/06  (rcs-revision d1a9b48be06d)
 )
 (/usr/share/texmf/tex/latex/beamer/base/beamerbasenotes.sty
 Package: beamerbasenotes 2010/05/01  (rcs-revision efa082c6111d)
-\beamer@frameboxcopy=\box46
+\beamer@frameboxcopy=\box45
 )
 (/usr/share/texmf/tex/latex/beamer/base/beamerbasetoc.sty
 Package: beamerbasetoc 2010/06/11  (rcs-revision 242ecaa6783b)
 )
 (/usr/share/texmf/tex/latex/beamer/base/beamerbasetemplates.sty
 Package: beamerbasetemplates 2010/05/01  (rcs-revision efa082c6111d)
-\beamer@sbttoks=\toks30
+\beamer@sbttoks=\toks27
 
 (/usr/share/texmf/tex/latex/beamer/base/beamerbaseauxtemplates.sty
 Package: beamerbaseauxtemplates 2010/05/01  (rcs-revision efa082c6111d)
 
 (/usr/share/texmf/tex/latex/beamer/base/beamerbaseboxes.sty
 Package: beamerbaseboxes 2010/05/01  (rcs-revision efa082c6111d)
-\bmb@box=\box47
-\bmb@colorbox=\box48
-\bmb@boxshadow=\box49
-\bmb@boxshadowball=\box50
-\bmb@boxshadowballlarge=\box51
+\bmb@box=\box46
+\bmb@colorbox=\box47
+\bmb@boxshadow=\box48
+\bmb@boxshadowball=\box49
+\bmb@boxshadowballlarge=\box50
 \bmb@temp=\dimen166
 \bmb@dima=\dimen167
 \bmb@dimb=\dimen168
@@ -547,7 +548,7 @@ Package: beamerbaselocalstructure 2010/06/01  (rcs-revision 81f9e33f7cc2)
 
 (/usr/share/texlive/texmf-dist/tex/latex/tools/enumerate.sty
 Package: enumerate 1999/03/05 v3.00 enumerate extensions (DPC)
-\@enLab=\toks31
+\@enLab=\toks28
 )
 \c@figure=\count138
 \c@table=\count139
@@ -570,7 +571,7 @@ Package: amstext 2000/06/29 v2.01
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0
-\@emptytoks=\toks32
+\@emptytoks=\toks29
 \ex@=\dimen171
 ))
 (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsbsy.sty
@@ -590,8 +591,8 @@ LaTeX Info: Redefining \overline on input line 307.
 LaTeX Info: Redefining \ldots on input line 379.
 LaTeX Info: Redefining \dots on input line 382.
 LaTeX Info: Redefining \cdots on input line 467.
-\Mathstrutbox@=\box52
-\strutbox@=\box53
+\Mathstrutbox@=\box51
+\strutbox@=\box52
 \big@size=\dimen173
 LaTeX Font Info:    Redeclaring font encoding OML on input line 567.
 LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
@@ -600,35 +601,35 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
 \dotsspace@=\muskip11
 \c@parentequation=\count147
 \dspbrk@lvl=\count148
-\tag@help=\toks33
+\tag@help=\toks30
 \row@=\count149
 \column@=\count150
 \maxfields@=\count151
-\andhelp@=\toks34
+\andhelp@=\toks31
 \eqnshift@=\dimen174
 \alignsep@=\dimen175
 \tagshift@=\dimen176
 \tagwidth@=\dimen177
 \totwidth@=\dimen178
 \lineht@=\dimen179
-\@envbody=\toks35
+\@envbody=\toks32
 \multlinegap=\skip52
 \multlinetaggap=\skip53
-\mathdisplay@stack=\toks36
+\mathdisplay@stack=\toks33
 LaTeX Info: Redefining \[ on input line 2666.
 LaTeX Info: Redefining \] on input line 2667.
 )
 (/usr/share/texlive/texmf-dist/tex/latex/amscls/amsthm.sty
 Package: amsthm 2009/07/02 v2.20.1
-\thm@style=\toks37
-\thm@bodyfont=\toks38
-\thm@headfont=\toks39
-\thm@notefont=\toks40
-\thm@headpunct=\toks41
+\thm@style=\toks34
+\thm@bodyfont=\toks35
+\thm@headfont=\toks36
+\thm@notefont=\toks37
+\thm@headpunct=\toks38
 \thm@preskip=\skip54
 \thm@postskip=\skip55
 \thm@headsep=\skip56
-\dth@everypar=\toks42
+\dth@everypar=\toks39
 )
 \c@theorem=\count152
 )
@@ -695,7 +696,7 @@ Package: pgf 2008/01/15 v2.10 (rcs-revision 1.12)
 
 (/usr/share/texmf/tex/generic/pgf/modules/pgfmoduleshapes.code.tex
 File: pgfmoduleshapes.code.tex 2010/09/09  (rcs-revision 1.13)
-\pgfnodeparttextbox=\box54
+\pgfnodeparttextbox=\box53
 )
 (/usr/share/texmf/tex/generic/pgf/modules/pgfmoduleplot.code.tex
 File: pgfmoduleplot.code.tex 2010/10/22  (rcs-revision 1.8)
@@ -715,8 +716,8 @@ Package: pgfcomp-version-1-18 2007/07/23 v2.10 (rcs-revision 1.1)
 Package: pgffor 2010/03/23 v2.10 (rcs-revision 1.18)
 \pgffor@iter=\dimen197
 \pgffor@skip=\dimen198
-\pgffor@stack=\toks43
-\pgffor@toks=\toks44
+\pgffor@stack=\toks40
+\pgffor@toks=\toks41
 ))
 (/usr/share/texmf/tex/generic/pgf/frontendlayer/tikz/tikz.code.tex
 Package: tikz 2010/10/13 v2.10 (rcs-revision 1.76)
@@ -732,8 +733,8 @@ File: pgflibraryplothandlers.code.tex 2010/05/31 v2.10 (rcs-revision 1.15)
 \tikz@lastysaved=\dimen203
 \tikzleveldistance=\dimen204
 \tikzsiblingdistance=\dimen205
-\tikz@figbox=\box55
-\tikz@tempbox=\box56
+\tikz@figbox=\box54
+\tikz@tempbox=\box55
 \tikztreelevel=\count158
 \tikznumberofchildren=\count159
 \tikznumberofcurrentchild=\count160
@@ -837,9 +838,9 @@ LaTeX Font Info:    Try loading font information for OT1+lmss on input line 115
 File: ot1lmss.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 *geometry* driver: auto-detecting
-*geometry* detected driver: dvips
+*geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
-* driver: dvips
+* driver: pdftex
 * paper: custom
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
@@ -870,6 +871,34 @@ File: ot1lmss.fd 2009/10/30 v1.6 Font defs for Latin Modern
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
+(/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count170
+\scratchdimen=\dimen215
+\scratchbox=\box56
+\nofMPsegments=\count171
+\nofMParguments=\count172
+\everyMPshowfont=\toks42
+\MPscratchCnt=\count173
+\MPscratchDim=\dimen216
+\MPnumerator=\count174
+\makeMPintoPDFobject=\count175
+\everyMPtoPDFconversion=\toks43
+) (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
+
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2010/08/19 v1.1 Manage graphics extensions (HO)
+)
+Package grfext Info: Graphics extension search list:
+(grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 452.
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
 ABD: EveryShipout initializing macros
 \AtBeginShipoutBox=\box57
 Package hyperref Info: Link coloring OFF on input line 115.
@@ -880,7 +909,7 @@ Package: nameref 2010/04/30 v2.40 Cross-referencing by name of section
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
-\c@section@level=\count170
+\c@section@level=\count176
 )
 LaTeX Info: Redefining \ref on input line 115.
 LaTeX Info: Redefining \pageref on input line 115.
@@ -979,7 +1008,7 @@ Overfull \hbox (156.50307pt too wide) has occurred while \output is active
 
 [1
 
-] (./bitcoin.toc)
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./bitcoin.toc)
 Overfull \hbox (156.50307pt too wide) has occurred while \output is active
  [][]  \OT1/lmss/m/n/6 ([])  
  []
@@ -1187,13 +1216,31 @@ Overfull \hbox (156.50307pt too wide) has occurred while \output is active
 [30
 
 ]
+Package epstopdf Info: Source file: <wideareasupport.eps>
+(epstopdf)                    date: 2014-04-29 23:58:06
+(epstopdf)                    size: 1452715 bytes
+(epstopdf)             Output file: <wideareasupport-eps-converted-to.pdf>
+(epstopdf)                    date: 2014-04-30 00:00:53
+(epstopdf)                    size: 32343 bytes
+(epstopdf)             Command: <repstopdf --outfile=wideareasupport-eps-conver
+ted-to.pdf wideareasupport.eps>
+(epstopdf)             \includegraphics on input line 248.
+Package epstopdf Info: Output file is already uptodate.
+ <wideareasupport-eps-converted-to.pdf, id=883, 495.8525pt x 483.8075pt>
+File: wideareasupport-eps-converted-to.pdf Graphic file (type pdf)
+
+<use wideareasupport-eps-converted-to.pdf>
+Package pdftex.def Info: wideareasupport-eps-converted-to.pdf used on input lin
+e 248.
+(pdftex.def)             Requested size: 198.33748pt x 193.51956pt.
+
 Overfull \hbox (156.50307pt too wide) has occurred while \output is active
  [][]  \OT1/lmss/m/n/6 ([])  
  []
 
 [31
 
-]
+ <./wideareasupport-eps-converted-to.pdf>]
 Overfull \hbox (156.50307pt too wide) has occurred while \output is active
  [][]  \OT1/lmss/m/n/6 ([])  
  []
@@ -1243,11 +1290,6 @@ Overfull \hbox (156.50307pt too wide) has occurred while \output is active
 [38
 
 ]
-\openout4 = `bitcoin.vrb'.
-
- (./bitcoin.vrb
-File: bloom.eps Graphic file (type eps)
- <bloom.eps>)
 Overfull \hbox (156.50307pt too wide) has occurred while \output is active
  [][]  \OT1/lmss/m/n/6 ([])  
  []
@@ -1258,44 +1300,87 @@ Overfull \hbox (156.50307pt too wide) has occurred while \output is active
 \openout4 = `bitcoin.vrb'.
 
  (./bitcoin.vrb
-File: d3.eps Graphic file (type eps)
- <d3.eps>)
+Package epstopdf Info: Source file: <bloom.eps>
+(epstopdf)                    date: 2014-04-27 19:28:58
+(epstopdf)                    size: 724854 bytes
+(epstopdf)             Output file: <bloom-eps-converted-to.pdf>
+(epstopdf)                    date: 2014-04-30 00:00:54
+(epstopdf)                    size: 20291 bytes
+(epstopdf)             Command: <repstopdf --outfile=bloom-eps-converted-to.pdf
+ bloom.eps>
+(epstopdf)             \includegraphics on input line 3.
+Package epstopdf Info: Output file is already uptodate.
+
+<bloom-eps-converted-to.pdf, id=1125, 346.29375pt x 344.28625pt>
+File: bloom-eps-converted-to.pdf Graphic file (type pdf)
+
+<use bloom-eps-converted-to.pdf>
+Package pdftex.def Info: bloom-eps-converted-to.pdf used on input line 3.
+(pdftex.def)             Requested size: 138.51503pt x 137.71205pt.
+)
 Overfull \hbox (156.50307pt too wide) has occurred while \output is active
  [][]  \OT1/lmss/m/n/6 ([])  
  []
 
 [40
 
-]
+ <./bloom-eps-converted-to.pdf>]
 \openout4 = `bitcoin.vrb'.
 
  (./bitcoin.vrb
-File: d4.eps Graphic file (type eps)
- <d4.eps>)
+Package epstopdf Info: Source file: <d3.eps>
+(epstopdf)                    date: 2014-04-27 19:41:56
+(epstopdf)                    size: 486265 bytes
+(epstopdf)             Output file: <d3-eps-converted-to.pdf>
+(epstopdf)                    date: 2014-04-30 00:00:54
+(epstopdf)                    size: 15079 bytes
+(epstopdf)             Command: <repstopdf --outfile=d3-eps-converted-to.pdf d3
+.eps>
+(epstopdf)             \includegraphics on input line 3.
+Package epstopdf Info: Output file is already uptodate.
+
+<d3-eps-converted-to.pdf, id=1155, 383.4325pt x 207.77625pt>
+File: d3-eps-converted-to.pdf Graphic file (type pdf)
+
+<use d3-eps-converted-to.pdf>
+Package pdftex.def Info: d3-eps-converted-to.pdf used on input line 3.
+(pdftex.def)             Requested size: 153.37029pt x 83.10901pt.
+)
 Overfull \hbox (156.50307pt too wide) has occurred while \output is active
  [][]  \OT1/lmss/m/n/6 ([])  
  []
 
 [41
 
-]
+ <./d3-eps-converted-to.pdf>]
 \openout4 = `bitcoin.vrb'.
 
  (./bitcoin.vrb
-File: t1.eps Graphic file (type eps)
- <t1.eps>)
+Package epstopdf Info: Source file: <d4.eps>
+(epstopdf)                    date: 2014-04-27 19:42:15
+(epstopdf)                    size: 1328174 bytes
+(epstopdf)             Output file: <d4-eps-converted-to.pdf>
+(epstopdf)                    date: 2014-04-30 00:00:55
+(epstopdf)                    size: 31443 bytes
+(epstopdf)             Command: <repstopdf --outfile=d4-eps-converted-to.pdf d4
+.eps>
+(epstopdf)             \includegraphics on input line 3.
+Package epstopdf Info: Output file is already uptodate.
+
+<d4-eps-converted-to.pdf, id=1184, 470.75874pt x 465.74pt>
+File: d4-eps-converted-to.pdf Graphic file (type pdf)
+
+<use d4-eps-converted-to.pdf>
+Package pdftex.def Info: d4-eps-converted-to.pdf used on input line 3.
+(pdftex.def)             Requested size: 188.30016pt x 186.2927pt.
+)
 Overfull \hbox (156.50307pt too wide) has occurred while \output is active
  [][]  \OT1/lmss/m/n/6 ([])  
  []
 
 [42
 
-]
-\openout4 = `bitcoin.vrb'.
-
- (./bitcoin.vrb
-File: t2.eps Graphic file (type eps)
- <t2.eps>)
+ <./d4-eps-converted-to.pdf>] (./bitcoin.toc)
 Overfull \hbox (156.50307pt too wide) has occurred while \output is active
  [][]  \OT1/lmss/m/n/6 ([])  
  []
@@ -1306,36 +1391,131 @@ Overfull \hbox (156.50307pt too wide) has occurred while \output is active
 \openout4 = `bitcoin.vrb'.
 
  (./bitcoin.vrb
-File: t3.eps Graphic file (type eps)
- <t3.eps>)
+Package epstopdf Info: Source file: <t1.eps>
+(epstopdf)                    date: 2014-04-27 20:01:03
+(epstopdf)                    size: 2425113 bytes
+(epstopdf)             Output file: <t1-eps-converted-to.pdf>
+(epstopdf)                    date: 2014-04-30 00:00:56
+(epstopdf)                    size: 90753 bytes
+(epstopdf)             Command: <repstopdf --outfile=t1-eps-converted-to.pdf t1
+.eps>
+(epstopdf)             \includegraphics on input line 3.
+Package epstopdf Info: Output file is already uptodate.
+
+<t1-eps-converted-to.pdf, id=1245, 878.28125pt x 456.70625pt>
+File: t1-eps-converted-to.pdf Graphic file (type pdf)
+
+<use t1-eps-converted-to.pdf>
+Package pdftex.def Info: t1-eps-converted-to.pdf used on input line 3.
+(pdftex.def)             Requested size: 175.65314pt x 91.33963pt.
+)
 Overfull \hbox (156.50307pt too wide) has occurred while \output is active
  [][]  \OT1/lmss/m/n/6 ([])  
  []
 
 [44
 
-]
+ <./t1-eps-converted-to.pdf>]
 \openout4 = `bitcoin.vrb'.
 
  (./bitcoin.vrb
-File: t4.eps Graphic file (type eps)
- <t4.eps>)
+Package epstopdf Info: Source file: <t2.eps>
+(epstopdf)                    date: 2014-04-27 20:01:09
+(epstopdf)                    size: 2195691 bytes
+(epstopdf)             Output file: <t2-eps-converted-to.pdf>
+(epstopdf)                    date: 2014-04-30 00:00:56
+(epstopdf)                    size: 71458 bytes
+(epstopdf)             Command: <repstopdf --outfile=t2-eps-converted-to.pdf t2
+.eps>
+(epstopdf)             \includegraphics on input line 3.
+Package epstopdf Info: Output file is already uptodate.
+
+<t2-eps-converted-to.pdf, id=1275, 710.655pt x 510.90875pt>
+File: t2-eps-converted-to.pdf Graphic file (type pdf)
+
+<use t2-eps-converted-to.pdf>
+Package pdftex.def Info: t2-eps-converted-to.pdf used on input line 3.
+(pdftex.def)             Requested size: 142.12848pt x 102.17993pt.
+)
 Overfull \hbox (156.50307pt too wide) has occurred while \output is active
  [][]  \OT1/lmss/m/n/6 ([])  
  []
 
 [45
 
-]
+ <./t2-eps-converted-to.pdf>]
 \openout4 = `bitcoin.vrb'.
 
- (./bitcoin.vrb)
+ (./bitcoin.vrb
+Package epstopdf Info: Source file: <t3.eps>
+(epstopdf)                    date: 2014-04-27 20:01:17
+(epstopdf)                    size: 1954759 bytes
+(epstopdf)             Output file: <t3-eps-converted-to.pdf>
+(epstopdf)                    date: 2014-04-30 00:00:57
+(epstopdf)                    size: 54992 bytes
+(epstopdf)             Command: <repstopdf --outfile=t3-eps-converted-to.pdf t3
+.eps>
+(epstopdf)             \includegraphics on input line 3.
+Package epstopdf Info: Output file is already uptodate.
+
+<t3-eps-converted-to.pdf, id=1305, 1065.9825pt x 303.1325pt>
+File: t3-eps-converted-to.pdf Graphic file (type pdf)
+
+<use t3-eps-converted-to.pdf>
+Package pdftex.def Info: t3-eps-converted-to.pdf used on input line 3.
+(pdftex.def)             Requested size: 213.19272pt x 60.62541pt.
+)
 Overfull \hbox (156.50307pt too wide) has occurred while \output is active
  [][]  \OT1/lmss/m/n/6 ([])  
  []
 
 [46
 
+ <./t3-eps-converted-to.pdf>]
+\openout4 = `bitcoin.vrb'.
+
+ (./bitcoin.vrb
+Package epstopdf Info: Source file: <t4.eps>
+(epstopdf)                    date: 2014-04-27 20:01:26
+(epstopdf)                    size: 3016842 bytes
+(epstopdf)             Output file: <t4-eps-converted-to.pdf>
+(epstopdf)                    date: 2014-04-30 00:00:58
+(epstopdf)                    size: 135044 bytes
+(epstopdf)             Command: <repstopdf --outfile=t4-eps-converted-to.pdf t4
+.eps>
+(epstopdf)             \includegraphics on input line 3.
+Package epstopdf Info: Output file is already uptodate.
+
+<t4-eps-converted-to.pdf, id=1336, 924.45375pt x 540.0175pt>
+File: t4-eps-converted-to.pdf Graphic file (type pdf)
+
+<use t4-eps-converted-to.pdf>
+Package pdftex.def Info: t4-eps-converted-to.pdf used on input line 3.
+(pdftex.def)             Requested size: 184.88747pt x 108.00157pt.
+)
+Overfull \hbox (156.50307pt too wide) has occurred while \output is active
+ [][]  \OT1/lmss/m/n/6 ([])  
+ []
+
+[47
+
+ <./t4-eps-converted-to.pdf>]
+\openout4 = `bitcoin.vrb'.
+
+ (./bitcoin.vrb)
+Overfull \hbox (156.50307pt too wide) has occurred while \output is active
+ [][]  \OT1/lmss/m/n/6 ([])  
+ []
+
+[48
+
+] (./bitcoin.toc)
+Overfull \hbox (156.50307pt too wide) has occurred while \output is active
+ [][]  \OT1/lmss/m/n/6 ([])  
+ []
+
+[49
+
 ]
 \openout4 = `bitcoin.vrb'.
 
@@ -1344,14 +1524,14 @@ Overfull \hbox (156.50307pt too wide) has occurred while \output is active
  [][]  \OT1/lmss/m/n/6 ([])  
  []
 
-[47
+[50
 
 ]
 Overfull \hbox (156.50307pt too wide) has occurred while \output is active
  [][]  \OT1/lmss/m/n/6 ([])  
  []
 
-[48
+[51
 
 ]
 \tf@nav=\write6
@@ -1363,26 +1543,38 @@ Overfull \hbox (156.50307pt too wide) has occurred while \output is active
 \tf@snm=\write8
 \openout8 = `bitcoin.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 357.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 357.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 364.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 364.
  (./bitcoin.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 357.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 357.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 364.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 364.
 Package rerunfilecheck Info: File `bitcoin.out' has not changed.
-(rerunfilecheck)             Checksum: B8F75B1D52EF1D197D87AB331CC706C8;309.
+(rerunfilecheck)             Checksum: 617C1E5DDFECC3F60A4A33A70A533B5C;407.
 
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 357.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 364.
  ) 
 Here is how much of TeX's memory you used:
- 17973 strings out of 495060
- 342392 string characters out of 3182053
- 420258 words of memory out of 3000000
- 20712 multiletter control sequences out of 15000+200000
+ 18641 strings out of 495059
+ 352198 string characters out of 3182030
+ 425043 words of memory out of 3000000
+ 21233 multiletter control sequences out of 15000+200000
  31796 words of font info for 27 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
  49i,16n,67p,396b,644s stack positions out of 5000i,500n,10000p,200000b,50000s
+{/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}</usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texmf/fonts/type1/public/
+lm/lmss10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/te
+xmf/fonts/type1/public/lm/lmss17.pfb></usr/share/texmf/fonts/type1/public/lm/lm
+ss8.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/
+fonts/type1/public/lm/lmsso10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsso
+8.pfb>
+Output written on bitcoin.pdf (51 pages, 700001 bytes).
+PDF statistics:
+ 1529 PDF objects out of 1728 (max. 8388607)
+ 1425 compressed objects within 15 object streams
+ 111 named destinations out of 1000 (max. 500000)
+ 179 words of extra memory for PDF output out of 10000 (max. 10000000)
 
-Output written on bitcoin.dvi (48 pages, 599676 bytes).
