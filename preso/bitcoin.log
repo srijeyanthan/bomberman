@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=pdflatex 2013.7.30)  30 APR 2014 00:19
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=pdflatex 2013.7.30)  30 APR 2014 01:43
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1559,7 +1559,7 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 364.
 Here is how much of TeX's memory you used:
  18641 strings out of 495059
  352198 string characters out of 3182030
- 425043 words of memory out of 3000000
+ 425044 words of memory out of 3000000
  21233 multiletter control sequences out of 15000+200000
  31796 words of font info for 27 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
@@ -1571,7 +1571,7 @@ xmf/fonts/type1/public/lm/lmss17.pfb></usr/share/texmf/fonts/type1/public/lm/lm
 ss8.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/
 fonts/type1/public/lm/lmsso10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsso
 8.pfb>
-Output written on bitcoin.pdf (51 pages, 700001 bytes).
+Output written on bitcoin.pdf (51 pages, 699995 bytes).
 PDF statistics:
  1529 PDF objects out of 1728 (max. 8388607)
  1425 compressed objects within 15 object streams
