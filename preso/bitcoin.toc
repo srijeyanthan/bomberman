@@ -4,6 +4,6 @@
 \beamer@subsectionintoc {1}{2}{Goals}{5}{0}{1}
 \beamer@sectionintoc {2}{Design Concepts}{6}{0}{2}
 \beamer@sectionintoc {3}{Architecture}{11}{0}{3}
-\beamer@sectionintoc {4}{Wide Area Support}{30}{0}{4}
-\beamer@sectionintoc {5}{System Performance}{43}{0}{5}
-\beamer@sectionintoc {6}{Conclusion}{49}{0}{6}
+\beamer@sectionintoc {4}{Wide Area Support}{31}{0}{4}
+\beamer@sectionintoc {5}{System Performance}{44}{0}{5}
+\beamer@sectionintoc {6}{Conclusion}{50}{0}{6}
