@@ -1,6 +1,6 @@
 package com.cmov.bomberman.server;
 
-public class BombermanServerDef {
+public class BombermanProtocol {
 	public static final int MESSAGE_TYPE = 1;
 	public static final int USER_NAME = 2;
 	public static final int BOMB_PLACEMENT = 3;
@@ -10,6 +10,8 @@ public class BombermanServerDef {
 	public static final int GRID_ROW=7;
 	public static final int GRID_COLUMN=8;
 	public static final int GRID_ELEMENTS=10;
+	public static final int PLAYER_ID=11;
+
 
 	public static final byte JOIN_MESSAGE = 'J';
 	public static final byte PLAYER_MOVEMENT_MESSAGE = 'P';

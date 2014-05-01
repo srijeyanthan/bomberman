@@ -1,12 +1,13 @@
 package com.cmov.bomberman.server;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 
 public class Game {
 	private String gameName = null;
-	private List<Player> players = new ArrayList<Player>();
+	private Map<Integer, Player> playersmap = new HashMap<Integer,Player>();
 	private LogicalWorld logicalWorld;
 	private boolean running = false;
 
@@ -15,35 +16,46 @@ public class Game {
 		this.logicalWorld = new LogicalWorld();
 	}
 
-	public boolean addPlayer(Player player) {
-		player.setID(players.size() + 1);
-
+	public int addPlayer(Player player) {
+		
+		/*
+		 * Note : here we are using player id as map size +1, we are adding one becuase player id in the configuration
+		 * is starting from 1, in order to make uniform, this approch will be nice.
+		 * */
+		Random randomGenerator = new Random();
+		// random id will be generated within this range, hope this range would be enough
+		int randomInt = randomGenerator.nextInt(10000);
+		player.setID(randomInt);	
+		// get the modulo here, this is kind of trick :)
+		int pos  = playersmap.size() % 3;
 		// Adds player to playground view, set starting position
-		int x = ConfigReader.players.getXCor();
-		int y = ConfigReader.players.getYCor();
-		System.out.println("Player is going to insert in to map x " + x + "|"
+		int x = ConfigReader.playermap.get(pos).getXCor();
+		int y = ConfigReader.playermap.get(pos).getYCor();
+		System.out.println("[Server] Player is going  to insert in to map x " + x + "|"
 				+ "y " + y);
 
-		this.logicalWorld.setElement(x, y, player.getID(), player);
 		player.setPosition(x, y);
+		this.logicalWorld.setElement(x, y, player.getID(), player);
+		
 
-		players.add(player);
+		//players.add(player);
 		player.setGame(this);
-		System.out.println("Player" + player.getID()
+		playersmap.put(randomInt, player);
+		System.out.println("[Server] Player" + player.getID()
 				+ "added to logical world (" + player.getNickname() + ")");
-		return true;
+		return randomInt;
 	}
 
 	public int getPlayerCount() {
-		return this.players.size();
+		return this.playersmap.size();
 	}
 
 	public LogicalWorld getLogicalWorld() {
 		return this.logicalWorld;
 	}
 
-	public List<Player> getPlayers() {
-		return this.players;
+	public Player getPlayer(int playerid) {
+		return this.playersmap.get(playerid);
 	}
 
 	public void removePlayer(int x, int y, Player player) {

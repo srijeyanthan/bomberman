@@ -8,7 +8,6 @@ import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-
 public class RobotThread extends Thread {
 
 	public class RobotCor {
@@ -16,6 +15,11 @@ public class RobotThread extends Thread {
 		public int y = -1;
 	}
 
+	public enum GameState {
+		PAUSE, RUN, RESUME
+	}
+
+	private GameState state = GameState.PAUSE;
 	List<Integer> moveablepos = new ArrayList<Integer>();
 	List<Integer> moveableAI = new ArrayList<Integer>();
 	private Random randomGenerator;
@@ -30,10 +34,10 @@ public class RobotThread extends Thread {
 	private Map<Integer, RobotCor> updatedRobotPos = new HashMap<Integer, RobotCor>();
 	private Map<Integer, RobotCor> originalRbotPos = new HashMap<Integer, RobotCor>();
 	final static Lock lock = new ReentrantLock();
-	// private GameState state = GameState.RUN;
 	private IExplodable ExplodableActivity;
-
-	public RobotThread(int row, int col, Server server) {
+    private Object valueLock = new Object();
+    private boolean value = false;   
+	public RobotThread(int row, int col, BomberManWorker server) {
 		super();
 
 		for (int i = 1; i <= 5; ++i) {
@@ -46,8 +50,10 @@ public class RobotThread extends Thread {
 		}
 		this.row = row;
 		this.col = col;
+		// I think we could remove this interface , because , we can directly
+		// call that method.
 		robotActiviy = (IMoveableRobot) server;
-		ExplodableActivity = (IExplodable) server;
+		// ExplodableActivity = (IExplodable) server;
 
 	}
 
@@ -67,11 +73,6 @@ public class RobotThread extends Thread {
 
 		if (nyl > 0 || nyr < this.col || nxu > 0 || nxd < this.row) {
 
-			/*
-			 * System.out.println("(x-" + x + ",nyr-" + nyr + ")" + "(x-" + x +
-			 * ",nyl-" + nyl + ")" + "(nxu-" + nxu + ",y-" + y + ")" + "(nxd-" +
-			 * nxd + ",y-" + y + ")");
-			 */
 			if (logicalworld.getElement(x, nyr) != null) {
 				// Move right = 1
 				if (logicalworld.getElement(x, nyr)[0] == null)
@@ -249,108 +250,132 @@ public class RobotThread extends Thread {
 		this.running = running;
 	}
 
-	/*
-	 * public void setState(GameState state) { this.state = state; }
-	 * 
-	 * public GameState getGameState() { return this.state; }
-	 */
+	public void setState(GameState state) {
+		this.state = state;
+		if (this.state.equals(GameState.RUN))
+			synchronized ( valueLock ) {    
+			      value = true;    
+			      valueLock.notify();  // notifyAll() might be safer...    
+			}  
+		//in case if we set the game state to pause , then we have to put the thread in wait
+		//mode, because we don't let the mobile phone to consume more cpu, we should be verty carefull
+		//when we write the multi-threaded program, just run() method is more dangerous. :)
+		//by : Sri.
+		if (this.state.equals(GameState.PAUSE))
+			synchronized ( valueLock ) {    
+			      value = false;    
+			      valueLock.notify();  // notifyAll() might be safer...    
+			}  
+	}
+
+	public GameState getGameState() {
+		return this.state;
+	}
+
 	public void run() {
 
 		while (running) {
-			/* if ((getGameState() == GameState.RUN)) { */
-			try {
-				Thread.sleep(6000);
-				// ConfigReader.LockTheGrid();
-				lock.lock();
-				int RobotCounter = 0;
-				Byte[][] GridLayout = ConfigReader.getGridLayout();
-				for (int x = 0; x < this.row; x++) {
-					for (int y = 0; y < this.col; y++) {
-						if (GridLayout[x][y] == 'r') {
-							++RobotCounter;
-							move(x, y, RobotCounter);
 
+			synchronized ( valueLock ) {    
+		          while ( value != true ) {    
+		              try {
+						valueLock.wait();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}    
+		         }    
+		         // value is now true    
+		      }  
+			if ((getGameState() == GameState.RUN)) {
+				try {
+					Thread.sleep(1000);
+					// ConfigReader.LockTheGrid();
+					lock.lock();
+					int RobotCounter = 0;
+					Byte[][] GridLayout = ConfigReader.getGridLayout();
+					for (int x = 0; x < this.row; x++) {
+						for (int y = 0; y < this.col; y++) {
+							if (GridLayout[x][y] == 'r') {
+								++RobotCounter;
+								move(x, y, RobotCounter);
+
+							}
 						}
 					}
-				}
 
-				String Robotmovementbuffer = new String();
-				Robotmovementbuffer = "<"+BombermanServerDef.MESSAGE_TYPE + "="
-						+ BombermanServerDef.ROBOT_PLACEMET_MESSAGE + "|"
-						+ BombermanServerDef.ROBOT_NEW_PLACE + "=";
-				int iter = 1;
-				for (Map.Entry<Integer, RobotCor> entry : updatedRobotPos
-						.entrySet()) {
-					if (updatedRobotPos.get(iter).x != -1
-							&& updatedRobotPos.get(iter).y != -1) {
-						int x = updatedRobotPos.get(iter).x;
-						int y = updatedRobotPos.get(iter).y;
-						/*
-						 * System.out.println("Robot move pos - x - " + x +
-						 * "|y = " + y);
-						 */
-						// if(this.logicalworld.getElement(x, y)[0] instanceof
-						// Player)
-						// /ExplodableActivity.Exploaded(true);
-						ConfigReader.UpdateGridLayOutCell(x, y, (byte) 'r');
-						this.logicalworld.setElement(x, y, 0, new Robot(x, y));
-						Robotmovementbuffer +=  x + "," + y + ".";
-						updatedRobotPos.get(iter).x = -1;
-						updatedRobotPos.get(iter).y = -1;
+					String Robotmovementbuffer = new String();
+					Robotmovementbuffer = "<" + BombermanProtocol.MESSAGE_TYPE
+							+ "=" + BombermanProtocol.ROBOT_PLACEMET_MESSAGE
+							+ "|" + BombermanProtocol.ROBOT_NEW_PLACE + "=";
+					int iter = 1;
+					for (Map.Entry<Integer, RobotCor> entry : updatedRobotPos
+							.entrySet()) {
+						if (updatedRobotPos.get(iter).x != -1
+								&& updatedRobotPos.get(iter).y != -1) {
+							int x = updatedRobotPos.get(iter).x;
+							int y = updatedRobotPos.get(iter).y;
+							// if(this.logicalworld.getElement(x, y)[0]
+							// instanceof
+							// Player)
+							// /ExplodableActivity.Exploaded(true);
+							ConfigReader.UpdateGridLayOutCell(x, y, (byte) 'r');
+							this.logicalworld.setElement(x, y, 0, new Robot(x,
+									y));
+							Robotmovementbuffer += x + "," + y + ".";
+							updatedRobotPos.get(iter).x = -1;
+							updatedRobotPos.get(iter).y = -1;
 
+						}
+						++iter;
 					}
-					++iter;
-				}
 
-				if (Robotmovementbuffer
-						.charAt(Robotmovementbuffer.length() - 1) == '.') {
-					Robotmovementbuffer = Robotmovementbuffer.replaceFirst(
-							".$", "");
-				}
-				Robotmovementbuffer += "|"
-						+ BombermanServerDef.ROBOT_ORIGINAL_PLACE + "=";
-				iter = 1;
-				for (Map.Entry<Integer, RobotCor> entry : originalRbotPos
-						.entrySet()) {
-					if (originalRbotPos.get(iter).x != -1
-							&& originalRbotPos.get(iter).y != -1) {
-
-						int x = originalRbotPos.get(iter).x;
-						int y = originalRbotPos.get(iter).y;
-						/*
-						 * System.out.println("Original pos - x - " + x +
-						 * "|y = " + y);
-						 */
-						Robotmovementbuffer +=  x + "," + y + ".";
-						originalRbotPos.get(iter).x = -1;
-						originalRbotPos.get(iter).y = -1;
-						ConfigReader.UpdateGridLayOutCell(x, y, (byte) '-');
-						this.logicalworld.setElement(x, y, 0, null);
+					if (Robotmovementbuffer
+							.charAt(Robotmovementbuffer.length() - 1) == '.') {
+						Robotmovementbuffer = Robotmovementbuffer.replaceFirst(
+								".$", "");
 					}
-					++iter;
+					Robotmovementbuffer += "|"
+							+ BombermanProtocol.ROBOT_ORIGINAL_PLACE + "=";
+					iter = 1;
+					for (Map.Entry<Integer, RobotCor> entry : originalRbotPos
+							.entrySet()) {
+						if (originalRbotPos.get(iter).x != -1
+								&& originalRbotPos.get(iter).y != -1) {
+
+							int x = originalRbotPos.get(iter).x;
+							int y = originalRbotPos.get(iter).y;
+							Robotmovementbuffer += x + "," + y + ".";
+							originalRbotPos.get(iter).x = -1;
+							originalRbotPos.get(iter).y = -1;
+							ConfigReader.UpdateGridLayOutCell(x, y, (byte) '-');
+							this.logicalworld.setElement(x, y, 0, null);
+						}
+						++iter;
+					}
+
+					if (Robotmovementbuffer
+							.charAt(Robotmovementbuffer.length() - 1) == '.') {
+						Robotmovementbuffer = Robotmovementbuffer.replaceFirst(
+								".$", "");
+					}
+					Phirobotmovelist.clear();
+					Robotmovementbuffer += ">";
+					System.out.println("Robot movement buffer is ready - "
+							+ Robotmovementbuffer);
+					robotActiviy.RobotMovedAtLogicalLayer(Robotmovementbuffer);
+
+					// ConfigReader.UnlockTheGrid();
+					lock.unlock();
+					System.out
+							.println("_____________ Robot thread is going to sleep now ____________");
+					// Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 
-				if (Robotmovementbuffer
-						.charAt(Robotmovementbuffer.length() - 1) == '.') {
-					Robotmovementbuffer = Robotmovementbuffer.replaceFirst(
-							".$", "");
-				}
-				Phirobotmovelist.clear();
-				Robotmovementbuffer+=">";
-				System.out.println("Robot movement buffer is ready - "
-						+ Robotmovementbuffer);
-				robotActiviy.RobotMovedAtLogicalLayer(Robotmovementbuffer);
-
-				// ConfigReader.UnlockTheGrid();
-				lock.unlock();
-				System.out
-						.println("_____________ Robot thread is goin to sleep now ____________");
-				// Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	}
-	// }
 }

@@ -21,11 +21,10 @@ public class Player extends Cell {
 	private final int ALLOWED_BOMB =1;
 
 	private MoveDirection lastMoveDirection = MoveDirection.DOWN;
-    private Server server;
+    private BomberManWorker server;
 	
-	public Player(Game game, String nickname,Server server) {
+	public Player(String nickname,BomberManWorker server) {
 		super(0, 0);
-		this.game = game;
 		this.nickname = nickname;
 		this.server = server;
 	}

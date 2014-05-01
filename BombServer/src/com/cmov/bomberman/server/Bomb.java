@@ -22,7 +22,7 @@ class Bomb extends Cell {
 		
 	}
 
-	public void InitBomb( Player player,Server server)
+	public void InitBomb( Player player,BomberManWorker server)
 	{
 		this.player = player;
 		timer = new BombExplosionTimer(this);

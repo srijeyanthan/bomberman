@@ -1,8 +1,10 @@
 package com.cmov.bomberman.server;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -62,15 +64,13 @@ public class ConfigReader {
 	}
 
 	public static class Player {
-		private static int x;
-		private static int y;
+		private  int x;
+		private  int y;
 
-		public void setXCor(int xCor) {
-			x = xCor;
-		}
-
-		public void setYCor(int yCor) {
-			y = yCor;
+		public Player(int xcor , int ycor )
+		{
+			x = xcor ;
+			y= ycor;
 		}
 
 		public int getXCor() {
@@ -88,6 +88,7 @@ public class ConfigReader {
 	private static Gameconfig gameconfig = null;
 	private static GameDim gameDim = null;
 
+	public static Map<Integer, Player> playermap = new HashMap<Integer, Player>();
 	public static Player players = null;
 	public static Player players2 = null;
 	public static Player players3 = null;
@@ -133,26 +134,26 @@ public class ConfigReader {
 										.getChildNodes().item(0).getNodeValue();
 								String[] elements = rowVal.split(" ");
 
-								for (String string : elements) {
+								for (String mapelement : elements) {
 
-									grid[j - 1][localxcounter] = string
-											.getBytes()[0];
-									if (grid[j-1][localxcounter] == '1') {
-										players = new Player();
-										players.setXCor(j-1);
-										players.setYCor(localxcounter);
+									if (mapelement.getBytes()[0] == '1') {
+										playermap.put(0, new Player(j - 1,
+												localxcounter));
+										grid[j - 1][localxcounter]='-';
+
+									} else if (mapelement.getBytes()[0] == '2') {
+										playermap.put(1, new Player(j - 1,
+												localxcounter));
+										grid[j - 1][localxcounter]='-';
+									} else if (mapelement.getBytes()[0] == '3') {
+										playermap.put(2, new Player(j - 1,
+												localxcounter));
+										grid[j - 1][localxcounter]='-';
+									} else {
+										grid[j - 1][localxcounter] = mapelement
+												.getBytes()[0];
 									}
-									if (grid[j-1][localxcounter] == '2') {
-										players2 = new Player();
-										players2.setXCor(j-1);
-										players2.setYCor(localxcounter);
-									}
-									if (grid[j-1][localxcounter] == '3') {
-										players3 = new Player();
-										players3.setXCor(j-1);
-										players3.setYCor(localxcounter);
-									}
-									
+
 									++localxcounter;
 								}
 

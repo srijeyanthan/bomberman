@@ -1,346 +1,238 @@
 package com.cmov.bomberman.server;
-
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
+import java.nio.channels.spi.SelectorProvider;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-import com.cmov.bomberman.server.BombermanServerDef;
+import com.cmov.bomberman.server.RobotThread.GameState;
 
-public class Server implements IMoveableRobot, IExplodable, IUpdatableScore {
-	private InetAddress addr;
+public class Server implements Runnable {
+	// The host:port combination to listen on
+	private InetAddress hostAddress;
 	private int port;
+
+	// The channel on which we'll accept connections
+	private ServerSocketChannel serverChannel;
+
+	// The selector we'll be monitoring
 	private Selector selector;
-	private Map<SocketChannel, List<byte[]>> dataMap;
-	final static Lock lock = new ReentrantLock();
-	private Map<String, String> Session;
-	private String IncomingBuffer = "";
-	private RobotThread robotThread = null;
-	private LogicalWorld logicalworld;
-	private Map<String, Boolean> orderMessageMap;
 
-	public Server(InetAddress addr, int port, LogicalWorld logicalworld)
-			throws IOException {
-		this.addr = addr;
+	// The buffer into which we'll read data when it's available
+	private ByteBuffer readBuffer = ByteBuffer.allocate(8192);
+
+	private BomberManWorker worker;
+	public static RobotThread robotThread = null;
+
+	// A list of PendingChange instances
+	private List pendingChanges = new LinkedList();
+
+	// Maps a SocketChannel to a list of ByteBuffer instances
+	private Map pendingData = new HashMap();
+	public static LogicalWorld logicalworld;
+	public static Game mGame = null;
+	public static Map<String, ServerDataEvent> clientList = new HashMap<String,ServerDataEvent>();
+	
+	public Server(InetAddress hostAddress, int port, BomberManWorker worker) throws IOException {
+		this.hostAddress = hostAddress;
 		this.port = port;
-		dataMap = new HashMap<SocketChannel, List<byte[]>>();
-		orderMessageMap = new HashMap<String, Boolean>();
-		Session = new HashMap<String, String>();
-		this.logicalworld = logicalworld;
-		startServer();
+		this.selector = this.initSelector();
+		this.worker = worker;
+		InitBombermanGame();
+		startRobotThread();
+		
 	}
-
-	public void Exploaded(boolean isPlayerDeadinGame) {
-		// bomberManView.postInvalidate();
-		// isBombPlaced = false;
-		// isPlayerDead = isPlayerDeadinGame; // / this is only for test ,
-
+	
+	private void InitBombermanGame() {
+		mGame = new Game("BombServer");
+		logicalworld = mGame.getLogicalWorld();
 	}
+	 private void startRobotThread()
+	   {
+		   robotThread = new RobotThread(ConfigReader.getGameDim().row,
+					ConfigReader.getGameDim().column, this.worker);
+			robotThread.setLogicalWord(Server.logicalworld);
+			robotThread.setRunning(true);
+			robotThread.start();
+			System.out.println("______Starting robot thread________");
+	   }
+	public void send(SocketChannel socket, byte[] data) {
+		synchronized (this.pendingChanges) {
+			// Indicate we want the interest ops set changed
+			this.pendingChanges.add(new ChangeRequest(socket, ChangeRequest.CHANGEOPS, SelectionKey.OP_WRITE));
 
-	public void UpdateScore(int numberOfRobotDied) {
-		/*
-		 * scoreOfThePlayer += ConfigReader.getGameConfig().pointperrobotkilled
-		 * numberOfRobotDied; numberofRobotkilled += numberOfRobotDied;
-		 */
-	}
-
-	private void InitBomberManMap() {
-
-		// bomberManView.invalidate();
-
-	}
-
-	private void startServer() throws IOException {
-		// create selector and channel
-		this.selector = Selector.open();
-		ServerSocketChannel serverChannel = ServerSocketChannel.open();
-		serverChannel.configureBlocking(false);
-
-		// bind to port
-		// InetSocketAddress listenAddr = new InetSocketAddress(this.addr,
-		// / this.port);
-		InetSocketAddress listenAddr = new InetSocketAddress(this.port);
-		serverChannel.socket().bind(listenAddr);
-		serverChannel.register(this.selector, SelectionKey.OP_ACCEPT);
-
-		System.out.println("********* Bomberman listening on 9090 ****************");
-		log("Bomberman server is ready  Ctrl-C to stop.");
-
-		// processing
-		while (true) {
-			// wait for events
-			int n = this.selector.select();
-
-			if (n == 0) {
-				continue; // nothing to do
+			// And queue the data we want written
+			synchronized (this.pendingData) {
+				List queue = (List) this.pendingData.get(socket);
+				if (queue == null) {
+					queue = new ArrayList();
+					this.pendingData.put(socket, queue);
+				}
+				queue.add(ByteBuffer.wrap(data));
 			}
-			// wakeup to work on selected keys
-			Iterator<SelectionKey> keys = this.selector.selectedKeys()
-					.iterator();
-			while (keys.hasNext()) {
-				SelectionKey key = (SelectionKey) keys.next();
+		}
 
-				// this is necessary to prevent the same key from coming up
-				// again the next time around.
-				keys.remove();
+		// Finally, wake up our selecting thread so it can make the required changes
+		this.selector.wakeup();
+	}
 
-				if (!key.isValid()) {
-					continue;
+	public void run() {
+		while (true) {
+			try {
+				// Process any pending changes
+				synchronized (this.pendingChanges) {
+					Iterator changes = this.pendingChanges.iterator();
+					while (changes.hasNext()) {
+						ChangeRequest change = (ChangeRequest) changes.next();
+						switch (change.type) {
+						case ChangeRequest.CHANGEOPS:
+							SelectionKey key = change.socket.keyFor(this.selector);
+							key.interestOps(change.ops);
+						}
+					}
+					this.pendingChanges.clear();
 				}
 
-				if (key.isAcceptable()) {
-					/*System.out
-							.println("accept method has been fired ---" + key);*/
-					this.accept(key);
-				} else if (key.isReadable()) {
-					//System.out.println("readable key ---" + key);
-					this.read(key);
-				} else if (key.isWritable()) {
-					//System.out.println("write metho  ---" + key);
-					this.write(key);
+				// Wait for an event one of the registered channels
+				this.selector.select();
+
+				// Iterate over the set of keys for which events are available
+				Iterator selectedKeys = this.selector.selectedKeys().iterator();
+				while (selectedKeys.hasNext()) {
+					SelectionKey key = (SelectionKey) selectedKeys.next();
+					selectedKeys.remove();
+
+					if (!key.isValid()) {
+						continue;
+					}
+
+					// Check what event is available and deal with it
+					if (key.isAcceptable()) {
+						this.accept(key);
+					} else if (key.isReadable()) {
+						this.read(key);
+					} else if (key.isWritable()) {
+						this.write(key);
+					}
+				
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
 
 	private void accept(SelectionKey key) throws IOException {
+		// For an accept to be pending the channel must be a server socket channel.
+		ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
 
-		ServerSocketChannel serverChannel = (ServerSocketChannel) key.channel();
-		SocketChannel channel = serverChannel.accept();
-		channel.configureBlocking(false);
+		// Accept the connection and make it non-blocking
+		SocketChannel socketChannel = serverSocketChannel.accept();
+		Socket socket = socketChannel.socket();
+		socketChannel.configureBlocking(false);
 
-		System.out.println("key - " + key + "|channel - " + channel);
-		// we have exceeded number of allowed of connection
-		if (Session.size() > 3) {
-			channel.write(ByteBuffer
-					.wrap("Exceeded number of allowed of connection - retury later\r\n"
-							.getBytes("US-ASCII")));
-			channel.close();
-			key.cancel();
-			Socket socket = channel.socket();
-			socket.close();
-		} else {
-			/*channel.write(ByteBuffer.wrap("Welcome to Bomberman server \r\n"
-					.getBytes("US-ASCII")));*/
-			Socket socket = channel.socket();
-			SocketAddress remoteAddr = socket.getRemoteSocketAddress();
-			log("Connected to: " + remoteAddr);
-			dataMap.put(channel, new ArrayList<byte[]>());
-			channel.register(this.selector, SelectionKey.OP_READ);
-		}
+		// Register the new SocketChannel with our Selector, indicating
+		// we'd like to be notified when there's data waiting to be read
+		socketChannel.register(this.selector, SelectionKey.OP_READ);
 	}
 
 	private void read(SelectionKey key) throws IOException {
-		SocketChannel channel = (SocketChannel) key.channel();
-		System.out.println("data is coming from this client  "
-				+ channel.socket().getRemoteSocketAddress());
-		ByteBuffer bufferA = ByteBuffer.allocate(100);
+		SocketChannel socketChannel = (SocketChannel) key.channel();
 
-		String Sessoinstring = channel.socket().getRemoteSocketAddress()
-				.toString();
-		@SuppressWarnings("unused")
-		int count = 0;
+		// Clear out our read buffer so it's ready for new data
+		this.readBuffer.clear();
 
-		int numRead = -1;
-		while ((count = channel.read(bufferA)) > 0) {
-			bufferA.flip();
-			IncomingBuffer += Charset.defaultCharset().decode(bufferA);
-			numRead += IncomingBuffer.length();
-
-		}
-		// if we have any leading new line chracter just remove them
-		IncomingBuffer.trim();
-		// just remove all the leading new line charater
-		IncomingBuffer = IncomingBuffer.replaceAll("[\n\r]", "");
-
-		System.out.println("Data has been received from the client - "
-				+ IncomingBuffer);
-		if (numRead == -1) {
-			this.dataMap.remove(channel);
-			Socket socket = channel.socket();
-			SocketAddress remoteAddr = socket.getRemoteSocketAddress();
-			log("Connection closed by client: " + remoteAddr);
-			channel.close();
+		// Attempt to read off the channel
+		int numRead;
+		try {
+			numRead = socketChannel.read(this.readBuffer);
+		} catch (IOException e) {
+			System.out.println("[Server] Remote has forcibly closed the conention, do we need still remove the client, I dont know ??<TODO>");
+			// The remote forcibly closed the connection, cancel
+			// the selection key and close the channel.
 			key.cancel();
+			socketChannel.close();
 			return;
 		}
 
-		processMessage(IncomingBuffer, Sessoinstring, key);
+		if (numRead == -1) {
+			// Remote entity shut the socket down cleanly. Do the
+			// same from our end and cancel the channel.
+			System.out.println("[Server] Client has diconnection from server -"+socketChannel.socket().getRemoteSocketAddress().toString());
+			clientList.remove(socketChannel.socket().getRemoteSocketAddress().toString());
+			System.out.println("[Server] Client has sucessfully remvoed from the client list");
+			if(clientList.size() < 2)
+			{
+				Server.robotThread.setState(GameState.PAUSE);
+			}
+			key.channel().close();
+			key.cancel();
+			
+			return;
+		}
+
+		// Hand the data off to our worker thread
+		this.worker.processData(this, socketChannel, this.readBuffer.array(), numRead);
 	}
 
 	private void write(SelectionKey key) throws IOException {
-		SocketChannel channel = (SocketChannel) key.channel();
-		List<byte[]> pendingData = this.dataMap.get(channel);
-		Iterator<byte[]> items = pendingData.iterator();
-		while (items.hasNext()) {
-			byte[] item = items.next();
-			items.remove();
-			channel.write(ByteBuffer.wrap(item));
+		SocketChannel socketChannel = (SocketChannel) key.channel();
 
-		}
-		key.interestOps(SelectionKey.OP_WRITE);
-		//key.interestOps(SelectionKey.OP_READ);
-	}
+		synchronized (this.pendingData) {
+			List queue = (List) this.pendingData.get(socketChannel);
 
-	private void doSendToClient(SelectionKey key, byte[] data) {
-		SocketChannel channel = (SocketChannel) key.channel();
-		List<byte[]> pendingData = this.dataMap.get(channel);
-		pendingData.add(data);
-		key.interestOps(SelectionKey.OP_WRITE);
-
-	}
-
-	private static void log(String s) {
-		System.out.println(s);
-	}
-
-	private List<Map<Integer, String>> processIndividualMessage(String message) {
-		// <message1><message2>... // this is out message structure
-		List<Map<Integer, String>> processedtokens = new ArrayList<Map<Integer, String>>();
-		String[] splittedmessage = message.split(">");
-		int numberofmessages = splittedmessage.length;
-		for (int i = 0; i < numberofmessages; ++i) {
-			Map<Integer, String> processedTok = new HashMap<Integer, String>();
-			String processingmessage = splittedmessage[i].substring(1);
-			String[] splittedprocessngmessage = processingmessage.split("\\|");
-			for (int j = 0; j < splittedprocessngmessage.length; ++j) {
-				String[] individualTag = splittedprocessngmessage[j].split("=");
-				processedTok.put(Integer.parseInt(individualTag[0]),
-						individualTag[1]);
-			}
-			processedtokens.add(processedTok);
-		}
-
-		return processedtokens;
-
-	}
-
-	private void processMessage(String IncomBuffer, String sessionstring,
-			SelectionKey key) {
-		String processmessage = "";
-		lock.lock(); // we are going modify the global string , so have to lock
-		processmessage = IncomingBuffer;
-		int posoflastindex = 0;
-		posoflastindex = IncomBuffer.lastIndexOf('>');
-		if (posoflastindex != 0) {
-			// // why we put plus one here is , remove whole string other wise
-			// this last character will remain in the string.
-			IncomingBuffer = IncomingBuffer.substring(posoflastindex + 1);
-			processmessage = processmessage.substring(0, posoflastindex + 1);
-			lock.unlock();
-		} else {
-			lock.unlock();
-			System.out
-					.println("incomming buffer didnt have the expected > end charcter");
-			return;
-		}
-
-		if (!processmessage.isEmpty()) {
-			List<Map<Integer, String>> processedmsg = processIndividualMessage(processmessage);
-			for (int i = 0; i < processedmsg.size(); ++i) {
-				Map<Integer, String> fieldmap = processedmsg.get(i);
-				if (fieldmap.get(BombermanServerDef.MESSAGE_TYPE).getBytes()[0] == BombermanServerDef.JOIN_MESSAGE) {
-					processJoingMessage(fieldmap, sessionstring, key);
-				} else if (fieldmap.get(BombermanServerDef.MESSAGE_TYPE)
-						.getBytes()[0] == BombermanServerDef.PLAYER_MOVEMENT_MESSAGE) {
-					ProcessPlayerMessage(fieldmap, sessionstring);
+			// Write until there's not more data ...
+			while (!queue.isEmpty()) {
+				ByteBuffer buf = (ByteBuffer) queue.get(0);
+				socketChannel.write(buf);
+				if (buf.remaining() > 0) {
+					// ... or the socket's buffer fills up
+					break;
 				}
-			}
-		}
-
-	}
-
-	private void processJoingMessage(Map<Integer, String> fieldmap,
-			String sessionstring, SelectionKey key) {
-		System.err.println("sessioin string - " + sessionstring + "|U="
-				+ fieldmap.get(BombermanServerDef.USER_NAME));
-		if (Session.put(sessionstring,
-				fieldmap.get(BombermanServerDef.USER_NAME)) == null) {
-			System.out.println("usernmae has been sucefully inserted ...");
-		} else {
-			System.out.println("user name is already added ...");
-		}
-
-		String mapmsg = BuildGridLayout();
-
-		doSendToClient(key, mapmsg.getBytes());
-		orderMessageMap.put(((SocketChannel) key.channel()).socket()
-				.getRemoteSocketAddress().toString(), true);
-		// // number of clients has reaced two, so lets start the robot movement
-		// and send the data to client
-		//if (Session.size() >= 2) {
-		robotThread = new RobotThread(ConfigReader.getGameDim().row,
-				ConfigReader.getGameDim().column, this);
-		robotThread.setLogicalWord(this.logicalworld);
-		robotThread.setRunning(true);
-		robotThread.start();
-		//}
-	}
-
-	private String BuildGridLayout() {
-		String mapmessage = "";
-		int row = ConfigReader.getGameDim().row;
-		int column = ConfigReader.getGameDim().column;
-		mapmessage = "<"+BombermanServerDef.MESSAGE_TYPE + "="
-				+ BombermanServerDef.GRID_MESSAGE + "|"
-				+ BombermanServerDef.GRID_ROW + "=" + row + "|"
-				+ BombermanServerDef.GRID_COLUMN + "=" + column + "|"
-				+ BombermanServerDef.GRID_ELEMENTS + "=";
-		Byte[][] GridLayout = ConfigReader.getGridLayout();
-		for (int i = 0; i < row; ++i) {
-			byte[] element = new byte[GridLayout[i].length];
-			for (int j = 0; j < column; ++j) {
-				element[j] = GridLayout[i][j];
-
-			}
-			String strfrombyte = "";
-			try {
-				strfrombyte = new String(element, "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-			mapmessage += strfrombyte;
-		}
-		mapmessage+=">";
-		System.out.println("Grid message is generated - " + mapmessage);
-		return mapmessage;
-	}
-
-	public void RobotMovedAtLogicalLayer(String Robotmovementbuffer) {
-
-		for (@SuppressWarnings("rawtypes")
-		Map.Entry entry : dataMap.entrySet()) {
-			SocketChannel socket = (SocketChannel) entry.getKey();
-			// we need to send this robot movement once we sent the initial grid
-			// map layout
-			System.out.println("socket - " + socket);
-			if (orderMessageMap.containsKey(socket.socket()
-					.getRemoteSocketAddress().toString())) {
-				if (orderMessageMap.get(socket.socket()
-						.getRemoteSocketAddress().toString())) {
-					doSendToClient(socket.keyFor(this.selector),
-							Robotmovementbuffer.getBytes());
-				}
+				queue.remove(0);
 			}
 
+			if (queue.isEmpty()) {
+				// We wrote away all data, so we're no longer interested
+				// in writing on this socket. Switch back to waiting for
+				// data.
+				key.interestOps(SelectionKey.OP_READ);
+			}
 		}
-
 	}
 
-	private void ProcessPlayerMessage(Map<Integer, String> fieldmap,
-			String sessionstring) {
+	private Selector initSelector() throws IOException {
+		// Create a new selector
+		Selector socketSelector = SelectorProvider.provider().openSelector();
 
+		// Create a new non-blocking server socket channel
+		this.serverChannel = ServerSocketChannel.open();
+		serverChannel.configureBlocking(false);
+
+		// Bind the server socket to the specified address and port
+		InetSocketAddress isa = new InetSocketAddress(this.hostAddress, this.port);
+		serverChannel.socket().bind(isa);
+
+		// Register the server socket channel, indicating an interest in 
+		// accepting new connections
+		serverChannel.register(socketSelector, SelectionKey.OP_ACCEPT);
+
+		return socketSelector;
 	}
 
+	/*public static void main(String[] args) {
+		try {
+			BomberManWorker worker = new BomberManWorker();
+			new Thread(worker).start();
+			new Thread(new Server(null, 9090, worker)).start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}*/
 }
