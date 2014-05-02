@@ -1,9 +1,16 @@
 package com.cmov.bomberman;
 
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -12,6 +19,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -27,25 +35,23 @@ public class MainActivity extends Activity {
 	private static Bitmap robot = null;
 	private static Bitmap bomb = null;
 	private static int scoreOfThePlayer = 0;
-	private static int numberofRobotkilled =0;
+	private static int numberofRobotkilled = 0;
 	private boolean isBombPlaced = false;
 	private boolean isPlayerDead = false;
 	Button bombButton = null;
 	Button pausebutton = null;
 	private static RectRender rectrender = null;
-	
-
 	BroadcastReceiver elapsedBroadcastReciver;
 	private int bombermanGameDuration = 0;
-
+	final static Lock lock = new ReentrantLock();
+	private static List<String> messageq = new ArrayList<String>();
+	private Handler mMainHandler, mChildHandler;
 	public enum GameState {
 		PAUSE, RUN, RESUME
 	}
 
 	private GameState state = GameState.RUN;
 
-	
-	
 	@Override
 	public void onStop() {
 		super.onStop();
@@ -53,6 +59,10 @@ public class MainActivity extends Activity {
 			unregisterReceiver(elapsedBroadcastReciver);
 	}
 
+	public List<String> getMsgQ()
+	{
+		return messageq;
+	}
 	private void startingUp() {
 		Thread timer = new Thread() { // new thread
 			public void run() {
@@ -74,27 +84,32 @@ public class MainActivity extends Activity {
 								bombButton.setText("Bomb");
 							}
 							if (isPlayerDead) {
-								
-								String message = "No of Robots killed - "+Integer.toString(numberofRobotkilled)+"\n"+"Total Score - "+Integer.toString(scoreOfThePlayer);
+
+								String message = "No of Robots killed - "
+										+ Integer.toString(numberofRobotkilled)
+										+ "\n" + "Total Score - "
+										+ Integer.toString(scoreOfThePlayer);
 								new AlertDialog.Builder(MainActivity.this)
-								.setTitle("Game over - Game stat")
-								.setMessage(message)
-								.setPositiveButton(android.R.string.yes,
-										new DialogInterface.OnClickListener() {
-											public void onClick(DialogInterface dialog,
-													int which) {
-												
-												Intent i = getBaseContext()
-														.getPackageManager()
-														.getLaunchIntentForPackage(
-																getBaseContext()
-																		.getPackageName());
-												i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-												startActivity(i);
-											}
-											
-										})
-								.setIcon(R.drawable.bomberman).show();
+										.setTitle("Game over - Game stat")
+										.setMessage(message)
+										.setPositiveButton(
+												android.R.string.yes,
+												new DialogInterface.OnClickListener() {
+													public void onClick(
+															DialogInterface dialog,
+															int which) {
+
+														Intent i = getBaseContext()
+																.getPackageManager()
+																.getLaunchIntentForPackage(
+																		getBaseContext()
+																				.getPackageName());
+														i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+														startActivity(i);
+													}
+
+												})
+										.setIcon(R.drawable.bomberman).show();
 								isPlayerDead = false;
 							}
 						}
@@ -134,7 +149,6 @@ public class MainActivity extends Activity {
 		bomberManView.invalidate();
 
 	}
-
 
 	public void Close(String title, String messageboxcontent,
 			final boolean isRestart) {
@@ -187,13 +201,13 @@ public class MainActivity extends Activity {
 		if (state == GameState.RUN) {
 			this.state = GameState.PAUSE;
 			pausebutton.setText("Resume");
-		}else
-		{
+		} else {
 			this.state = GameState.RUN;
 			pausebutton.setText("Pause");
 		}
 
 	}
+	
 
 	@Override
 	public void onResume() {
@@ -202,7 +216,33 @@ public class MainActivity extends Activity {
 		// get the resource
 
 	}
-
+	public boolean isQEmpty()
+	{
+		lock.lock();
+		boolean result = messageq.isEmpty();
+		lock.unlock();
+		return result;
+	}
+	public String getMessageFromQ()
+	{
+		lock.lock();
+		String msg =  messageq.get(0);
+		messageq.remove(0);
+		lock.unlock();
+		return msg;
+	}
+	public void removemsg()
+	{
+		lock.lock();
+		messageq.remove(0);
+		lock.unlock();
+		
+	}
+	public void addToQ(String msg) {
+		lock.lock();
+		 messageq.add(msg);
+		lock.unlock();
+    }
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -247,7 +287,13 @@ public class MainActivity extends Activity {
 
 		RspHandler.setBombermanview(bomberManView);
 		startingUp();
+		
+		/*MessageDispatcher md = new MessageDispatcher(this);
+		 Thread t = new Thread(md);
+		 t.setDaemon(true);
+		 t.start();*/
 
+		
 		bombButton = (Button) findViewById(R.id.btnBomb);
 		bombButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -270,9 +316,20 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
 					
-						  // send moved msg to server and wait  0, -1
-					//bombermanclient.sendplayermoveleft();
-
+				    // send moved msg to server and wait  0, -1
+					String movemsg ="<"+BombermanProtocol.MESSAGE_TYPE+"="+BombermanProtocol.PLAYER_MOVEMENT_MESSAGE+"|"+BombermanProtocol.PLAYER_ID+"="+RspHandler.playerid+"|"+BombermanProtocol.PLAYER_MOVEMENT+"="+"0.-1"+">";
+					addToQ(movemsg);
+					
+					/*if (mChildHandler != null) {
+						
+						 
+						 * Send a message to the child thread.
+						 
+						Message msg = mChildHandler.obtainMessage();
+						msg.obj = mMainHandler.getLooper().getThread().getName() + " says Hello";
+						mChildHandler.sendMessage(msg);
+						Log.i("ThreadMessaging", "Send a message to the child thread - " + (String)msg.obj);
+					}*/
 					}
 				
 			}
@@ -282,7 +339,8 @@ public class MainActivity extends Activity {
 		rightbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
-					
+					String movemsg ="<"+BombermanProtocol.MESSAGE_TYPE+"="+BombermanProtocol.PLAYER_MOVEMENT_MESSAGE+"|"+BombermanProtocol.PLAYER_ID+"="+RspHandler.playerid+"|"+BombermanProtocol.PLAYER_MOVEMENT+"="+"0.1"+">";
+					addToQ(movemsg);
 					  // send moved msg to server and wait  0, 1
 					//bombermanclient.sendplayermoveright();
 				}
@@ -293,6 +351,8 @@ public class MainActivity extends Activity {
 		upbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
+					String movemsg ="<"+BombermanProtocol.MESSAGE_TYPE+"="+BombermanProtocol.PLAYER_MOVEMENT_MESSAGE+"|"+BombermanProtocol.PLAYER_ID+"="+RspHandler.playerid+"|"+BombermanProtocol.PLAYER_MOVEMENT+"="+"-1.0"+">";
+					addToQ(movemsg);
 					  // send moved msg to server and wait  -1,0
 					//bombermanclient.sendplayermoveup();
 					}
@@ -304,7 +364,8 @@ public class MainActivity extends Activity {
 		downbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
-					
+					String movemsg ="<"+BombermanProtocol.MESSAGE_TYPE+"="+BombermanProtocol.PLAYER_MOVEMENT_MESSAGE+"|"+BombermanProtocol.PLAYER_ID+"="+RspHandler.playerid+"|"+BombermanProtocol.PLAYER_MOVEMENT+"="+"1.0"+">";
+					addToQ(movemsg);
 					 // send moved msg to server and wait  1,0
 					//bombermanclient.sendplayermovedown();
 				}

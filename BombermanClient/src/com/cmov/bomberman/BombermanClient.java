@@ -2,272 +2,368 @@ package com.cmov.bomberman;
 
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.nio.channels.spi.SelectorProvider;
-import java.util.*;
+import java.nio.channels.WritableByteChannel;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+
+import android.os.Handler;
+import android.os.Message;
 
 
-public class BombermanClient implements Runnable {
-	// The host:port combination to connect to
-	private InetAddress hostAddress;
-	private int port;
+public abstract class BombermanClient implements Runnable {
+	private static final long INITIAL_RECONNECT_INTERVAL = 500; // 500 ms.
+	private static final long MAXIMUM_RECONNECT_INTERVAL = 30000; // 30 sec.
+	private static final int READ_BUFFER_SIZE = 0x100000;
+	private static final int WRITE_BUFFER_SIZE = 0x100000;
 
-	private static String username;
-	// The selector we'll be monitoring
+	private long reconnectInterval = INITIAL_RECONNECT_INTERVAL;
+
+	private ByteBuffer readBuf = ByteBuffer.allocate(READ_BUFFER_SIZE); // 1Mb
+	private ByteBuffer writeBuf = ByteBuffer.allocate(WRITE_BUFFER_SIZE); // 1Mb
+
+	private final Thread thread = new Thread(this);
+	private SocketAddress address;
+
 	private Selector selector;
+	private SocketChannel channel;
+	private static RspHandler handler = null;
+	private final AtomicBoolean connected = new AtomicBoolean(false);
 
-	// The buffer into which we'll read data when it's available
-	private ByteBuffer readBuffer = ByteBuffer.allocate(8192);
+	private AtomicLong bytesOut = new AtomicLong(0L);
+	private AtomicLong bytesIn = new AtomicLong(0L);
 
-	// A list of PendingChange instances
-	private List<ChangeRequest> pendingChanges = new LinkedList<ChangeRequest>();
+	public static BombermanClient client = null;
+	private static String username;
 
-	// Maps a SocketChannel to a list of ByteBuffer instances
-	@SuppressWarnings("rawtypes")
-	private Map<SocketChannel, List> pendingData = new HashMap<SocketChannel, List>();
-	
-	// Maps a SocketChannel to a RspHandler
-	private Map<SocketChannel, RspHandler> rspHandlers = Collections.synchronizedMap(new HashMap<SocketChannel, RspHandler>());
-	
-	public BombermanClient (InetAddress hostAddress, int port)throws IOException {
-		this.hostAddress = hostAddress;
-		this.port = port;
-		this.selector = this.initSelector();
+	public BombermanClient() {
+
 	}
 
-	public void send(byte[] data, RspHandler handler) throws IOException {
-		// Start a new connection
-		
-		SocketChannel socket = this.initiateConnection();
-		System.out.println("this is the socket - "+socket);
-		
-		// Register the response handler
-		this.rspHandlers.put(socket, handler);
-		
-		// And queue the data we want written
-		synchronized (this.pendingData) {
-			@SuppressWarnings("unchecked")
-			List<ByteBuffer> queue = (List<ByteBuffer>) this.pendingData.get(socket);
-			if (queue == null) {
-				queue = new ArrayList<ByteBuffer>();
-				this.pendingData.put(socket, queue);
+	public void init() {
+		assert address != null : "server address missing";
+	}
+
+	public void start() throws IOException {
+		System.out.println("starting event loop");
+		thread.start();
+	}
+
+	public void join() throws InterruptedException {
+		if (Thread.currentThread().getId() != thread.getId())
+			thread.join();
+	}
+
+	public void stop() throws IOException, InterruptedException {
+		System.out.println("stopping event loop");
+		thread.interrupt();
+		selector.wakeup();
+	}
+
+	public boolean isConnected() {
+		return connected.get();
+	}
+
+	public void send(ByteBuffer buffer) throws InterruptedException,
+			IOException {
+		if (!connected.get())
+			throw new IOException("not connected");
+		synchronized (writeBuf) {
+			// try direct write of what's in the buffer to free up space
+			if (writeBuf.remaining() < buffer.remaining()) {
+				writeBuf.flip();
+				int bytesOp = 0, bytesTotal = 0;
+				while (writeBuf.hasRemaining()
+						&& (bytesOp = channel.write(writeBuf)) > 0)
+					bytesTotal += bytesOp;
+				writeBuf.compact();
 			}
-			queue.add(ByteBuffer.wrap(data));
-		}
 
-		// Finally, wake up our selecting thread so it can make the required changes
-		this.selector.wakeup();
+			// if didn't help, wait till some space appears
+			if (Thread.currentThread().getId() != thread.getId()) {
+				while (writeBuf.remaining() < buffer.remaining())
+					writeBuf.wait();
+			} else {
+				if (writeBuf.remaining() < buffer.remaining())
+					throw new IOException("send buffer full"); // TODO: add
+																// reallocation
+																// or buffers
+																// chain
+			}
+			writeBuf.put(buffer);
+
+			// try direct write to decrease the latency
+			writeBuf.flip();
+			int bytesOp = 0, bytesTotal = 0;
+			while (writeBuf.hasRemaining()
+					&& (bytesOp = channel.write(writeBuf)) > 0)
+				bytesTotal += bytesOp;
+			writeBuf.compact();
+
+			if (writeBuf.hasRemaining()) {
+				SelectionKey key = channel.keyFor(selector);
+				key.interestOps(key.interestOps() | SelectionKey.OP_WRITE);
+				selector.wakeup();
+			}
+		}
 	}
 
+	static class ExampleHandler extends Handler {
+		 
+		 
+        public ExampleHandler() {
+        }
+ 
+        @Override
+        public void handleMessage(Message msg) {
+            if(msg.what == 100) {
+                String sendmsg = msg.getData().getString("text");
+                System.out.println("This is the message we have to send to the server - "+sendmsg);
+ 
+                try {
+					sendDataToServer(sendmsg);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+            }
+        }
+    }
+	protected abstract void onRead(ByteBuffer buf) throws Exception;
+
+	protected abstract void onConnected() throws Exception;
+
+	protected abstract void onDisconnected();
+
+	private void configureChannel(SocketChannel channel) throws IOException {
+		channel.configureBlocking(false);
+		channel.socket().setSendBufferSize(0x100000); // 1Mb
+		channel.socket().setReceiveBufferSize(0x100000); // 1Mb
+		channel.socket().setKeepAlive(true);
+		channel.socket().setReuseAddress(true);
+		channel.socket().setSoLinger(false, 0);
+		channel.socket().setSoTimeout(0);
+		channel.socket().setTcpNoDelay(true);
+	}
+
+	@Override
 	public void run() {
-		while (true) {
-			try {
-				// Process any pending changes
-				synchronized (this.pendingChanges) {
-					Iterator<ChangeRequest> changes = this.pendingChanges.iterator();
-					while (changes.hasNext()) {
-						ChangeRequest change = (ChangeRequest) changes.next();
-						switch (change.type) {
-						case ChangeRequest.CHANGEOPS:
-							SelectionKey key = change.socket.keyFor(this.selector);
-							key.interestOps(change.ops);
-							break;
-						case ChangeRequest.REGISTER:
-							change.socket.register(this.selector, change.ops);
-							break;
-						}
-					}
-					this.pendingChanges.clear();
-				}
-
-				// Wait for an event one of the registered channels
-				this.selector.select();
-
-				// Iterate over the set of keys for which events are available
-				Iterator<?> selectedKeys = this.selector.selectedKeys().iterator();
-				while (selectedKeys.hasNext()) {
-					SelectionKey key = (SelectionKey) selectedKeys.next();
-					selectedKeys.remove();
-
-					if (!key.isValid()) {
-						continue;
-					}
-
-					// Check what event is available and deal with it
-					if (key.isConnectable()) {
-						this.finishConnection(key);
-					} else if (key.isReadable()) {
-						System.out.println("Ready to read the data ");
-						this.read(key);
-					} else if (key.isWritable()) {
-						this.write(key);
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	private void read(SelectionKey key) throws IOException {
-		SocketChannel socketChannel = (SocketChannel) key.channel();
-
-		// Clear out our read buffer so it's ready for new data
-		this.readBuffer.clear();
-
-		// Attempt to read off the channel
-		int numRead;
+		System.out.println("event loop running");
 		try {
-			numRead = socketChannel.read(this.readBuffer);
-		} catch (IOException e) {
-			// The remote forcibly closed the connection, cancel
-			// the selection key and close the channel.
-			key.cancel();
-			socketChannel.close();
-			return;
-		}
+			while (!Thread.interrupted()) { // reconnection loop
+				try {
+					selector = Selector.open();
+					channel = SocketChannel.open();
+					configureChannel(channel);
 
-		if (numRead == -1) {
-			// Remote entity shut the socket down cleanly. Do the
-			// same from our end and cancel the channel.
-			key.channel().close();
-			key.cancel();
-			return;
-			
-		}
-		
+					channel.connect(address);
+					channel.register(selector, SelectionKey.OP_CONNECT);
 
-		
-		
-		// Handle the response
-		this.handleResponse(socketChannel, this.readBuffer.array(), numRead);
-		this.readBuffer.clear();
-	}
+					while (!thread.isInterrupted() && channel.isOpen()) { // events
+																			// multiplexing
+																			// loop
+						if (selector.select() > 0)
+							processSelectedKeys(selector.selectedKeys());
+					}
+				} catch (Exception e) {
+					System.out.println("exception");
+					e.printStackTrace();
+				} finally {
+					connected.set(false);
+					onDisconnected();
+					writeBuf.clear();
+					readBuf.clear();
+					if (channel != null)
+						channel.close();
+					if (selector != null)
+						selector.close();
+					System.out.println("connection closed");
+				}
 
-	private void handleResponse(SocketChannel socketChannel, byte[] data, int numRead) throws IOException {
-		// Make a correctly sized copy of the data before handing it
-		// to the client
-		byte[] rspData = new byte[numRead];
-		System.arraycopy(data, 0, rspData, 0, numRead);
-		
-		// Look up the handler for this channel
-		RspHandler handler = (RspHandler) this.rspHandlers.get(socketChannel);
-		//System.out.println("received __________: "+new String(rspData));
-		// And pass the response to it
-		if (handler.handleResponse(rspData)) {
-			// The handler has seen enough, close the connection
-			/*socketChannel.close();
-			socketChannel.keyFor(this.selector).cancel();*/
-			socketChannel.keyFor(this.selector).interestOps(SelectionKey.OP_WRITE);
-		}
-	}
-
-	private void write(SelectionKey key) throws IOException {
-		SocketChannel socketChannel = (SocketChannel) key.channel();
-
-		synchronized (this.pendingData) {
-			List<?> queue = (List<?>) this.pendingData.get(socketChannel);
-
-			// Write until there's not more data ...
-			while (!queue.isEmpty()) {
-				ByteBuffer buf = (ByteBuffer) queue.get(0);
-				socketChannel.write(buf);
-				if (buf.remaining() > 0) {
-					// ... or the socket's buffer fills up
+				try {
+					Thread.sleep(reconnectInterval);
+					if (reconnectInterval < MAXIMUM_RECONNECT_INTERVAL)
+						reconnectInterval *= 2;
+					System.out.println("reconnecting to " + address);
+				} catch (InterruptedException e) {
 					break;
 				}
-				queue.remove(0);
 			}
-
-			if (queue.isEmpty()) {
-				// We wrote away all data, so we're no longer interested
-				// in writing on this socket. Switch back to waiting for
-				// data.
-				key.interestOps(SelectionKey.OP_READ);
-			}
-		}
-	}
-
-	private void finishConnection(SelectionKey key) throws IOException {
-		SocketChannel socketChannel = (SocketChannel) key.channel();
-	
-		// Finish the connection. If the connection operation failed
-		// this will raise an IOException.
-		try {
-			socketChannel.finishConnect();
-		} catch (IOException e) {
-			// Cancel the channel's registration with our selector
-			System.out.println(e);
-			key.cancel();
-			return;
-		}
-	
-		// Register an interest in writing on this channel
-		key.interestOps(SelectionKey.OP_WRITE);
-	}
-
-	private SocketChannel initiateConnection() throws IOException {
-		// Create a non-blocking socket channel
-		SocketChannel socketChannel = SocketChannel.open();
-		socketChannel.configureBlocking(false);
-	
-		// Kick off connection establishment
-		socketChannel.connect(new InetSocketAddress(this.hostAddress, this.port));
-		
-	
-		// Queue a channel registration since the caller is not the 
-		// selecting thread. As part of the registration we'll register
-		// an interest in connection events. These are raised when a channel
-		// is ready to complete connection establishment.
-		synchronized(this.pendingChanges) {
-			this.pendingChanges.add(new ChangeRequest(socketChannel, ChangeRequest.REGISTER, SelectionKey.OP_CONNECT));
-		}
-		
-		return socketChannel;
-	}
-
-	private Selector initSelector() throws IOException {
-		// Create a new selector
-		return SelectorProvider.provider().openSelector();
-	}
-
-	protected static String constructLoginMsg(String userName)
-	{
-		String loginMsg= "<1=J|2=" + userName + '>';
-		//String loginMsg = '<' + BombermanProtocol.MESSAGE_TYPE + '=' + BombermanProtocol.JOIN_MESSAGE + BombermanProtocol.USER_NAME +
-		//		 '=' + userName + '>';
-		return loginMsg;
-	}
-	public static void setPlayerName(String name)
-	{
-		username= name;
-	}
-	public static  void startBombermanClient()
-	{
-		try {
-			BombermanClient client = new BombermanClient(InetAddress.getByName("192.168.1.9"), 9090);
-			Thread t = new Thread(client);
-			t.setDaemon(true);
-			t.start();
-			RspHandler handler = new RspHandler();
-			String loginmsg  =constructLoginMsg(username);
-			client.send(loginmsg.getBytes(), handler);
-			
-			while(true)
-			{
-				handler.waitForResponse();
-			    Thread.sleep(3000);
-			}
-			/*handler.waitForResponse();
-			handler.waitForResponse();*/
 		} catch (Exception e) {
+			System.out.println("unrecoverable error");
 			e.printStackTrace();
 		}
-		
+
+		System.out.println("event loop terminated");
+	}
+
+	private void processSelectedKeys(Set keys) throws Exception {
+		Iterator itr = keys.iterator();
+		while (itr.hasNext()) {
+			SelectionKey key = (SelectionKey) itr.next();
+			if (key.isReadable())
+				processRead(key);
+			if (key.isWritable())
+				processWrite(key);
+			if (key.isConnectable())
+				processConnect(key);
+			if (key.isAcceptable())
+				;
+			itr.remove();
+		}
+	}
+
+	private void processConnect(SelectionKey key) throws Exception {
+		SocketChannel ch = (SocketChannel) key.channel();
+		if (ch.finishConnect()) {
+			System.out.println("connected to " + address);
+			key.interestOps(key.interestOps() ^ SelectionKey.OP_CONNECT);
+			key.interestOps(key.interestOps() | SelectionKey.OP_READ);
+			reconnectInterval = INITIAL_RECONNECT_INTERVAL;
+			connected.set(true);
+			onConnected();
+		}
+	}
+
+	private void processRead(SelectionKey key) throws Exception {
+		ReadableByteChannel ch = (ReadableByteChannel) key.channel();
+
+		int bytesOp = 0, bytesTotal = 0;
+		while (readBuf.hasRemaining() && (bytesOp = ch.read(readBuf)) > 0)
+			bytesTotal += bytesOp;
+
+		if (bytesTotal > 0) {
+			readBuf.flip();
+			onRead(readBuf);
+			readBuf.compact();
+		} else if (bytesOp == -1) {
+			System.out.println("peer closed read channel");
+			ch.close();
+		}
+
+		byte[] rspData = new byte[bytesTotal];
+		System.arraycopy(readBuf.array(), 0, rspData, 0, bytesTotal);
+		bytesIn.addAndGet(bytesTotal);
+		handler.handleResponse(rspData);
+		System.out.println("this is the out put - " + new String(rspData));
+		readBuf.clear();
+
+	}
+
+	private void processWrite(SelectionKey key) throws IOException {
+		WritableByteChannel ch = (WritableByteChannel) key.channel();
+		synchronized (writeBuf) {
+			writeBuf.flip();
+
+			int bytesOp = 0, bytesTotal = 0;
+			while (writeBuf.hasRemaining()
+					&& (bytesOp = ch.write(writeBuf)) > 0)
+				bytesTotal += bytesOp;
+
+			bytesOut.addAndGet(bytesTotal);
+
+			if (writeBuf.remaining() == 0) {
+				key.interestOps(key.interestOps() ^ SelectionKey.OP_WRITE);
+			}
+
+			if (bytesTotal > 0)
+				writeBuf.notify();
+			else if (bytesOp == -1) {
+				System.out.println("peer closed write channel");
+				ch.close();
+			}
+
+			writeBuf.compact();
+		}
+	}
+
+	public SocketAddress getAddress() {
+		return address;
+	}
+
+	public void setAddress(SocketAddress address) {
+		this.address = address;
+	}
+
+	public long getBytesOut() {
+		return bytesOut.get();
+	}
+
+	public long getBytesIn() {
+		return bytesIn.get();
+	}
+
+	protected static String constructLoginMsg(String userName) {
+		String loginMsg = "<1=J|2=" + userName + '>';
+		return loginMsg;
+	}
+
+	public static void setPlayerName(String name) {
+		username = name;
+	}
+
+	public static void sendDataToServer2(ByteBuffer bf) throws IOException {
+		try {
+			client.send(bf);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	public static void sendDataToServer(String msgtoserver) throws IOException {
+		ByteBuffer buf = ByteBuffer.allocate(65535);
+		buf = ByteBuffer.wrap(msgtoserver.getBytes());
+		try {
+			client.send(buf);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		buf.clear();
+	}
+
+	public static void startBombermanClient() throws IOException {
+		client = new BombermanClient() {
+			@Override
+			protected void onRead(ByteBuffer buf) throws Exception {
+				buf.position(buf.limit());
+			}
+
+			@Override
+			protected void onDisconnected() {
+			}
+
+			@Override
+			protected void onConnected() throws Exception {
+			}
+		};
+
+		handler = new RspHandler();
+		client.setAddress(new InetSocketAddress("192.168.1.6", 9090));
+		try {
+			client.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		while (!client.isConnected())
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		System.out.println("[Client] Client is starting ....");
+
+		String loginmsg = constructLoginMsg(username);
+		sendDataToServer(loginmsg);
+		while (true) {
+			handler.waitForResponse();
+			// Thread.sleep(3000);
+		}
 	}
 }

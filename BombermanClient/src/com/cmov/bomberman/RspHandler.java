@@ -1,7 +1,10 @@
 package com.cmov.bomberman;
 
 import android.annotation.SuppressLint;
+import android.os.Handler;
+import android.os.Message;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,7 +15,8 @@ public class RspHandler {
 	private byte[] rsp = null;
 	private String IncomingBuffer = "";
 	private static DrawView bomberManView;
-
+    public static int playerid=0;
+    private boolean fuck =false;
 	public synchronized boolean handleResponse(byte[] rsp) {
 		this.rsp = rsp;
 		this.IncomingBuffer += new String(rsp);
@@ -54,6 +58,7 @@ public class RspHandler {
 		return breakCor;
 	}
 
+	
 	/*This method will be used to process individual message . example 
 	 * input - <1=U|2=Group2><1=R|5=1,7.3,10.5,13.9,10|6=2,7.4,10.6,13.10,10>
 	 * output - 0 , in the map key =1 value =u , key =2 , value =u ....
@@ -83,10 +88,12 @@ public class RspHandler {
 		int row = Integer.parseInt(fieldmap.get(BombermanProtocol.GRID_ROW));
 		int col = Integer.parseInt(fieldmap.get(BombermanProtocol.GRID_COLUMN));
 		String gridelements = fieldmap.get(BombermanProtocol.GRID_ELEMENTS);
+		playerid = Integer.parseInt(fieldmap.get(BombermanProtocol.PLAYER_ID));
 		System.out.println("[INFO] -GridMsg - Row-" + row + "|Col-" + col
-				+ "|GridElements-" + gridelements);
+				+ "|GridElements-" + gridelements + "|playerid -"+playerid);
 		ConfigReader.InitializeTheGridFromServer(row, col,
 				gridelements.getBytes());
+		
 
 	}
 
@@ -112,7 +119,19 @@ public class RspHandler {
 	
 	private void processPlayerMovementMessage(Map<Integer, String> fieldmap)
 	{
-		
+		String playeroldpos= fieldmap.get(BombermanProtocol.PLAYER_OLD_POS);
+		String playernewpos = fieldmap.get(BombermanProtocol.PLAYER_NEW_POS);
+		String oldgridelement = fieldmap.get(BombermanProtocol.OLD_ELEMENT_TYPE);
+		String newgridelement = fieldmap.get(BombermanProtocol.NEW_ELEMENT_TYPE);
+		System.out.println("[Client] player old pos - "+playeroldpos +"|new pos -"+playernewpos+"|oldgridel -"+oldgridelement+"|newgridelment - "+newgridelement);
+		Map<Integer, Cor> breakOldCor = breakTheCordinateInToEasyFormat(playeroldpos);
+		ConfigReader.UpdateGridLayOutCell(breakOldCor.get(0).x,
+				breakOldCor.get(0).y, (byte) '-');
+		Map<Integer, Cor> breaknewCor = breakTheCordinateInToEasyFormat(playernewpos);
+		ConfigReader.UpdateGridLayOutCell(breaknewCor.get(0).x,
+				breaknewCor.get(0).y, (byte) '1');
+		bomberManView.postInvalidate();
+	
 	}
 	private void processBombPlacementessage(Map<Integer,String> fieldmap)
 	{

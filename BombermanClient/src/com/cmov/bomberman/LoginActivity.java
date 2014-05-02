@@ -1,6 +1,8 @@
 package com.cmov.bomberman;
 
 
+import java.io.IOException;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
@@ -18,7 +20,11 @@ public class LoginActivity extends Activity {
 	Runnable runnable = new Runnable() {
 		public void run() {
 
-			BombermanClient.startBombermanClient();
+			try {
+				BombermanClient.startBombermanClient();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			long endTime = System.currentTimeMillis() + 20 * 1000;
 
 			while (System.currentTimeMillis() < endTime) {
@@ -61,6 +67,7 @@ public class LoginActivity extends Activity {
 						}
 						Intent mainActivity = new Intent(LoginActivity.this, MainActivity.class);
 						mainActivity.putExtra("userName", playername);
+	
 		                startActivity(mainActivity);
 		                
 		                break;
