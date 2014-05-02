@@ -101,21 +101,26 @@ public class Player extends Cell {
     	this.bombCount = counter;
     }
     int getBombCounter() { return this.bombCount;}
-	void placeBomb() {
+	public String placeBomb() {
 	         
 		++bombCount;
 		if(bombCount> ALLOWED_BOMB)
 		{
-			return;
+			return "";
 		}
 		
 		
 		System.out.println("User " + nickname + " place the bomb  " + worldXCor
 				+ "/" + worldYCor);
 
+		String bombplacementmsg = new String();
+		bombplacementmsg = "<" + BombermanProtocol.MESSAGE_TYPE
+				+ "=" + BombermanProtocol.BOMP_PLACEMET_MESSAGE
+				+ "|" + BombermanProtocol.BOMB_PLACEMENT + "="+worldXCor +","+ worldYCor+"|"+BombermanProtocol.NEW_ELEMENT_TYPE+"="+(byte)'x'+">";
 		ConfigReader.UpdateGridLayOutCell(worldXCor, worldYCor, (byte) 'x');
 		this.game.getLogicalWorld().setElement(worldXCor, worldYCor, 0, new Bomb(worldXCor, worldYCor));
 		((Bomb)this.game.getLogicalWorld().getElement(worldXCor, worldYCor)[0]).InitBomb(this,server);
+		return bombplacementmsg;
 		
 	}
 

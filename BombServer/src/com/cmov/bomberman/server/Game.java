@@ -25,6 +25,7 @@ public class Game {
 		Random randomGenerator = new Random();
 		// random id will be generated within this range, hope this range would be enough
 		int randomInt = randomGenerator.nextInt(10000);
+		randomInt=1000;
 		player.setID(randomInt);	
 		// get the modulo here, this is kind of trick :)
 		int pos  = playersmap.size() % 3;
@@ -36,7 +37,7 @@ public class Game {
 
 		player.setPosition(x, y);
 		this.logicalWorld.setElement(x, y, player.getID(), player);
-		
+		ConfigReader.UpdateGridLayOutCell(x, y, (byte)'1');
 
 		//players.add(player);
 		player.setGame(this);
@@ -58,6 +59,10 @@ public class Game {
 		return this.playersmap.get(playerid);
 	}
 
+	public void removePlayer(int playerid)
+	{
+		this.playersmap.remove(playerid);
+	}
 	public void removePlayer(int x, int y, Player player) {
 		if (this.logicalWorld.getElement(x, y).equals(player)) // Removes only
 																// the selected
@@ -65,19 +70,30 @@ public class Game {
 			this.logicalWorld.setElement(x, y, player.getID(), null);
 	}
 
-	public boolean movePlayer(Player player, int dx, int dy) {
+	public String movePlayer(Player player, int dx, int dy) {
+		String playermovementbuffer = new String();
 		if (dx == 0 && dy == 0)
-			return true;
-
+		{
+			playermovementbuffer="";
+			return playermovementbuffer;
+		}
+		
 		// Check if we can move in that direction
 		int nx = player.getWorldXCor() + dx;
 		int ny = player.getWorldYCor() + dy;
 
 		if (nx < 0 || ny < 0 || this.logicalWorld.getWidth() <= ny
 				|| this.logicalWorld.getHeight() <= nx)
-			return false;
+		{
+			playermovementbuffer="";
+			return playermovementbuffer;
+		}
 		// player can not move if there is wall or obstacle , have to add here.
 		Cell el = this.logicalWorld.getElement(nx, ny)[0];
+		
+		playermovementbuffer = "<" + BombermanProtocol.MESSAGE_TYPE
+				+ "=" + BombermanProtocol.PLAYER_MOVEMENT_MESSAGE
+				+ "|" + BombermanProtocol.PLAYER_OLD_POS + "=";
 		if (el == null) // oder Extra
 		{
 			// Set old position in logical world to null...
@@ -88,19 +104,22 @@ public class Game {
 				{
 
 					ConfigReader.UpdateGridLayOutCell(player.getWorldXCor(),player.getWorldYCor(), (byte) 'b');
+					playermovementbuffer += player.getWorldXCor()+","+player.getWorldYCor()+"|"+BombermanProtocol.OLD_ELEMENT_TYPE+"="+(byte)'b'+"|"+BombermanProtocol.PLAYER_NEW_POS+"=";
+					
 					
 				} else {
 					ConfigReader.UpdateGridLayOutCell(player.getWorldXCor(),
 							player.getWorldYCor(), (byte) '-');
 					this.logicalWorld.setElement(player.getWorldXCor(),
 							player.getWorldYCor(), player.getID(), null);
+					playermovementbuffer += player.getWorldXCor()+","+player.getWorldYCor()+"|"+BombermanProtocol.OLD_ELEMENT_TYPE+"="+(byte)'-'+"|"+BombermanProtocol.PLAYER_NEW_POS+"=";
 				}
 			} else {
 				ConfigReader.UpdateGridLayOutCell(player.getWorldXCor(),
 						player.getWorldYCor(), (byte) '-');
 				this.logicalWorld.setElement(player.getWorldXCor(),
 						player.getWorldYCor(), player.getID(), null);
-			}
+				playermovementbuffer += player.getWorldXCor()+","+player.getWorldYCor()+"|"+BombermanProtocol.OLD_ELEMENT_TYPE+"="+(byte)'-'+"|"+BombermanProtocol.PLAYER_NEW_POS+"=";			}
 			
 			// ...and set new position
 			player.move(dx, dy);
@@ -108,10 +127,13 @@ public class Game {
 					player.getWorldYCor(), player.getID(), player);
 			ConfigReader.UpdateGridLayOutCell(player.getWorldXCor(),
 					player.getWorldYCor(), (byte) '1');
-
-			return true;
+			playermovementbuffer += player.getWorldXCor()+","+player.getWorldYCor()+"|"+BombermanProtocol.NEW_ELEMENT_TYPE+"="+(byte)'1'+">";
+			return playermovementbuffer;
 		} else
-			return false;
+		{
+			playermovementbuffer ="";
+			return playermovementbuffer;
+		}
 	}
 
 	@Override

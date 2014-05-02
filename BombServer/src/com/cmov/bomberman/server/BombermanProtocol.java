@@ -11,6 +11,10 @@ public class BombermanProtocol {
 	public static final int GRID_COLUMN=8;
 	public static final int GRID_ELEMENTS=10;
 	public static final int PLAYER_ID=11;
+	public static final int PLAYER_OLD_POS=12;
+	public static final int PLAYER_NEW_POS=13;
+	public static final int OLD_ELEMENT_TYPE=14;
+	public static final int NEW_ELEMENT_TYPE=15;
 
 
 	public static final byte JOIN_MESSAGE = 'J';

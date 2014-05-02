@@ -32,7 +32,7 @@ public class BomberManWorker implements Runnable,IMoveableRobot {
 		}
 	final static Lock lock = new ReentrantLock();
 	public Map<String, MessageSendStatus> msgSendStatus = new HashMap<String,MessageSendStatus>();
-	private Map<String, Integer> useridmap = new HashMap<String,Integer>();
+	public static Map<String, Integer> useridmap = new HashMap<String,Integer>();
     private Message msg = new Message();
     public void processData(Server server, SocketChannel socket,
 			byte[] data, int count) {
@@ -111,29 +111,59 @@ public class BomberManWorker implements Runnable,IMoveableRobot {
 		return mapmessage;
 	}
     
-   private void processPlayerMovementMessage(Map<Integer,String> fieldmap)
+	private void processPlayerMovementMessage(Map<Integer, String> fieldmap) {
+		// sample player movement message from client
+		// <1=P|11=1|4=1.0>
+		// lets get the which direction player has moved and player name
+		int playerid = Integer.parseInt(fieldmap
+				.get(BombermanProtocol.PLAYER_ID));
+		String playermovepos = fieldmap.get(BombermanProtocol.PLAYER_MOVEMENT);
+		String[] movpos = playermovepos.split("\\.");
+		int x = Integer.parseInt(movpos[0]);
+		int y = Integer.parseInt(movpos[1]);
+		Player localPlayer = Server.mGame.getPlayer(playerid);
+		String playermovementbuffer = Server.mGame
+				.movePlayer(localPlayer, x, y);
+		if (!playermovementbuffer.isEmpty()) {
+			System.out
+					.println("[Server] Player id request moved sucesfull id - "
+							+ playerid);
+			for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
+					.entrySet()) {
+				entry.getValue().server.send(entry.getValue().socket,
+						playermovementbuffer.getBytes());
+
+			}
+		}	
+		else {
+			System.out.println("[Server] Player id request moved failed  id - "
+					+ playerid);
+		}
+	}
+   
+   private void processBombPlaceMovementMessage(Map<Integer,String> fieldmap)
    {
-	   //sample player movement message from client 
-	   //<1=P|11=1|4=1.0>
+	   //when client place the bomb, he just send his userid server will choose the player and 
+	    //place the bomb
+	   //<1=B|11=1>
 	   // lets get the which direction player has moved and player name
-	   int playerid = Integer.parseInt(fieldmap.get(BombermanProtocol.PLAYER_ID));
-	   String playermovepos = fieldmap.get(BombermanProtocol.PLAYER_MOVEMENT);
-	   String[] movpos = playermovepos.split("\\.");
-	   int x = Integer.parseInt(movpos[0]);
-	   int y = Integer.parseInt(movpos[1]);
-	   Player localPlayer = Server.mGame.getPlayer(playerid);
-		boolean ismoved = Server.mGame.movePlayer(localPlayer, x, y);
-		if (ismoved)
-			System.out.println("[Server] Player id request moved sucesfull id - "+playerid);
-		else
+	    int playerid = Integer.parseInt(fieldmap.get(BombermanProtocol.PLAYER_ID));
+	    Player localPlayer = Server.mGame.getPlayer(playerid);
+		String bompmsg  = localPlayer.placeBomb();
+		if(!bompmsg.isEmpty())
 		{
-			System.out.println("[Server] Player id request moved failed  id - "+playerid);
+			//send the bomb placement message to everyone
+			System.out.println("[Server] bomb placement msg - "+bompmsg);
+			for (Map.Entry<String, ServerDataEvent> entry : Server.clientList.entrySet()) {
+					entry.getValue().server.send(entry.getValue().socket, bompmsg.getBytes());
+								
+			}
 		}
    }
    private void processJoinMessage(Map<Integer, String> fieldmap) {
 		
 		// we need to create 3 player and to the game
-	   String username = fieldmap.get(BombermanProtocol.USER_NAME);
+	    String username = fieldmap.get(BombermanProtocol.USER_NAME);
 		Player player = new Player(username, this);
 		int playerid = Server.mGame.addPlayer(player);
 	  
@@ -146,6 +176,7 @@ public class BomberManWorker implements Runnable,IMoveableRobot {
 				entry.getValue().server.send(entry.getValue().socket, mapmsg.getBytes());
 				System.out.println("[Server] grid message is sending to client - "+entry.getKey()+"|Grid - "+mapmsg);
 				msgSendStatus.get(entry.getKey()).isGridMsgSent=true;
+				useridmap.put(entry.getKey(), playerid);
 			}
 			
 		}
@@ -228,7 +259,11 @@ public class BomberManWorker implements Runnable,IMoveableRobot {
 						if ( msgType == BombermanProtocol.JOIN_MESSAGE) {
 							processJoinMessage(fieldmap);
 						}else if ( msgType == BombermanProtocol.PLAYER_MOVEMENT_MESSAGE) {
+							System.out.println("player movement message has been received ");
 							processPlayerMovementMessage(fieldmap);
+						}else if (msgType==BombermanProtocol.BOMP_PLACEMET_MESSAGE)
+						{
+							processBombPlaceMovementMessage(fieldmap);
 						}
 					}
 

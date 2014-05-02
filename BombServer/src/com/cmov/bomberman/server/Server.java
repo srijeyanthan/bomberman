@@ -167,6 +167,11 @@ public class Server implements Runnable {
 			System.out.println("[Server] Client has diconnection from server -"+socketChannel.socket().getRemoteSocketAddress().toString());
 			clientList.remove(socketChannel.socket().getRemoteSocketAddress().toString());
 			System.out.println("[Server] Client has sucessfully remvoed from the client list");
+			//remvove the player from the map
+			
+			int playerid  = BomberManWorker.useridmap.get(socketChannel.socket().getRemoteSocketAddress().toString());
+			System.out.println("[Server] Player id is removing from the map -" +playerid);
+			mGame.removePlayer(playerid);
 			if(clientList.size() < 2)
 			{
 				Server.robotThread.setState(GameState.PAUSE);
