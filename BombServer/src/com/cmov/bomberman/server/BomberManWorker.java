@@ -36,7 +36,6 @@ public class BomberManWorker implements Runnable,IMoveableRobot {
     private Message msg = new Message();
     public void processData(Server server, SocketChannel socket,
 			byte[] data, int count) {
-    	
     	String key="";
 		try {
 			key = socket.getRemoteAddress().toString();
@@ -52,7 +51,7 @@ public class BomberManWorker implements Runnable,IMoveableRobot {
 		synchronized (msg) {
 			byte[] dataCopy = new byte[count];
 			System.arraycopy(data, 0, dataCopy, 0, count);
-			msg.addMessge(data);
+			msg.addMessge(dataCopy);
 			msg.notify();
 			
 		}
@@ -259,7 +258,6 @@ public class BomberManWorker implements Runnable,IMoveableRobot {
 						if ( msgType == BombermanProtocol.JOIN_MESSAGE) {
 							processJoinMessage(fieldmap);
 						}else if ( msgType == BombermanProtocol.PLAYER_MOVEMENT_MESSAGE) {
-							System.out.println("player movement message has been received ");
 							processPlayerMovementMessage(fieldmap);
 						}else if (msgType==BombermanProtocol.BOMP_PLACEMET_MESSAGE)
 						{

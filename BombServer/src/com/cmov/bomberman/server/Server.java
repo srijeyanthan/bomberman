@@ -184,6 +184,7 @@ public class Server implements Runnable {
 
 		// Hand the data off to our worker thread
 		this.worker.processData(this, socketChannel, this.readBuffer.array(), numRead);
+		this.readBuffer.clear();
 	}
 
 	private void write(SelectionKey key) throws IOException {
@@ -231,13 +232,4 @@ public class Server implements Runnable {
 		return socketSelector;
 	}
 
-	/*public static void main(String[] args) {
-		try {
-			BomberManWorker worker = new BomberManWorker();
-			new Thread(worker).start();
-			new Thread(new Server(null, 9090, worker)).start();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}*/
 }
