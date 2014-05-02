@@ -9,6 +9,8 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -92,6 +94,7 @@ public class ConfigReader {
 	static AssetManager am;
 
 	private static boolean mapdataready = false;
+	
 	
 	private static void setmapdataready(boolean readyornot)
 	{

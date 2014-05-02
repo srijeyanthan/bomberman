@@ -317,8 +317,9 @@ public abstract class BombermanClient implements Runnable {
 		}
 	}
 	public static void sendDataToServer(String msgtoserver) throws IOException {
+		
 		ByteBuffer buf = ByteBuffer.allocate(65535);
-		buf = ByteBuffer.wrap(msgtoserver.getBytes());
+		buf = ByteBuffer.wrap(msgtoserver.getBytes());	
 		try {
 			client.send(buf);
 		} catch (InterruptedException e) {
@@ -344,7 +345,7 @@ public abstract class BombermanClient implements Runnable {
 		};
 
 		handler = new RspHandler();
-		client.setAddress(new InetSocketAddress("192.168.1.6", 9090));
+		client.setAddress(new InetSocketAddress("192.168.1.7", 9090));
 		try {
 			client.start();
 		} catch (IOException e) {
