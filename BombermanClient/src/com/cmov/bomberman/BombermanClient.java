@@ -345,7 +345,7 @@ public abstract class BombermanClient implements Runnable {
 		};
 
 		handler = new RspHandler();
-		client.setAddress(new InetSocketAddress("192.168.1.7", 9090));
+		client.setAddress(new InetSocketAddress("192.168.1.100", 9090));
 		try {
 			client.start();
 		} catch (IOException e) {
