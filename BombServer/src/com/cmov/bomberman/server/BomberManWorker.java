@@ -3,6 +3,7 @@ package com.cmov.bomberman.server;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.channels.SocketChannel;
+import java.security.spec.MGF1ParameterSpec;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -264,6 +265,10 @@ public class BomberManWorker implements Runnable,IMoveableRobot,IExplodable,IUpd
 						{
 							processBombPlaceMovementMessage(fieldmap);
 						}
+						else if (msgType ==BombermanProtocol.GAME_QUIT_MESSAGE)
+						{
+							processbombermanQuitMessage(fieldmap);
+						}
 					}
 
 				} else {
@@ -276,6 +281,24 @@ public class BomberManWorker implements Runnable,IMoveableRobot,IExplodable,IUpd
 
 	}
 
+	private void processbombermanQuitMessage(Map<Integer, String> fieldmap) {
+		int playerid = Integer.parseInt(fieldmap.get(BombermanProtocol.PLAYER_ID));
+		int playerxcor = Server.mGame.getPlayer(playerid).getWorldXCor();
+		int playerycor = Server.mGame.getPlayer(playerid).getWorldYCor();
+		ConfigReader.UpdateGridLayOutCell(playerxcor, playerycor, (byte)'-');
+		String quitmsg = "<" + BombermanProtocol.MESSAGE_TYPE
+				+ "=" + BombermanProtocol.GAME_QUIT_MESSAGE
+				+ "|" + BombermanProtocol.QUIT_PLAYER_POS+"="+playerxcor+","+playerycor+">";
+			for (Map.Entry<String, ServerDataEvent> entry : Server.clientList.entrySet()) {
+				int playerID = useridmap.get(entry.getKey());
+				if(playerID != playerid)
+				{
+					System.out.println("[SERVER] Server sending quit message to these users - "+ playerid);
+					entry.getValue().server.send(entry.getValue().socket, quitmsg.getBytes());
+				}
+			}
+	}
+
 	@Override
 	public void UpdateScore(int numberOfRobotDied) {
 		// TODO Auto-generated method stub
@@ -283,9 +306,11 @@ public class BomberManWorker implements Runnable,IMoveableRobot,IExplodable,IUpd
 	}
 
 	@Override
-	public void Exploaded(boolean isPlayerDead) {
-		// TODO Auto-generated method stub
-		
+	public void Exploaded(boolean isPlayerDead, String bombexlodemsg) {
+		for (Map.Entry<String, ServerDataEvent> entry : Server.clientList.entrySet()) {
+			entry.getValue().server.send(entry.getValue().socket, bombexlodemsg.getBytes());
+						
+	}
 	}
 	
 }

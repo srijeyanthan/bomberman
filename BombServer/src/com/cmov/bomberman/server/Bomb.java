@@ -34,6 +34,9 @@ class Bomb extends Cell {
 	public void explode() {
 		try {
 
+			String bombexplodemsg = "<" + BombermanProtocol.MESSAGE_TYPE
+					+ "=" + BombermanProtocol.BOMB_EXPLOSION_MESSAGE
+					+ "|" + BombermanProtocol.BOMB_EXPLOSION_COR+"=";
 			System.out.println(this + " bomb has exploaded!");
 			player.setBombCounter(0);
 			boolean isPlayerDead = false;
@@ -45,6 +48,7 @@ class Bomb extends Cell {
 			if (CellElement == 'x')
 				isPlayerDead = true;
 			ConfigReader.UpdateGridLayOutCell(worldXCor, worldYCor, (byte) '-');
+			bombexplodemsg += worldXCor+","+worldYCor+".";
 			int nx = worldXCor;
 			int ny = worldYCor;
 			int numberofElementsDied = 0;
@@ -61,6 +65,7 @@ class Bomb extends Cell {
 					}
 					ConfigReader
 							.UpdateGridLayOutCell(nx, worldYCor, (byte) '-');
+					bombexplodemsg += nx+","+worldYCor+".";
 					if (CellElement == 'r')
 						++numberofElementsDied;
 
@@ -79,6 +84,7 @@ class Bomb extends Cell {
 					}
 					ConfigReader
 							.UpdateGridLayOutCell(nx, worldYCor, (byte) '-');
+					bombexplodemsg += nx+","+worldYCor+".";
 					if (CellElement == 'r')
 						++numberofElementsDied;
 
@@ -98,6 +104,7 @@ class Bomb extends Cell {
 					}
 					ConfigReader
 							.UpdateGridLayOutCell(worldXCor, ny, (byte) '-');
+					bombexplodemsg += worldXCor+","+ny+".";
 					if (CellElement == 'r')
 						++numberofElementsDied;
 				}
@@ -115,6 +122,7 @@ class Bomb extends Cell {
 					}
 					ConfigReader
 							.UpdateGridLayOutCell(worldXCor, ny, (byte) '-');
+					bombexplodemsg += worldXCor+","+ny+".";
 					// ConfigReader.gridlayout[worldXCor][ny] = '-';
 					if (CellElement == 'r')
 						++numberofElementsDied;
@@ -128,7 +136,14 @@ class Bomb extends Cell {
 			// (player.game, gridX, gridY, player.bombDistance);
 			// TO-DO: notify this explosion to front end , so that we can draw
 
-			ExplodableActivity.Exploaded(isPlayerDead);
+			if (bombexplodemsg
+					.charAt(bombexplodemsg.length() - 1) == '.') {
+				bombexplodemsg = bombexplodemsg.replaceFirst(
+						".$", "");
+			}
+			bombexplodemsg += ">";
+			System.out.println("[SERVER] Bomb exploaded message is - "+bombexplodemsg);
+			ExplodableActivity.Exploaded(isPlayerDead,bombexplodemsg);
 			UpdatableScore.UpdateScore(numberofElementsDied);
 			ConfigReader.ReleaseLock();
 		} catch (Exception ex) {
