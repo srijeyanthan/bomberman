@@ -209,8 +209,22 @@ public class RspHandler {
 				else if (msgType == BombermanProtocol.NEW_PLAYER_JOIN) {
 					processNewPlayerJoinMessage(fieldmap);
 				}
+				else if (msgType == BombermanProtocol.BOMB_EXPLOSION_MESSAGE) {
+					processBombExplosionMessage(fieldmap);
+				}
+				else if (msgType == BombermanProtocol.GAME_END_MESSAGE) {
+					processGameFinishMessage(fieldmap);
+				}
 			}
 
 		} 
+	}
+
+	private void processGameFinishMessage(Map<Integer, String> fieldmap) {
+                // sever has sent game finish message , stop the game and show the stat to user		
+	}
+
+	private void processBombExplosionMessage(Map<Integer, String> fieldmap) {
+		// sever has sent affected cor, so update them in the view.
 	}
 }
