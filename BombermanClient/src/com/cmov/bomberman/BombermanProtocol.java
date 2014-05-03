@@ -18,6 +18,7 @@ public class BombermanProtocol {
 	public static final int NEW_PLAYER_JOIN_COR=16;
 	public static final int BOMB_EXPLOSION_COR=17;
 	public static final int GAME_STAT=18;
+	public static final int QUIT_PLAYER_POS=19;
 
 
 	public static final byte JOIN_MESSAGE = 'J';
@@ -28,4 +29,5 @@ public class BombermanProtocol {
 	public static final byte NEW_PLAYER_JOIN='N';
 	public static final byte BOMB_EXPLOSION_MESSAGE='O';
 	public static final byte GAME_END_MESSAGE='P';
+	public static final byte GAME_QUIT_MESSAGE='Q';
 }
