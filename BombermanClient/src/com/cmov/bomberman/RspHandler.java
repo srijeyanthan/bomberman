@@ -9,8 +9,9 @@ import java.util.Map;
 
 public class RspHandler {
 	private String IncomingBuffer = "";
-	private static DrawView bomberManView=null;
-    public static int playerid=0;
+	private static DrawView bomberManView = null;
+	public static int playerid = 0;
+
 	public synchronized boolean handleResponse(byte[] rsp) {
 		this.IncomingBuffer += new String(rsp);
 		this.notify();
@@ -31,14 +32,15 @@ public class RspHandler {
 		bomberManView = bomberManGameView;
 	}
 
-	/*This method will be used to break the string and return easy format . example 
-	 * input - 1,7.3,10.5,13.9,10
-	 * output - 0 - Cor object which contains 1,7
-	 *          1 - Cor object which contains 3,10
-	 * So caller function can just iterate and use*/
+	/*
+	 * This method will be used to break the string and return easy format .
+	 * example input - 1,7.3,10.5,13.9,10 output - 0 - Cor object which contains
+	 * 1,7 1 - Cor object which contains 3,10 So caller function can just
+	 * iterate and use
+	 */
 	@SuppressLint("UseSparseArrays")
 	public Map<Integer, Cor> breakTheCordinateInToEasyFormat(String smsg) {
-		String[] corsplitted = smsg.split("\\."); // 
+		String[] corsplitted = smsg.split("\\."); //
 
 		Map<Integer, Cor> breakCor = new HashMap<Integer, Cor>();
 		for (int i = 0; i < corsplitted.length; ++i) {
@@ -51,11 +53,12 @@ public class RspHandler {
 		return breakCor;
 	}
 
-	
-	/*This method will be used to process individual message . example 
-	 * input - <1=U|2=Group2><1=R|5=1,7.3,10.5,13.9,10|6=2,7.4,10.6,13.10,10>
-	 * output - 0 , in the map key =1 value =u , key =2 , value =u ....
-	 * So caller function can just iterate and use*/
+	/*
+	 * This method will be used to process individual message . example input -
+	 * <1=U|2=Group2><1=R|5=1,7.3,10.5,13.9,10|6=2,7.4,10.6,13.10,10> output - 0
+	 * , in the map key =1 value =u , key =2 , value =u .... So caller function
+	 * can just iterate and use
+	 */
 	@SuppressLint("UseSparseArrays")
 	private List<Map<Integer, String>> processIndividualMessage(String message) {
 		// <message1><message2>... // this is out message structure
@@ -84,10 +87,9 @@ public class RspHandler {
 		String gridelements = fieldmap.get(BombermanProtocol.GRID_ELEMENTS);
 		playerid = Integer.parseInt(fieldmap.get(BombermanProtocol.PLAYER_ID));
 		System.out.println("[INFO] -GridMsg - Row-" + row + "|Col-" + col
-				+ "|GridElements-" + gridelements + "|playerid -"+playerid);
+				+ "|GridElements-" + gridelements + "|playerid -" + playerid);
 		ConfigReader.InitializeTheGridFromServer(row, col,
 				gridelements.getBytes());
-		
 
 	}
 
@@ -113,7 +115,7 @@ public class RspHandler {
 			bomberManView.postInvalidate();
 
 	}
-	
+
 	private void processPlayerMovementMessage(Map<Integer, String> fieldmap) {
 		String playeroldpos = fieldmap.get(BombermanProtocol.PLAYER_OLD_POS);
 		String playernewpos = fieldmap.get(BombermanProtocol.PLAYER_NEW_POS);
@@ -150,7 +152,7 @@ public class RspHandler {
 				breakbombCor.get(0).y, (byte) 'x');
 		bomberManView.postInvalidate();
 	}
-	
+
 	private void processNewPlayerJoinMessage(Map<Integer, String> fieldmap) {
 		String newplayercor = fieldmap
 				.get(BombermanProtocol.NEW_PLAYER_JOIN_COR);
@@ -163,7 +165,7 @@ public class RspHandler {
 	}
 
 	public synchronized void waitForResponse() {
-		while (this.IncomingBuffer.length()== 0) {
+		while (this.IncomingBuffer.length() == 0) {
 			try {
 				this.wait();
 			} catch (InterruptedException e) {
@@ -188,37 +190,56 @@ public class RspHandler {
 			List<Map<Integer, String>> processedmsg = processIndividualMessage(processmessage);
 			for (int i = 0; i < processedmsg.size(); ++i) {
 				Map<Integer, String> fieldmap = processedmsg.get(i);
-				byte msgType = (byte)Integer.parseInt(fieldmap.get(BombermanProtocol.MESSAGE_TYPE));
+				byte msgType = (byte) Integer.parseInt(fieldmap
+						.get(BombermanProtocol.MESSAGE_TYPE));
 				if (msgType == BombermanProtocol.GRID_MESSAGE) {
 					processGridMessage(fieldmap);
 				} else if (msgType == BombermanProtocol.ROBOT_PLACEMET_MESSAGE) {
 					processRobotPlacementMessage(fieldmap);
-				}
-				else if (msgType == BombermanProtocol.PLAYER_MOVEMENT_MESSAGE) {
+				} else if (msgType == BombermanProtocol.PLAYER_MOVEMENT_MESSAGE) {
 					processPlayerMovementMessage(fieldmap);
-				}
-				else if (msgType == BombermanProtocol.BOMP_PLACEMET_MESSAGE) {
+				} else if (msgType == BombermanProtocol.BOMP_PLACEMET_MESSAGE) {
 					processBombPlacementessage(fieldmap);
-				}
-				else if (msgType == BombermanProtocol.NEW_PLAYER_JOIN) {
+				} else if (msgType == BombermanProtocol.NEW_PLAYER_JOIN) {
 					processNewPlayerJoinMessage(fieldmap);
-				}
-				else if (msgType == BombermanProtocol.BOMB_EXPLOSION_MESSAGE) {
+				} else if (msgType == BombermanProtocol.BOMB_EXPLOSION_MESSAGE) {
 					processBombExplosionMessage(fieldmap);
-				}
-				else if (msgType == BombermanProtocol.GAME_END_MESSAGE) {
+				} else if (msgType == BombermanProtocol.GAME_END_MESSAGE) {
 					processGameFinishMessage(fieldmap);
+				}
+				else if (msgType == BombermanProtocol.GAME_QUIT_MESSAGE){
+					processPlayerQuitMessage(fieldmap);
 				}
 			}
 
-		} 
+		}
+	}
+
+	private void processPlayerQuitMessage(Map<Integer, String> fieldmap) {
+		// TODO server has sent player quit reply!
+		String playerCorMsg = fieldmap.get(BombermanProtocol.QUIT_PLAYER_POS);
+		Map<Integer, Cor> playerCordinates = breakTheCordinateInToEasyFormat(playerCorMsg);
+			ConfigReader.UpdateGridLayOutCell(playerCordinates.get(0).x,
+					playerCordinates.get(0).y, (byte) '-');
+		if (bomberManView != null)
+			bomberManView.postInvalidate();
 	}
 
 	private void processGameFinishMessage(Map<Integer, String> fieldmap) {
-                // sever has sent game finish message , stop the game and show the stat to user		
+		// sever has sent game finish message , stop the game and show the stat
+		// to user
 	}
 
 	private void processBombExplosionMessage(Map<Integer, String> fieldmap) {
 		// sever has sent affected cor, so update them in the view.
+		String bombExplosionCor = fieldmap
+				.get(BombermanProtocol.BOMB_EXPLOSION_COR);
+		Map<Integer, Cor> bombExplosionCordinates = breakTheCordinateInToEasyFormat(bombExplosionCor);
+		for (Map.Entry<Integer, Cor> entry : bombExplosionCordinates.entrySet()) {
+			ConfigReader.UpdateGridLayOutCell(entry.getValue().x,
+					entry.getValue().y, (byte) '-');
+		}
+		if (bomberManView != null)
+			bomberManView.postInvalidate();
 	}
 }

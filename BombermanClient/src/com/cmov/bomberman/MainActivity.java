@@ -177,23 +177,6 @@ public class MainActivity extends Activity {
 
 	}
 
-	public void RobotMovedAtLogicalLayer() {
-		bomberManView.postInvalidate();
-	}
-
-	public void Exploaded(boolean isPlayerDeadinGame) {
-		bomberManView.postInvalidate();
-		isBombPlaced = false;
-		isPlayerDead = isPlayerDeadinGame; // / this is only for test ,
-
-	}
-
-	public void UpdateScore(int numberOfRobotDied) {
-		scoreOfThePlayer += ConfigReader.getGameConfig().pointperrobotkilled
-				* numberOfRobotDied;
-		numberofRobotkilled += numberOfRobotDied;
-	}
-
 	private void InitBomberManMap() {
 
 		bomberManView.invalidate();
@@ -278,7 +261,7 @@ public class MainActivity extends Activity {
 		}
 		Intent myIntent = getIntent();
 		String userName = myIntent.getStringExtra("userName");
-		//bombermanGameDuration = ConfigReader.getGameConfig().gameduration;
+		bombermanGameDuration = ConfigReader.getGameConfig().gameduration;
 		setContentView(R.layout.activity_main);
 
 		
@@ -329,12 +312,6 @@ public class MainActivity extends Activity {
 					String movemsg ="<"+BombermanProtocol.MESSAGE_TYPE+"="+bombplacementmsg+"|"+BombermanProtocol.PLAYER_ID+"="+RspHandler.playerid+">";
 				    // send moved msg to server and wait  0, -1
 					addToQ(movemsg);
-					
-						if (!isBombPlaced)
-							bombButton.setText("Bombed");
-						isBombPlaced = true;
-						
-
 					
 				}
 
@@ -400,6 +377,9 @@ public class MainActivity extends Activity {
 		quitebutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
+					String quitMsg = new String(new byte[] { BombermanProtocol.GAME_QUIT_MESSAGE });
+					String playerQuitMsg = "<"+BombermanProtocol.MESSAGE_TYPE+"="+quitMsg+"|"+BombermanProtocol.PLAYER_ID+"="+RspHandler.playerid+">";
+					addToQ(playerQuitMsg);
 					Close("Closing..",
 							"Are you sure you want to quite the game ?", false);
 					//send client leave message to server, so that server won't send any data
