@@ -125,8 +125,15 @@ public class RspHandler {
 		String newgridelement = fieldmap.get(BombermanProtocol.NEW_ELEMENT_TYPE);
 		System.out.println("[Client] player old pos - "+playeroldpos +"|new pos -"+playernewpos+"|oldgridel -"+oldgridelement+"|newgridelment - "+newgridelement);
 		Map<Integer, Cor> breakOldCor = breakTheCordinateInToEasyFormat(playeroldpos);
+		if((byte)Integer.parseInt(oldgridelement) =='b')
+		{
 		ConfigReader.UpdateGridLayOutCell(breakOldCor.get(0).x,
-				breakOldCor.get(0).y, (byte) '-');
+				breakOldCor.get(0).y, (byte) 'b');
+		}else
+		{
+			ConfigReader.UpdateGridLayOutCell(breakOldCor.get(0).x,
+					breakOldCor.get(0).y, (byte) '-');
+		}
 		Map<Integer, Cor> breaknewCor = breakTheCordinateInToEasyFormat(playernewpos);
 		ConfigReader.UpdateGridLayOutCell(breaknewCor.get(0).x,
 				breaknewCor.get(0).y, (byte) '1');
@@ -135,9 +142,24 @@ public class RspHandler {
 	}
 	private void processBombPlacementessage(Map<Integer,String> fieldmap)
 	{
-		
+		//server sending which element type , but , since client already knew which is the type we can update without being
+		//extracted that type, better approch is do the extraction.!!!
+		String bombcor= fieldmap.get(BombermanProtocol.BOMB_PLACEMENT);
+		Map<Integer, Cor> breakbombCor = breakTheCordinateInToEasyFormat(bombcor);
+		ConfigReader.UpdateGridLayOutCell(breakbombCor.get(0).x,
+				breakbombCor.get(0).y, (byte) 'x');
+		bomberManView.postInvalidate();
 	}
 	
+	private void processNewPlayerJoinMessage(Map<Integer,String> fieldmap)
+	{
+		String newplayercor= fieldmap.get(BombermanProtocol.NEW_PLAYER_JOIN_COR);
+		Map<Integer, Cor> breaknewplayerCor = breakTheCordinateInToEasyFormat(newplayercor);
+		ConfigReader.UpdateGridLayOutCell(breaknewplayerCor.get(0).x,
+				breaknewplayerCor.get(0).y, (byte) '1');
+		bomberManView.postInvalidate();
+		
+	}
 
 	public synchronized void waitForResponse() {
 		while (this.IncomingBuffer.length()== 0) {
@@ -176,6 +198,9 @@ public class RspHandler {
 				}
 				else if (msgType == BombermanProtocol.BOMP_PLACEMET_MESSAGE) {
 					processBombPlacementessage(fieldmap);
+				}
+				else if (msgType == BombermanProtocol.NEW_PLAYER_JOIN) {
+					processNewPlayerJoinMessage(fieldmap);
 				}
 			}
 

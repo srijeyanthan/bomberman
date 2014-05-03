@@ -19,6 +19,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.Menu;
@@ -52,6 +53,31 @@ public class MainActivity extends Activity {
 
 	private GameState state = GameState.RUN;
 
+	/*
+	 * note , this is tick timer , every minute it will reduced one minute from
+	 * original game duration, actually we dont need per second based timer ,
+	 * this would be sort of inefficient
+	 */
+	@Override
+	public void onStart() {
+		super.onStart();
+		elapsedBroadcastReciver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context ctx, Intent intent) {
+				if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
+					if (bombermanGameDuration >= 0) {
+						--bombermanGameDuration;
+						bombermanelapsedTimeTextView.setText("00" + ":"
+								+ bombermanGameDuration);
+
+					}
+				}
+			}
+		};
+
+		registerReceiver(elapsedBroadcastReciver, new IntentFilter(
+				Intent.ACTION_TIME_TICK));
+	}
 	@Override
 	public void onStop() {
 		super.onStop();
@@ -298,6 +324,12 @@ public class MainActivity extends Activity {
 				if (state == GameState.RUN) {
 					
 					// send bomb placed message to server
+					//<1=B|11=1>
+					String bombplacementmsg = new String(new byte[] { BombermanProtocol.BOMP_PLACEMET_MESSAGE});
+					String movemsg ="<"+BombermanProtocol.MESSAGE_TYPE+"="+bombplacementmsg+"|"+BombermanProtocol.PLAYER_ID+"="+RspHandler.playerid+">";
+				    // send moved msg to server and wait  0, -1
+					addToQ(movemsg);
+					
 						if (!isBombPlaced)
 							bombButton.setText("Bombed");
 						isBombPlaced = true;
