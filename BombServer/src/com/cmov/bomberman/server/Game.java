@@ -25,7 +25,6 @@ public class Game {
 		Random randomGenerator = new Random();
 		// random id will be generated within this range, hope this range would be enough
 		int randomInt = randomGenerator.nextInt(10000);
-		///randomInt=1000;
 		player.setID(randomInt);	
 		// get the modulo here, this is kind of trick :)
 		int pos  = playersmap.size() % 3;
@@ -103,6 +102,7 @@ public class Game {
 						.getWorldYCor()] == 'x') // bomb is there
 				{
 
+					System.out.println("player still has the bomb .......");
 					ConfigReader.UpdateGridLayOutCell(player.getWorldXCor(),player.getWorldYCor(), (byte) 'b');
 					playermovementbuffer += player.getWorldXCor()+","+player.getWorldYCor()+"|"+BombermanProtocol.OLD_ELEMENT_TYPE+"="+(byte)'b'+"|"+BombermanProtocol.PLAYER_NEW_POS+"=";
 					

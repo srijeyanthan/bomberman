@@ -60,7 +60,7 @@ public class Server implements Runnable {
 			robotThread.setLogicalWord(Server.logicalworld);
 			robotThread.setRunning(true);
 			robotThread.start();
-			System.out.println("______Starting robot thread________");
+			System.out.println("[SERVER] ************* Starting robot thread ****************");
 	   }
 	public void send(SocketChannel socket, byte[] data) {
 		synchronized (this.pendingChanges) {

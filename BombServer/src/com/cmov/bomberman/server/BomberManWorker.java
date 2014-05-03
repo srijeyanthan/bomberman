@@ -9,11 +9,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import com.cmov.bomberman.server.RobotThread.GameState;
 
-
-
-
-
-public class BomberManWorker implements Runnable,IMoveableRobot {
+public class BomberManWorker implements Runnable,IMoveableRobot,IExplodable,IUpdatableScore {
 	 public class MessageSendStatus
 	    {    	
 	    	public boolean isGridMsgSent =false;
@@ -176,6 +172,13 @@ public class BomberManWorker implements Runnable,IMoveableRobot {
 				System.out.println("[Server] grid message is sending to client - "+entry.getKey()+"|Grid - "+mapmsg);
 				msgSendStatus.get(entry.getKey()).isGridMsgSent=true;
 				useridmap.put(entry.getKey(), playerid);
+			}else
+			{
+				/* we have already sent a grid message to client , so now we will only send the new player update*/
+				int x = player.getWorldXCor();
+				int y = player.getWorldYCor();
+				String newplayermsg = "<"+BombermanProtocol.MESSAGE_TYPE + "="+BombermanProtocol.NEW_PLAYER_JOIN+"|"+BombermanProtocol.NEW_PLAYER_JOIN_COR+"="+x+","+y+">";
+				entry.getValue().server.send(entry.getValue().socket, newplayermsg.getBytes());
 			}
 			
 		}
@@ -242,8 +245,6 @@ public class BomberManWorker implements Runnable,IMoveableRobot {
 					} catch (InterruptedException e) {
 					}
 				}
-				// dataEvent1 = (ServerDataEvent) queue.get(0);
-				// dataEvent2 = (ServerDataEvent) queue.get(1);
 			}
 
 			if (!msg.isEmpty()) {
@@ -273,6 +274,18 @@ public class BomberManWorker implements Runnable,IMoveableRobot {
 			}
 		}
 
+	}
+
+	@Override
+	public void UpdateScore(int numberOfRobotDied) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void Exploaded(boolean isPlayerDead) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
