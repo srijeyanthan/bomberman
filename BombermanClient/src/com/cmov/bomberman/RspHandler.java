@@ -14,7 +14,7 @@ import java.util.Map;
 public class RspHandler {
 	private byte[] rsp = null;
 	private String IncomingBuffer = "";
-	private static DrawView bomberManView;
+	private static DrawView bomberManView=null;
     public static int playerid=0;
     private boolean fuck =false;
 	public synchronized boolean handleResponse(byte[] rsp) {
@@ -103,62 +103,69 @@ public class RspHandler {
 		for (Map.Entry<Integer, Cor> entry : processedNewRbtCor.entrySet()) {
 			ConfigReader.UpdateGridLayOutCell(entry.getValue().x,
 					entry.getValue().y, (byte) 'r');
-			System.out.println("[INFO] - RobotMsg NewPos - x-" + entry.getValue().x + "|y-" + entry.getValue().y);
+			System.out.println("[INFO] - RobotMsg NewPos - x-"
+					+ entry.getValue().x + "|y-" + entry.getValue().y);
 		}
 		Map<Integer, Cor> processedOldRbtCor = breakTheCordinateInToEasyFormat(fieldmap
 				.get(BombermanProtocol.ROBOT_ORIGINAL_PLACE));
 		for (Map.Entry<Integer, Cor> entry : processedOldRbtCor.entrySet()) {
 			ConfigReader.UpdateGridLayOutCell(entry.getValue().x,
 					entry.getValue().y, (byte) '-');
-			System.out.println("[INFO] - RobotMsg OldPos - x-" + entry.getValue().x + "|y-" + entry.getValue().y);
+			System.out.println("[INFO] - RobotMsg OldPos - x-"
+					+ entry.getValue().x + "|y-" + entry.getValue().y);
 		}
 
-		bomberManView.postInvalidate();
+		if (bomberManView != null)
+			bomberManView.postInvalidate();
 
 	}
 	
-	private void processPlayerMovementMessage(Map<Integer, String> fieldmap)
-	{
-		String playeroldpos= fieldmap.get(BombermanProtocol.PLAYER_OLD_POS);
+	private void processPlayerMovementMessage(Map<Integer, String> fieldmap) {
+		String playeroldpos = fieldmap.get(BombermanProtocol.PLAYER_OLD_POS);
 		String playernewpos = fieldmap.get(BombermanProtocol.PLAYER_NEW_POS);
-		String oldgridelement = fieldmap.get(BombermanProtocol.OLD_ELEMENT_TYPE);
-		String newgridelement = fieldmap.get(BombermanProtocol.NEW_ELEMENT_TYPE);
-		System.out.println("[Client] player old pos - "+playeroldpos +"|new pos -"+playernewpos+"|oldgridel -"+oldgridelement+"|newgridelment - "+newgridelement);
+		String oldgridelement = fieldmap
+				.get(BombermanProtocol.OLD_ELEMENT_TYPE);
+		String newgridelement = fieldmap
+				.get(BombermanProtocol.NEW_ELEMENT_TYPE);
+		System.out.println("[Client] player old pos - " + playeroldpos
+				+ "|new pos -" + playernewpos + "|oldgridel -" + oldgridelement
+				+ "|newgridelment - " + newgridelement);
 		Map<Integer, Cor> breakOldCor = breakTheCordinateInToEasyFormat(playeroldpos);
-		if((byte)Integer.parseInt(oldgridelement) =='b')
-		{
-		ConfigReader.UpdateGridLayOutCell(breakOldCor.get(0).x,
-				breakOldCor.get(0).y, (byte) 'b');
-		}else
-		{
+		if ((byte) Integer.parseInt(oldgridelement) == 'b') {
+			ConfigReader.UpdateGridLayOutCell(breakOldCor.get(0).x,
+					breakOldCor.get(0).y, (byte) 'b');
+		} else {
 			ConfigReader.UpdateGridLayOutCell(breakOldCor.get(0).x,
 					breakOldCor.get(0).y, (byte) '-');
 		}
 		Map<Integer, Cor> breaknewCor = breakTheCordinateInToEasyFormat(playernewpos);
 		ConfigReader.UpdateGridLayOutCell(breaknewCor.get(0).x,
 				breaknewCor.get(0).y, (byte) '1');
-		bomberManView.postInvalidate();
-	
+		if (bomberManView != null)
+			bomberManView.postInvalidate();
+
 	}
-	private void processBombPlacementessage(Map<Integer,String> fieldmap)
-	{
-		//server sending which element type , but , since client already knew which is the type we can update without being
-		//extracted that type, better approch is do the extraction.!!!
-		String bombcor= fieldmap.get(BombermanProtocol.BOMB_PLACEMENT);
+
+	private void processBombPlacementessage(Map<Integer, String> fieldmap) {
+		// server sending which element type , but , since client already knew
+		// which is the type we can update without being
+		// extracted that type, better approch is do the extraction.!!!
+		String bombcor = fieldmap.get(BombermanProtocol.BOMB_PLACEMENT);
 		Map<Integer, Cor> breakbombCor = breakTheCordinateInToEasyFormat(bombcor);
 		ConfigReader.UpdateGridLayOutCell(breakbombCor.get(0).x,
 				breakbombCor.get(0).y, (byte) 'x');
 		bomberManView.postInvalidate();
 	}
 	
-	private void processNewPlayerJoinMessage(Map<Integer,String> fieldmap)
-	{
-		String newplayercor= fieldmap.get(BombermanProtocol.NEW_PLAYER_JOIN_COR);
+	private void processNewPlayerJoinMessage(Map<Integer, String> fieldmap) {
+		String newplayercor = fieldmap
+				.get(BombermanProtocol.NEW_PLAYER_JOIN_COR);
 		Map<Integer, Cor> breaknewplayerCor = breakTheCordinateInToEasyFormat(newplayercor);
 		ConfigReader.UpdateGridLayOutCell(breaknewplayerCor.get(0).x,
 				breaknewplayerCor.get(0).y, (byte) '1');
-		bomberManView.postInvalidate();
-		
+		if (bomberManView != null)
+			bomberManView.postInvalidate();
+
 	}
 
 	public synchronized void waitForResponse() {
@@ -204,10 +211,6 @@ public class RspHandler {
 				}
 			}
 
-		} else {
-			System.out
-					.println("[WARNING]- <Rsp Handler> Process message is empty!! ");
-		}
-
+		} 
 	}
 }
