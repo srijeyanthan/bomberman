@@ -1,24 +1,17 @@
 package com.cmov.bomberman;
 
 import android.annotation.SuppressLint;
-import android.os.Handler;
-import android.os.Message;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 public class RspHandler {
-	private byte[] rsp = null;
 	private String IncomingBuffer = "";
 	private static DrawView bomberManView=null;
     public static int playerid=0;
-    private boolean fuck =false;
 	public synchronized boolean handleResponse(byte[] rsp) {
-		this.rsp = rsp;
 		this.IncomingBuffer += new String(rsp);
 		this.notify();
 		return true;
@@ -63,6 +56,7 @@ public class RspHandler {
 	 * input - <1=U|2=Group2><1=R|5=1,7.3,10.5,13.9,10|6=2,7.4,10.6,13.10,10>
 	 * output - 0 , in the map key =1 value =u , key =2 , value =u ....
 	 * So caller function can just iterate and use*/
+	@SuppressLint("UseSparseArrays")
 	private List<Map<Integer, String>> processIndividualMessage(String message) {
 		// <message1><message2>... // this is out message structure
 		List<Map<Integer, String>> processedtokens = new ArrayList<Map<Integer, String>>();
