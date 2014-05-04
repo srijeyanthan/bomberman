@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
 	private int bombermanGameDuration = 0;
 	private static List<String> messageq = new ArrayList<String>();
 	final static Lock lock = new ReentrantLock();
+
 	public enum GameState {
 		PAUSE, RUN, RESUME
 	}
@@ -78,41 +79,42 @@ public class MainActivity extends Activity {
 		registerReceiver(elapsedBroadcastReciver, new IntentFilter(
 				Intent.ACTION_TIME_TICK));
 	}
+
 	@Override
 	public void onStop() {
 		super.onStop();
 		if (elapsedBroadcastReciver != null)
 			unregisterReceiver(elapsedBroadcastReciver);
 	}
-	
-	
-	public  boolean isQEmpty()
-	{
+
+	public boolean isQEmpty() {
 		lock.lock();
 		boolean result = messageq.isEmpty();
 		lock.unlock();
 		return result;
 	}
-	public   String getMessageFromQ()
-	{
+
+	public String getMessageFromQ() {
 		lock.lock();
-		String msg =  messageq.get(0);
+		String msg = messageq.get(0);
 		messageq.remove(0);
 		lock.unlock();
 		return msg;
 	}
-	public  void  removemsg()
-	{
+
+	public void removemsg() {
 		lock.lock();
 		messageq.remove(0);
 		lock.unlock();
-		
+
 	}
-	public  void addToQ(String smsg) {
+
+	public void addToQ(String smsg) {
 		lock.lock();
-		 messageq.add(smsg);
+		messageq.add(smsg);
 		lock.unlock();
-    }
+	}
+
 	private void startingUp() {
 		Thread timer = new Thread() { // new thread
 			public void run() {
@@ -232,15 +234,26 @@ public class MainActivity extends Activity {
 	public void onPause() {
 		super.onPause(); // Always call the superclass method first
 		if (state == GameState.RUN) {
+			String pauseMsg = new String(
+					new byte[] { BombermanProtocol.GAME_PAUSE_MESSAGE });
+			String playerPauseMsg = "<" + BombermanProtocol.MESSAGE_TYPE + "="
+					+ pauseMsg + "|" + BombermanProtocol.PLAYER_ID + "="
+					+ RspHandler.playerid + ">";
+			addToQ(playerPauseMsg);
 			this.state = GameState.PAUSE;
 			pausebutton.setText("Resume");
 		} else {
+			String resumeMsg = new String(
+					new byte[] { BombermanProtocol.GAME_RESUME_MESSAGE });
+			String playerResumeMsg = "<" + BombermanProtocol.MESSAGE_TYPE + "="
+					+ resumeMsg + "|" + BombermanProtocol.PLAYER_ID + "="
+					+ RspHandler.playerid + ">";
+			addToQ(playerResumeMsg);
 			this.state = GameState.RUN;
 			pausebutton.setText("Pause");
 		}
 
 	}
-	
 
 	@Override
 	public void onResume() {
@@ -249,7 +262,7 @@ public class MainActivity extends Activity {
 		// get the resource
 
 	}
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -263,8 +276,6 @@ public class MainActivity extends Activity {
 		String userName = myIntent.getStringExtra("userName");
 		bombermanGameDuration = ConfigReader.getGameConfig().gameduration;
 		setContentView(R.layout.activity_main);
-
-		
 
 		bomberManView = (com.cmov.bomberman.DrawView) findViewById(R.id.bckg);
 		bombermanelapsedTimeTextView = (TextView) findViewById(R.id.tleft);
@@ -294,25 +305,28 @@ public class MainActivity extends Activity {
 
 		RspHandler.setBombermanview(bomberManView);
 		startingUp();
-		
+
 		MessageDispatcher md = new MessageDispatcher(this);
 		Thread t = new Thread(md);
 		t.setDaemon(true);
 		t.start();
 
-		
 		bombButton = (Button) findViewById(R.id.btnBomb);
 		bombButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
-					
+
 					// send bomb placed message to server
-					//<1=B|11=1>
-					String bombplacementmsg = new String(new byte[] { BombermanProtocol.BOMP_PLACEMET_MESSAGE});
-					String movemsg ="<"+BombermanProtocol.MESSAGE_TYPE+"="+bombplacementmsg+"|"+BombermanProtocol.PLAYER_ID+"="+RspHandler.playerid+">";
-				    // send moved msg to server and wait  0, -1
+					// <1=B|11=1>
+					String bombplacementmsg = new String(
+							new byte[] { BombermanProtocol.BOMP_PLACEMET_MESSAGE });
+					String movemsg = "<" + BombermanProtocol.MESSAGE_TYPE + "="
+							+ bombplacementmsg + "|"
+							+ BombermanProtocol.PLAYER_ID + "="
+							+ RspHandler.playerid + ">";
+					// send moved msg to server and wait 0, -1
 					addToQ(movemsg);
-					
+
 				}
 
 			}
@@ -322,14 +336,20 @@ public class MainActivity extends Activity {
 		leftbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
-					
-					String playermovementmsg = new String(new byte[] { BombermanProtocol.PLAYER_MOVEMENT_MESSAGE });
-					String movemsg ="<"+BombermanProtocol.MESSAGE_TYPE+"="+playermovementmsg+"|"+BombermanProtocol.PLAYER_ID+"="+RspHandler.playerid+"|"+BombermanProtocol.PLAYER_MOVEMENT+"="+"0.-1"+">";
-				    // send moved msg to server and wait  0, -1
+
+					String playermovementmsg = new String(
+							new byte[] { BombermanProtocol.PLAYER_MOVEMENT_MESSAGE });
+					String movemsg = "<" + BombermanProtocol.MESSAGE_TYPE + "="
+							+ playermovementmsg + "|"
+							+ BombermanProtocol.PLAYER_ID + "="
+							+ RspHandler.playerid + "|"
+							+ BombermanProtocol.PLAYER_MOVEMENT + "=" + "0.-1"
+							+ ">";
+					// send moved msg to server and wait 0, -1
 					addToQ(movemsg);
-					
-					}
-				
+
+				}
+
 			}
 		});
 
@@ -337,11 +357,17 @@ public class MainActivity extends Activity {
 		rightbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
-					String playermovementmsg = new String(new byte[] { BombermanProtocol.PLAYER_MOVEMENT_MESSAGE });
-					String movemsg ="<"+BombermanProtocol.MESSAGE_TYPE+"="+playermovementmsg+"|"+BombermanProtocol.PLAYER_ID+"="+RspHandler.playerid+"|"+BombermanProtocol.PLAYER_MOVEMENT+"="+"0.1"+">";
+					String playermovementmsg = new String(
+							new byte[] { BombermanProtocol.PLAYER_MOVEMENT_MESSAGE });
+					String movemsg = "<" + BombermanProtocol.MESSAGE_TYPE + "="
+							+ playermovementmsg + "|"
+							+ BombermanProtocol.PLAYER_ID + "="
+							+ RspHandler.playerid + "|"
+							+ BombermanProtocol.PLAYER_MOVEMENT + "=" + "0.1"
+							+ ">";
 					addToQ(movemsg);
-					// send moved msg to server and wait  0, 1
-					//bombermanclient.sendplayermoveright();
+					// send moved msg to server and wait 0, 1
+					// bombermanclient.sendplayermoveright();
 				}
 			}
 		});
@@ -350,13 +376,19 @@ public class MainActivity extends Activity {
 		upbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
-					String playermovementmsg = new String(new byte[] { BombermanProtocol.PLAYER_MOVEMENT_MESSAGE });
-					String movemsg ="<"+BombermanProtocol.MESSAGE_TYPE+"="+playermovementmsg+"|"+BombermanProtocol.PLAYER_ID+"="+RspHandler.playerid+"|"+BombermanProtocol.PLAYER_MOVEMENT+"="+"-1.0"+">";
+					String playermovementmsg = new String(
+							new byte[] { BombermanProtocol.PLAYER_MOVEMENT_MESSAGE });
+					String movemsg = "<" + BombermanProtocol.MESSAGE_TYPE + "="
+							+ playermovementmsg + "|"
+							+ BombermanProtocol.PLAYER_ID + "="
+							+ RspHandler.playerid + "|"
+							+ BombermanProtocol.PLAYER_MOVEMENT + "=" + "-1.0"
+							+ ">";
 					addToQ(movemsg);
-					// send moved msg to server and wait  -1,0
-					//bombermanclient.sendplayermoveup();
-					}
-				
+					// send moved msg to server and wait -1,0
+					// bombermanclient.sendplayermoveup();
+				}
+
 			}
 		});
 
@@ -364,11 +396,17 @@ public class MainActivity extends Activity {
 		downbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
-					String playermovementmsg = new String(new byte[] { BombermanProtocol.PLAYER_MOVEMENT_MESSAGE });
-					String movemsg ="<"+BombermanProtocol.MESSAGE_TYPE+"="+playermovementmsg+"|"+BombermanProtocol.PLAYER_ID+"="+RspHandler.playerid+"|"+BombermanProtocol.PLAYER_MOVEMENT+"="+"1.0"+">";
+					String playermovementmsg = new String(
+							new byte[] { BombermanProtocol.PLAYER_MOVEMENT_MESSAGE });
+					String movemsg = "<" + BombermanProtocol.MESSAGE_TYPE + "="
+							+ playermovementmsg + "|"
+							+ BombermanProtocol.PLAYER_ID + "="
+							+ RspHandler.playerid + "|"
+							+ BombermanProtocol.PLAYER_MOVEMENT + "=" + "1.0"
+							+ ">";
 					addToQ(movemsg);
-					// send moved msg to server and wait  1,0
-					//bombermanclient.sendplayermovedown();
+					// send moved msg to server and wait 1,0
+					// bombermanclient.sendplayermovedown();
 				}
 			}
 		});
@@ -377,13 +415,17 @@ public class MainActivity extends Activity {
 		quitebutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
-					String quitMsg = new String(new byte[] { BombermanProtocol.GAME_QUIT_MESSAGE });
-					String playerQuitMsg = "<"+BombermanProtocol.MESSAGE_TYPE+"="+quitMsg+"|"+BombermanProtocol.PLAYER_ID+"="+RspHandler.playerid+">";
+					String quitMsg = new String(
+							new byte[] { BombermanProtocol.GAME_QUIT_MESSAGE });
+					String playerQuitMsg = "<" + BombermanProtocol.MESSAGE_TYPE
+							+ "=" + quitMsg + "|" + BombermanProtocol.PLAYER_ID
+							+ "=" + RspHandler.playerid + ">";
 					addToQ(playerQuitMsg);
 					Close("Closing..",
 							"Are you sure you want to quite the game ?", false);
-					//send client leave message to server, so that server won't send any data
-					
+					// send client leave message to server, so that server won't
+					// send any data
+
 				}
 			}
 		});

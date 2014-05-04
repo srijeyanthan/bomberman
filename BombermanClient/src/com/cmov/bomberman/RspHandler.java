@@ -1,6 +1,7 @@
 package com.cmov.bomberman;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap.Config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -210,9 +211,35 @@ public class RspHandler {
 				else if (msgType == BombermanProtocol.GAME_QUIT_MESSAGE){
 					processPlayerQuitMessage(fieldmap);
 				}
+				else if(msgType == BombermanProtocol.GAME_PAUSE_MESSAGE)
+				{
+					processPlayerPauseMessage(fieldmap);
+				}
+				else if(msgType == BombermanProtocol.GAME_RESUME_MESSAGE)
+				{
+					processPlayerResumeMessage(fieldmap);
+				}
 			}
 
 		}
+	}
+
+	private void processPlayerResumeMessage(Map<Integer, String> fieldmap) {
+		// TODO Auto-generated method stub
+		String resumeCormsg = fieldmap.get(BombermanProtocol.RESUME_PLAYER_POS);
+		Map<Integer, Cor> resumeCordinates = breakTheCordinateInToEasyFormat(resumeCormsg);
+		ConfigReader.UpdateGridLayOutCell(resumeCordinates.get(0).x, resumeCordinates.get(0).y, (byte) '1');
+		if(bomberManView != null)
+			bomberManView.postInvalidate();
+	}
+
+	private void processPlayerPauseMessage(Map<Integer, String> fieldmap) {
+		// TODO server has sent player pause reply!
+		String pauseCormsg = fieldmap.get(BombermanProtocol.PAUSE_PLAYER_POS);
+		Map<Integer, Cor> pauseCordinates = breakTheCordinateInToEasyFormat(pauseCormsg);
+		ConfigReader.UpdateGridLayOutCell(pauseCordinates.get(0).x, pauseCordinates.get(0).y, (byte) 'w');
+		if(bomberManView != null)
+			bomberManView.postInvalidate();
 	}
 
 	private void processPlayerQuitMessage(Map<Integer, String> fieldmap) {
