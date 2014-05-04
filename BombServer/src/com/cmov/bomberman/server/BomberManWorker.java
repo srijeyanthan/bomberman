@@ -29,13 +29,15 @@ public class BomberManWorker implements Runnable, IMoveableRobot, IExplodable,
 	}
 
 	final static Lock lock = new ReentrantLock();
-	public Map<String, MessageSendStatus> msgSendStatus = new HashMap<String, MessageSendStatus>();
-	public static Map<String, Integer> useridmap = new HashMap<String, Integer>();
-	private Message msg = new Message();
+	
+	public Map<String, MessageSendStatus> msgSendStatus = new HashMap<String,MessageSendStatus>();
+	public static Map<String, Integer> useridmap = new HashMap<String,Integer>();
+	public Map<Integer,Integer> globalScore = new HashMap<Integer, Integer>();
+    private Message msg = new Message();
+    public void processData(Server server, SocketChannel socket,
+			byte[] data, int count) {
+    	String key="";
 
-	public void processData(Server server, SocketChannel socket, byte[] data,
-			int count) {
-		String key = "";
 		try {
 			key = socket.getRemoteAddress().toString();
 		} catch (IOException e1) {
@@ -83,7 +85,6 @@ public class BomberManWorker implements Runnable, IMoveableRobot, IExplodable,
 								+ entry.getKey()
 								+ " - because client has disconnected from the server");
 			}
-
 		}
 
 	}
@@ -147,24 +148,23 @@ public class BomberManWorker implements Runnable, IMoveableRobot, IExplodable,
 		}
 	}
 
-	private void processBombPlaceMovementMessage(Map<Integer, String> fieldmap) {
-		// when client place the bomb, he just send his userid server will
-		// choose the player and
-		// place the bomb
-		// <1=B|11=1>
-		// lets get the which direction player has moved and player name
-		int playerid = Integer.parseInt(fieldmap
-				.get(BombermanProtocol.PLAYER_ID));
-		Player localPlayer = Server.mGame.getPlayer(playerid);
-		String bompmsg = localPlayer.placeBomb();
-		if (!bompmsg.isEmpty()) {
-			// send the bomb placement message to everyone
-			System.out.println("[Server] bomb placement msg - " + bompmsg);
-			for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
-					.entrySet()) {
-				entry.getValue().server.send(entry.getValue().socket,
-						bompmsg.getBytes());
-
+   
+   private void processBombPlaceMovementMessage(Map<Integer,String> fieldmap)
+   {
+	   //when client place the bomb, he just send his userid server will choose the player and 
+	    //place the bomb
+	   //<1=B|11=1>
+	   // lets get the which direction player has moved and player name
+	    int playerid = Integer.parseInt(fieldmap.get(BombermanProtocol.PLAYER_ID));
+	    Player localPlayer = Server.mGame.getPlayer(playerid);
+		String bompmsg  = localPlayer.placeBomb(playerid);
+		if(!bompmsg.isEmpty())
+		{
+			//send the bomb placement message to everyone
+			System.out.println("[Server] bomb placement msg - "+bompmsg);
+			for (Map.Entry<String, ServerDataEvent> entry : Server.clientList.entrySet()) {
+					entry.getValue().server.send(entry.getValue().socket, bompmsg.getBytes());
+								
 			}
 		}
 	}
@@ -212,6 +212,17 @@ public class BomberManWorker implements Runnable, IMoveableRobot, IExplodable,
 		if (Server.clientList.size() == 2) {
 			Server.robotThread.setState(GameState.RUN);
 		}
+		String noOfPlayerMsg = "<" + BombermanProtocol.MESSAGE_TYPE
+				+ "=" + BombermanProtocol.NUMBER_OF_PLAYERS_MESSAGE
+				+ "|" + BombermanProtocol.NUMBER_OF_PLAYERS+"="+Server.clientList.size()+">";
+		
+		for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
+				.entrySet()) {
+			entry.getValue().server.send(entry.getValue().socket,
+					noOfPlayerMsg.getBytes());
+			
+		}
+		
 	}
 
 	/*
@@ -376,9 +387,25 @@ public class BomberManWorker implements Runnable, IMoveableRobot, IExplodable,
 	}
 
 	@Override
-	public void UpdateScore(int numberOfRobotDied) {
-		// TODO Auto-generated method stub
-
+	public void UpdateScore(int playerid , int numberOfRobotDied , int numberofPlayerkilled) {
+		int totalScore =0;
+	    totalScore = (numberOfRobotDied*ConfigReader.getGameConfig().pointperrobotkilled) + (numberofPlayerkilled*ConfigReader.getGameConfig().pointsperopponentkilled);
+		System.out.println("[SERVER] player id - "+playerid+"|Total score - "+totalScore);
+		globalScore.put(playerid, totalScore);
+		//send only if total score is more than 0
+		if(totalScore >0){
+		String scoreupdatemsg = "<" + BombermanProtocol.MESSAGE_TYPE
+				+ "=" + BombermanProtocol.INDIVIDUAL_SCORE_UPDATE
+				+ "|" + BombermanProtocol.SCORE+"="+totalScore+">";
+		for (Map.Entry<String, ServerDataEvent> entry : Server.clientList.entrySet()) {
+			int playerID = useridmap.get(entry.getKey());
+			if(playerID == playerid)
+			{
+				System.out.println("[SERVER] Server sending update message to these users - "+ playerid);
+				entry.getValue().server.send(entry.getValue().socket, scoreupdatemsg.getBytes());
+			}
+		}
+		}
 	}
 
 	@Override

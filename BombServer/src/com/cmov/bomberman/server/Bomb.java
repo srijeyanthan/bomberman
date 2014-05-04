@@ -16,18 +16,19 @@ class Bomb extends Cell {
 	private BombExplosionTimer timer;
 	public boolean isExploded;
 	private int stage = 1;
+	private int playerid =0;
 
 	public Bomb(int x, int y) {
 		super(x, y);
 		
 	}
 
-	public void InitBomb( Player player,BomberManWorker server)
+	public void InitBomb( Player player,BomberManWorker server,int playerid)
 	{
 		this.player = player;
 		timer = new BombExplosionTimer(this);
 		isExploded = false;
-
+        this.playerid = playerid;
 		ExplodableActivity = (IExplodable) server;
 		UpdatableScore = (IUpdatableScore) server;
 	}
@@ -51,13 +52,14 @@ class Bomb extends Cell {
 			bombexplodemsg += worldXCor+","+worldYCor+".";
 			int nx = worldXCor;
 			int ny = worldYCor;
-			int numberofElementsDied = 0;
+			int numberofRobotKilled = 0;
+			int numberofPlayerkilled=0;
 			if (++nx < ConfigReader.getGameDim().row) {
 				CellElement = ConfigReader.gridlayout[nx][worldYCor];
 				if (CellElement != 'w') // dont update , because we can not
 										// break the wall :)
 				{
-
+                     // here we need a fix 
 					if (CellElement == 'o' || CellElement == 'r') {
 						player.game.getLogicalWorld().setElement(nx, worldYCor,
 								0, null);
@@ -67,11 +69,19 @@ class Bomb extends Cell {
 							.UpdateGridLayOutCell(nx, worldYCor, (byte) '-');
 					bombexplodemsg += nx+","+worldYCor+".";
 					if (CellElement == 'r')
-						++numberofElementsDied;
+						++numberofRobotKilled;
+					if(CellElement=='1')
+					{
+						// if playerid and bompid is same then we can not give that point to 
+						// that player
+						int existingplayerid = ((Player)player.game.getLogicalWorld().getElement(nx, worldYCor)[0]).getID();
+						if(existingplayerid != this.playerid)
+						{
+						++numberofPlayerkilled;
+						}
+					}
 
 				}
-				if (CellElement == '1')
-					isPlayerDead = true;
 			}
 			nx = worldXCor;
 			if (--nx > 0) {
@@ -86,11 +96,17 @@ class Bomb extends Cell {
 							.UpdateGridLayOutCell(nx, worldYCor, (byte) '-');
 					bombexplodemsg += nx+","+worldYCor+".";
 					if (CellElement == 'r')
-						++numberofElementsDied;
+						++numberofRobotKilled;
+					if(CellElement=='1')
+					{
+						int existingplayerid = ((Player)player.game.getLogicalWorld().getElement(nx, worldYCor)[0]).getID();
+						if(existingplayerid != this.playerid)
+						{
+						++numberofPlayerkilled;
+						}
+					}
 
 				}
-				if (CellElement == '1')
-					isPlayerDead = true;
 
 			}
 			if (++ny < ConfigReader.getGameDim().column) {
@@ -106,10 +122,16 @@ class Bomb extends Cell {
 							.UpdateGridLayOutCell(worldXCor, ny, (byte) '-');
 					bombexplodemsg += worldXCor+","+ny+".";
 					if (CellElement == 'r')
-						++numberofElementsDied;
+						++numberofRobotKilled;
+					if(CellElement=='1')
+					{
+						int existingplayerid = ((Player)player.game.getLogicalWorld().getElement(worldXCor, ny)[0]).getID();
+						if(existingplayerid != this.playerid)
+						{
+						++numberofPlayerkilled;
+						}
+					}
 				}
-				if (CellElement == '1')
-					isPlayerDead = true;
 			}
 			ny = worldYCor;
 			if (--ny > 0) {
@@ -123,13 +145,18 @@ class Bomb extends Cell {
 					ConfigReader
 							.UpdateGridLayOutCell(worldXCor, ny, (byte) '-');
 					bombexplodemsg += worldXCor+","+ny+".";
-					// ConfigReader.gridlayout[worldXCor][ny] = '-';
 					if (CellElement == 'r')
-						++numberofElementsDied;
+						++numberofRobotKilled;
+					if(CellElement=='1')
+					{
+						int existingplayerid = ((Player)player.game.getLogicalWorld().getElement(worldXCor, ny)[0]).getID();
+						if(existingplayerid != this.playerid)
+						{
+						  ++numberofPlayerkilled;
+						}
+					}
 
 				}
-				if (CellElement == '1')
-					isPlayerDead = true;
 
 			}
 			timer.cancel();
@@ -144,7 +171,7 @@ class Bomb extends Cell {
 			bombexplodemsg += ">";
 			System.out.println("[SERVER] Bomb exploaded message is - "+bombexplodemsg);
 			ExplodableActivity.Exploaded(isPlayerDead,bombexplodemsg);
-			UpdatableScore.UpdateScore(numberofElementsDied);
+			UpdatableScore.UpdateScore(this.playerid,numberofRobotKilled,numberofPlayerkilled);
 			ConfigReader.ReleaseLock();
 		} catch (Exception ex) {
 			ex.printStackTrace();

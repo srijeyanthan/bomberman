@@ -361,14 +361,14 @@ public class RobotThread extends Thread {
 					}
 					Phirobotmovelist.clear();
 					Robotmovementbuffer += ">";
-					System.out.println("Robot movement buffer is ready - "
-							+ Robotmovementbuffer);
+					/*System.out.println("Robot movement buffer is ready - "
+							+ Robotmovementbuffer);*/
 					robotActiviy.RobotMovedAtLogicalLayer(Robotmovementbuffer);
 
 					// ConfigReader.UnlockTheGrid();
 					lock.unlock();
-					System.out
-							.println("_____________ Robot thread is going to sleep now ____________");
+					/*System.out
+							.println("_____________ Robot thread is going to sleep now ____________");*/
 					// Thread.sleep(2000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block

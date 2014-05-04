@@ -179,6 +179,17 @@ public class Server implements Runnable {
 			key.channel().close();
 			key.cancel();
 			
+			// some of the client has diconnected , send the message to all the client except disconnected socket
+			String noOfPlayerMsg = "<" + BombermanProtocol.MESSAGE_TYPE
+					+ "=" + BombermanProtocol.NUMBER_OF_PLAYERS_MESSAGE
+					+ "|" + BombermanProtocol.NUMBER_OF_PLAYERS+"="+Server.clientList.size()+">";
+			for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
+					.entrySet()) {
+				entry.getValue().server.send(entry.getValue().socket,
+						noOfPlayerMsg.getBytes());
+				
+			}
+			
 			return;
 		}
 

@@ -37,9 +37,7 @@ public class MainActivity extends Activity {
 	private static Bitmap robot = null;
 	private static Bitmap bomb = null;
 	private static int scoreOfThePlayer = 0;
-	private static int numberofRobotkilled = 0;
-	private boolean isBombPlaced = false;
-	private boolean isPlayerDead = false;
+	private static int numberofPlayers=0;
 	Button bombButton = null;
 	Button pausebutton = null;
 	private static RectRender rectrender = null;
@@ -132,38 +130,7 @@ public class MainActivity extends Activity {
 						public void run() {
 							bombermanScoreView.setText(String
 									.valueOf(scoreOfThePlayer));
-							if (!isBombPlaced) {
-								bombButton.setText("Bomb");
-							}
-							if (isPlayerDead) {
-
-								String message = "No of Robots killed - "
-										+ Integer.toString(numberofRobotkilled)
-										+ "\n" + "Total Score - "
-										+ Integer.toString(scoreOfThePlayer);
-								new AlertDialog.Builder(MainActivity.this)
-										.setTitle("Game over - Game stat")
-										.setMessage(message)
-										.setPositiveButton(
-												android.R.string.yes,
-												new DialogInterface.OnClickListener() {
-													public void onClick(
-															DialogInterface dialog,
-															int which) {
-
-														Intent i = getBaseContext()
-																.getPackageManager()
-																.getLaunchIntentForPackage(
-																		getBaseContext()
-																				.getPackageName());
-														i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-														startActivity(i);
-													}
-
-												})
-										.setIcon(R.drawable.bomberman).show();
-								isPlayerDead = false;
-							}
+							bombermanNoOfPlayersview.setText(String.valueOf(numberofPlayers));
 						}
 					});
 				} while (b == true);
@@ -183,6 +150,15 @@ public class MainActivity extends Activity {
 
 		bomberManView.invalidate();
 
+	}
+	
+	public static void setScoreofThePlayer(int totalscore)
+	{
+		scoreOfThePlayer += totalscore;
+	}
+	public static void setNumberofPlayer(int numberofPlayer)
+	{
+		numberofPlayers = numberofPlayer;
 	}
 
 	public void Close(String title, String messageboxcontent,
@@ -285,7 +261,7 @@ public class MainActivity extends Activity {
 		bombermanScoreView = (TextView) findViewById(R.id.score);
 
 		bombermanusernameview.setText(userName);
-		bombermanNoOfPlayersview.setText("3");
+		
 		bombermanelapsedTimeTextView
 				.setText("00" + ":" + bombermanGameDuration);
 
@@ -304,6 +280,8 @@ public class MainActivity extends Activity {
 		InitBomberManMap();
 
 		RspHandler.setBombermanview(bomberManView);
+		RspHandler.setBombermanScoreview(bombermanScoreView);
+		bombermanScoreView.setText(String.valueOf(0));
 		startingUp();
 
 		MessageDispatcher md = new MessageDispatcher(this);

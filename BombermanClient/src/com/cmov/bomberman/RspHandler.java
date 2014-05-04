@@ -1,7 +1,11 @@
 package com.cmov.bomberman;
 
 import android.annotation.SuppressLint;
+
 import android.graphics.Bitmap.Config;
+
+import android.widget.TextView;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +16,7 @@ public class RspHandler {
 	private String IncomingBuffer = "";
 	private static DrawView bomberManView = null;
 	public static int playerid = 0;
-
+	private static TextView bombermanScoreView=null;
 	public synchronized boolean handleResponse(byte[] rsp) {
 		this.IncomingBuffer += new String(rsp);
 		this.notify();
@@ -33,6 +37,10 @@ public class RspHandler {
 		bomberManView = bomberManGameView;
 	}
 
+	public static void setBombermanScoreview(TextView bombermantextview)
+	{
+		bombermanScoreView = bombermantextview;
+	}
 	/*
 	 * This method will be used to break the string and return easy format .
 	 * example input - 1,7.3,10.5,13.9,10 output - 0 - Cor object which contains
@@ -207,9 +215,12 @@ public class RspHandler {
 					processBombExplosionMessage(fieldmap);
 				} else if (msgType == BombermanProtocol.GAME_END_MESSAGE) {
 					processGameFinishMessage(fieldmap);
-				}
-				else if (msgType == BombermanProtocol.GAME_QUIT_MESSAGE){
+				}else if (msgType == BombermanProtocol.GAME_QUIT_MESSAGE){
 					processPlayerQuitMessage(fieldmap);
+				}else if (msgType == BombermanProtocol.INDIVIDUAL_SCORE_UPDATE){
+					processIndividualScoreupdate(fieldmap);
+				}else if (msgType == BombermanProtocol.NUMBER_OF_PLAYERS_MESSAGE){
+					processNoOfPlayerMessage(fieldmap);
 				}
 				else if(msgType == BombermanProtocol.GAME_PAUSE_MESSAGE)
 				{
@@ -242,6 +253,17 @@ public class RspHandler {
 			bomberManView.postInvalidate();
 	}
 
+	private void processNoOfPlayerMessage(Map<Integer, String> fieldmap) {
+		int noOfPlayers = Integer.parseInt(fieldmap.get(BombermanProtocol.NUMBER_OF_PLAYERS));
+		MainActivity.setNumberofPlayer(noOfPlayers);
+	}
+
+	private void processIndividualScoreupdate(Map<Integer,String> fieldmap)
+	{
+		int totalscore = Integer.parseInt(fieldmap.get(BombermanProtocol.SCORE));
+		MainActivity.setScoreofThePlayer(totalscore);
+	}
+	
 	private void processPlayerQuitMessage(Map<Integer, String> fieldmap) {
 		// TODO server has sent player quit reply!
 		String playerCorMsg = fieldmap.get(BombermanProtocol.QUIT_PLAYER_POS);

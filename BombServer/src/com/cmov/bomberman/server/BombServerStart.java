@@ -6,21 +6,8 @@ public class BombServerStart {
 
 	
 
-	/*
-	 * static Runnable runnable = new Runnable() { public void run() {
-	 * 
-	 * try {
-	 * 
-	 * server = new Server(null, 9090, logicalworld);
-	 * 
-	 * } catch (IOException e1) { // TODO Auto-generated catch block
-	 * e1.printStackTrace(); } long endTime = System.currentTimeMillis() + 20 *
-	 * 1000;
-	 * 
-	 * while (System.currentTimeMillis() < endTime) { synchronized (this) { try
-	 * { wait(endTime - System.currentTimeMillis()); } catch (Exception e) { } }
-	 * } } };
-	 */
+	
+	
 
 	public static void main(String[] args) {
 
