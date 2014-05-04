@@ -191,6 +191,17 @@ public class BomberManWorker implements Runnable,IMoveableRobot,IExplodable,IUpd
 		{
 			Server.robotThread.setState(GameState.RUN);
 		}
+		String noOfPlayerMsg = "<" + BombermanProtocol.MESSAGE_TYPE
+				+ "=" + BombermanProtocol.NUMBER_OF_PLAYERS_MESSAGE
+				+ "|" + BombermanProtocol.NUMBER_OF_PLAYERS+"="+Server.clientList.size()+">";
+		
+		for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
+				.entrySet()) {
+			entry.getValue().server.send(entry.getValue().socket,
+					noOfPlayerMsg.getBytes());
+			
+		}
+		
 	}
 
 	/*This method will be used to break the string and return easy format . example 
