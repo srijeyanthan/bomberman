@@ -101,7 +101,7 @@ public class Player extends Cell {
     	this.bombCount = counter;
     }
     int getBombCounter() { return this.bombCount;}
-	public String placeBomb() {
+	public String placeBomb(int playerid) {
 	         
 		++bombCount;
 		if(bombCount> ALLOWED_BOMB)
@@ -119,7 +119,7 @@ public class Player extends Cell {
 				+ "|" + BombermanProtocol.BOMB_PLACEMENT + "="+worldXCor +","+ worldYCor+"|"+BombermanProtocol.NEW_ELEMENT_TYPE+"="+(byte)'x'+">";
 		ConfigReader.UpdateGridLayOutCell(worldXCor, worldYCor, (byte) 'x');
 		this.game.getLogicalWorld().setElement(worldXCor, worldYCor, 0, new Bomb(worldXCor, worldYCor));
-		((Bomb)this.game.getLogicalWorld().getElement(worldXCor, worldYCor)[0]).InitBomb(this,server);
+		((Bomb)this.game.getLogicalWorld().getElement(worldXCor, worldYCor)[0]).InitBomb(this,server,playerid);
 		return bombplacementmsg;
 		
 	}

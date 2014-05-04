@@ -11,6 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.cmov.bomberman.server.RobotThread.GameState;
 
 public class BomberManWorker implements Runnable,IMoveableRobot,IExplodable,IUpdatableScore {
+	
 	 public class MessageSendStatus
 	    {    	
 	    	public boolean isGridMsgSent =false;
@@ -30,6 +31,7 @@ public class BomberManWorker implements Runnable,IMoveableRobot,IExplodable,IUpd
 	final static Lock lock = new ReentrantLock();
 	public Map<String, MessageSendStatus> msgSendStatus = new HashMap<String,MessageSendStatus>();
 	public static Map<String, Integer> useridmap = new HashMap<String,Integer>();
+	public Map<Integer,Integer> globalScore = new HashMap<Integer, Integer>();
     private Message msg = new Message();
     public void processData(Server server, SocketChannel socket,
 			byte[] data, int count) {
@@ -66,7 +68,7 @@ public class BomberManWorker implements Runnable,IMoveableRobot,IExplodable,IUpd
     		//please note : this is checking (socket.isconnected() ) would be  a performance issue 
     		if(entry.getValue().socket.isConnected()) {
 			entry.getValue().server.send(entry.getValue().socket, Robotmovementbuffer.getBytes());
-				System.out.println("[Server] grid message is sending to client - "+entry.getKey()+"|Grid - "+Robotmovementbuffer);
+				//System.out.println("[Server] grid message is sending to client - "+entry.getKey()+"|Grid - "+Robotmovementbuffer);
     		}else
     		{
     			System.out.println("[Server] Can't send the data to this client - "+entry.getKey()+" - because client has disconnected from the server");
@@ -145,7 +147,7 @@ public class BomberManWorker implements Runnable,IMoveableRobot,IExplodable,IUpd
 	   // lets get the which direction player has moved and player name
 	    int playerid = Integer.parseInt(fieldmap.get(BombermanProtocol.PLAYER_ID));
 	    Player localPlayer = Server.mGame.getPlayer(playerid);
-		String bompmsg  = localPlayer.placeBomb();
+		String bompmsg  = localPlayer.placeBomb(playerid);
 		if(!bompmsg.isEmpty())
 		{
 			//send the bomb placement message to everyone
@@ -300,17 +302,35 @@ public class BomberManWorker implements Runnable,IMoveableRobot,IExplodable,IUpd
 	}
 
 	@Override
-	public void UpdateScore(int numberOfRobotDied) {
-		// TODO Auto-generated method stub
-		
+	public void UpdateScore(int playerid , int numberOfRobotDied , int numberofPlayerkilled) {
+		int totalScore =0;
+	    totalScore = (numberOfRobotDied*ConfigReader.getGameConfig().pointperrobotkilled) + (numberofPlayerkilled*ConfigReader.getGameConfig().pointsperopponentkilled);
+		System.out.println("[SERVER] player id - "+playerid+"|Total score - "+totalScore);
+		globalScore.put(playerid, totalScore);
+		//send only if total score is more than 0
+		if(totalScore >0){
+		String scoreupdatemsg = "<" + BombermanProtocol.MESSAGE_TYPE
+				+ "=" + BombermanProtocol.INDIVIDUAL_SCORE_UPDATE
+				+ "|" + BombermanProtocol.SCORE+"="+totalScore+">";
+		for (Map.Entry<String, ServerDataEvent> entry : Server.clientList.entrySet()) {
+			int playerID = useridmap.get(entry.getKey());
+			if(playerID == playerid)
+			{
+				System.out.println("[SERVER] Server sending update message to these users - "+ playerid);
+				entry.getValue().server.send(entry.getValue().socket, scoreupdatemsg.getBytes());
+			}
+		}
+		}
 	}
 
 	@Override
 	public void Exploaded(boolean isPlayerDead, String bombexlodemsg) {
-		for (Map.Entry<String, ServerDataEvent> entry : Server.clientList.entrySet()) {
-			entry.getValue().server.send(entry.getValue().socket, bombexlodemsg.getBytes());
-						
-	}
+		for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
+				.entrySet()) {
+			entry.getValue().server.send(entry.getValue().socket,
+					bombexlodemsg.getBytes());
+
+		}
 	}
 	
 }
