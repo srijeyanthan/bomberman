@@ -49,10 +49,6 @@ public class BombServerStart {
 		}
 
 		
-		/*
-		 * Thread bombermanserverThread = new Thread(runnable);
-		 * bombermanserverThread.start();
-		 */
 
 	}
 }

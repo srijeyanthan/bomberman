@@ -95,6 +95,8 @@ public class ConfigReader {
 	public static Player players4 = null;
 	private static Logger logger = new Logger();
 	public static int serverPort = 0;
+	public static int totalnoplayer=0;
+	public static int totalrobotcount=0;
 
 	public static Logger getLogger() {
 		return logger;
@@ -158,6 +160,9 @@ public class ConfigReader {
 									}else {
 										grid[j - 1][localxcounter] = mapelement
 												.getBytes()[0];
+										if (mapelement.getBytes()[0] == 'r') {
+											++totalrobotcount;
+										}
 									}
 
 									++localxcounter;
@@ -168,6 +173,7 @@ public class ConfigReader {
 						}
 					}
 					gridlayout = grid;
+					totalnoplayer = playermap.size();
 				} else {
 					System.exit(1);
 				}

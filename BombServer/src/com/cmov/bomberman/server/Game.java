@@ -27,7 +27,7 @@ public class Game {
 		int randomInt = randomGenerator.nextInt(10000);
 		player.setID(randomInt);	
 		// get the modulo here, this is kind of trick :)
-		int pos  = playersmap.size() % 3;
+		int pos  = playersmap.size() % ConfigReader.totalnoplayer;
 		// Adds player to playground view, set starting position
 		int x = ConfigReader.playermap.get(pos).getXCor();
 		int y = ConfigReader.playermap.get(pos).getYCor();
