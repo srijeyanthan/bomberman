@@ -49,12 +49,12 @@
      ed - explosion duratoin, er - explosion range rs - robot speed , pr-points per robots killed
      po - points per opponent killed -->
     <gameconfig>
-        <gd value="30"/>
-        <et value="1"/>
-        <ed value="1"/>
-        <er value="1"/>
-        <rs value="1"/>
-        <pr value="300"/>
-        <po value="1000"/>
+        <gd value="120"/>
+        <et value="2"/>
+        <ed value="2"/>
+        <er value="4"/> 
+        <rs value="2"/>   <!-- this actualyl means, each 0.5 second , robot has to move 1 cell  -->
+        <pr value="10"/>
+        <po value="100"/>
     </gameconfig>
 </map>

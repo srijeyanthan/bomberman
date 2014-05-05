@@ -92,6 +92,7 @@ public class ConfigReader {
 	public static Player players = null;
 	public static Player players2 = null;
 	public static Player players3 = null;
+	public static Player players4 = null;
 	private static Logger logger = new Logger();
 	public static int serverPort = 0;
 
@@ -99,14 +100,15 @@ public class ConfigReader {
 		return logger;
 	}
 
-	public static void InitReaders() {
+	public static void InitReaders(int gamelevel) {
 
+		String configFilename = "config_"+gamelevel+".xml";
 		ReadGameDim();
 		ReadGameConfig();
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			File file = new File("config.xml");
+			File file = new File(configFilename);
 			if (file.exists()) {
 				Document doc = db.parse(file);
 				Element docEle = doc.getDocumentElement();
@@ -149,7 +151,11 @@ public class ConfigReader {
 										playermap.put(2, new Player(j - 1,
 												localxcounter));
 										grid[j - 1][localxcounter]='-';
-									} else {
+									} else if (mapelement.getBytes()[0] == '4') {
+										playermap.put(3, new Player(j - 1,
+												localxcounter));
+										grid[j - 1][localxcounter]='-';
+									}else {
 										grid[j - 1][localxcounter] = mapelement
 												.getBytes()[0];
 									}
