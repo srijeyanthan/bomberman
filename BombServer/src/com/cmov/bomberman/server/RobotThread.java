@@ -36,7 +36,8 @@ public class RobotThread extends Thread {
 	final static Lock lock = new ReentrantLock();
 	private IExplodable ExplodableActivity;
     private Object valueLock = new Object();
-    private boolean value = false;   
+    private boolean value = false; 
+    private int robotSpeed = ConfigReader.Gameconfig.robotspeed;
 	public RobotThread(int row, int col, BomberManWorker server) {
 		super();
 
@@ -271,7 +272,7 @@ public class RobotThread extends Thread {
 		      }  
 			if ((getGameState() == GameState.RUN)) {
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(robotSpeed*1000);
 					// ConfigReader.LockTheGrid();
 					lock.lock();
 					int RobotCounter = 0;

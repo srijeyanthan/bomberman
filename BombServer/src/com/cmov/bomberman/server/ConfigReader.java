@@ -26,13 +26,13 @@ import org.w3c.dom.NodeList;
 public class ConfigReader {
 
 	final static Lock lock = new ReentrantLock();
-
+	
 	public static class Gameconfig {
 		public final int gameduration;
 		public final int explosiontimeout;
 		public final int explosionduration;
 		public final int explosionrange;
-		public final int robotspeed;
+		public static int robotspeed;
 		public final int pointperrobotkilled;
 		public final int pointsperopponentkilled;
 
@@ -42,7 +42,7 @@ public class ConfigReader {
 			this.explosiontimeout = et;
 			this.explosionduration = ed;
 			this.explosionrange = er;
-			this.robotspeed = rs;
+			Gameconfig.robotspeed = rs;
 			this.pointperrobotkilled = pr;
 			this.pointsperopponentkilled = po;
 
