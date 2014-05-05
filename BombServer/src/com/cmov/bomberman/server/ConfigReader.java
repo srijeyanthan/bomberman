@@ -32,7 +32,7 @@ public class ConfigReader {
 		public final int explosiontimeout;
 		public final int explosionduration;
 		public final int explosionrange;
-		public static int robotspeed;
+		public final int robotspeed;
 		public final int pointperrobotkilled;
 		public final int pointsperopponentkilled;
 
@@ -42,7 +42,7 @@ public class ConfigReader {
 			this.explosiontimeout = et;
 			this.explosionduration = ed;
 			this.explosionrange = er;
-			Gameconfig.robotspeed = rs;
+			this.robotspeed = rs;
 			this.pointperrobotkilled = pr;
 			this.pointsperopponentkilled = po;
 
