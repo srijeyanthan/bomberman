@@ -16,7 +16,7 @@ public class LoginActivity extends Activity {
 	@SuppressWarnings("unused")
 	private Button button;
 	private String playername;
-
+    
 	Runnable runnable = new Runnable() {
 		public void run() {
 

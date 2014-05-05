@@ -32,6 +32,16 @@ public class RspHandler {
 		public int x = -1;
 		public int y = -1;
 	}
+	
+	public class CorString {
+		public CorString(String name, int score) {
+			this.name = name;
+			this.score = score;
+		}
+
+		public String name = "";
+		public int score = -1;
+	}
 
 	public static void setBombermanview(DrawView bomberManGameView) {
 		bomberManView = bomberManGameView;
@@ -60,6 +70,21 @@ public class RspHandler {
 
 		}
 		return breakCor;
+	}
+	
+	@SuppressLint("UseSparseArrays")
+	public Map<Integer, CorString> breakTheCordinateInToEasyFormatStrings(String smsg) {
+		String[] corsplitted = smsg.split("\\."); //
+
+		Map<Integer, CorString> breakCorString = new HashMap<Integer, CorString>();
+		for (int i = 0; i < corsplitted.length; ++i) {
+			String[] furthercorsplitted = corsplitted[i].split(",");
+			String name = furthercorsplitted[0];
+			int score = Integer.parseInt(furthercorsplitted[1]);
+			breakCorString.put(i, new CorString(name, score));
+
+		}
+		return breakCorString;
 	}
 
 	/*
@@ -277,6 +302,14 @@ public class RspHandler {
 	private void processGameFinishMessage(Map<Integer, String> fieldmap) {
 		// sever has sent game finish message , stop the game and show the stat
 		// to user
+		String stats = "";
+		String gameFinishMsg = fieldmap.get(BombermanProtocol.GAME_STAT);
+		Map<Integer, CorString> gameStats = breakTheCordinateInToEasyFormatStrings(gameFinishMsg);
+		for(Map.Entry<Integer, CorString> entry : gameStats.entrySet()) {
+			stats += "Player Name: " + entry.getValue().name + " Score: " + entry.getValue().score + "\n";
+		}
+		
+		BombermanClient.Mainactivity.SetGameStat(stats);
 	}
 
 	private void processBombExplosionMessage(Map<Integer, String> fieldmap) {

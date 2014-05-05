@@ -38,6 +38,7 @@ public class MainActivity extends Activity {
 	private static Bitmap bomb = null;
 	private static int scoreOfThePlayer = 0;
 	private static int numberofPlayers=0;
+	private String gameStatString;
 	Button bombButton = null;
 	Button pausebutton = null;
 	private static RectRender rectrender = null;
@@ -46,6 +47,30 @@ public class MainActivity extends Activity {
 	private static List<String> messageq = new ArrayList<String>();
 	final static Lock lock = new ReentrantLock();
 
+	
+	public void SetGameStat(String stat)
+	{
+		this.gameStatString = stat;
+		new AlertDialog.Builder(MainActivity.this)
+		.setTitle("Game over - Game stat")
+		.setMessage(stat)
+		.setPositiveButton(android.R.string.yes,
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,
+							int which) {
+						
+						Intent i = getBaseContext()
+								.getPackageManager()
+								.getLaunchIntentForPackage(
+										getBaseContext()
+												.getPackageName());
+						i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+						startActivity(i);
+					}
+					
+				})
+		.setIcon(R.drawable.bomberman).show();
+	}
 	public enum GameState {
 		PAUSE, RUN, RESUME
 	}
@@ -288,7 +313,7 @@ public class MainActivity extends Activity {
 		Thread t = new Thread(md);
 		t.setDaemon(true);
 		t.start();
-
+        BombermanClient.SetActivity(this);
 		bombButton = (Button) findViewById(R.id.btnBomb);
 		bombButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
