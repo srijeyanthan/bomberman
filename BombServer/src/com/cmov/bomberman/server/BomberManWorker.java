@@ -162,15 +162,17 @@ public class BomberManWorker implements Runnable, IMoveableRobot, IExplodable,
 		int playerid = Integer.parseInt(fieldmap
 				.get(BombermanProtocol.PLAYER_ID));
 		Player localPlayer = Server.mGame.getPlayer(playerid);
-		String bompmsg = localPlayer.placeBomb(playerid);
-		if (!bompmsg.isEmpty()) {
-			// send the bomb placement message to everyone
-			System.out.println("[Server] bomb placement msg - " + bompmsg);
-			for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
-					.entrySet()) {
-				entry.getValue().server.send(entry.getValue().socket,
-						bompmsg.getBytes());
+		if (localPlayer != null) {
+			String bompmsg = localPlayer.placeBomb(playerid);
+			if (!bompmsg.isEmpty()) {
+				// send the bomb placement message to everyone
+				System.out.println("[Server] bomb placement msg - " + bompmsg);
+				for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
+						.entrySet()) {
+					entry.getValue().server.send(entry.getValue().socket,
+							bompmsg.getBytes());
 
+				}
 			}
 		}
 	}
@@ -422,7 +424,11 @@ public class BomberManWorker implements Runnable, IMoveableRobot, IExplodable,
 				+ (numberofPlayerkilled * ConfigReader.getGameConfig().pointsperopponentkilled);
 		System.out.println("[SERVER] player id - " + playerid
 				+ "|Total score - " + totalScore);
-		globalScore.put(playerid, totalScore);
+		if (globalScore.containsKey(playerid)) {
+			int previoustotal = globalScore.get(playerid);
+			globalScore.put(playerid, previoustotal + totalScore);
+		} else
+			globalScore.put(playerid, totalScore);
 		// send only if total score is more than 0
 		if (totalScore > 0) {
 			String scoreupdatemsg = "<" + BombermanProtocol.MESSAGE_TYPE + "="

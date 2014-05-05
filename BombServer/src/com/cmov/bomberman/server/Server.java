@@ -175,7 +175,7 @@ public class Server implements Runnable {
 			mGame.removePlayer(playerid);
 			if(clientList.size() < 2)
 			{
-				Server.isGameStarted =false;
+				//Server.isGameStarted =false;
 				Server.robotThread.setState(GameState.PAUSE);
 			}
 			key.channel().close();
