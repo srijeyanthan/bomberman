@@ -31,7 +31,7 @@ public class BombermanProtocol {
 	public static final byte GRID_MESSAGE ='M';
 	public static final byte NEW_PLAYER_JOIN='N';
 	public static final byte BOMB_EXPLOSION_MESSAGE='O';
-	public static final byte GAME_END_MESSAGE='P';
+	public static final byte GAME_END_MESSAGE='D';
 	public static final byte GAME_QUIT_MESSAGE='Q';
 	public static final byte GAME_PAUSE_MESSAGE='A';
 	public static final byte GAME_RESUME_MESSAGE='C';
