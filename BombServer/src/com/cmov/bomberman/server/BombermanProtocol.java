@@ -19,8 +19,10 @@ public class BombermanProtocol {
 	public static final int BOMB_EXPLOSION_COR=17;
 	public static final int GAME_STAT=18;
 	public static final int QUIT_PLAYER_POS=19;
-	public static final int SCORE=20;
-    public static final int NUMBER_OF_PLAYERS=21;
+	public static final int PAUSE_PLAYER_POS=20;
+	public static final int RESUME_PLAYER_POS=21;
+	public static final int SCORE=22;
+    public static final int NUMBER_OF_PLAYERS=23;
 
 	public static final byte JOIN_MESSAGE = 'J';
 	public static final byte PLAYER_MOVEMENT_MESSAGE = 'P';
@@ -31,6 +33,8 @@ public class BombermanProtocol {
 	public static final byte BOMB_EXPLOSION_MESSAGE='O';
 	public static final byte GAME_END_MESSAGE='P';
 	public static final byte GAME_QUIT_MESSAGE='Q';
+	public static final byte GAME_PAUSE_MESSAGE='A';
+	public static final byte GAME_RESUME_MESSAGE='C';
 	public static final byte INDIVIDUAL_SCORE_UPDATE='S';
 	public static final byte NUMBER_OF_PLAYERS_MESSAGE='T';
 }
