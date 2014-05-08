@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
 
@@ -24,6 +25,7 @@ public abstract class BombermanClient implements Runnable {
 	private static final long MAXIMUM_RECONNECT_INTERVAL = 30000; // 30 sec.
 	private static final int READ_BUFFER_SIZE = 0x100000;
 	private static final int WRITE_BUFFER_SIZE = 0x100000;
+	public static MainActivity Mainactivity;
 
 	private long reconnectInterval = INITIAL_RECONNECT_INTERVAL;
 
@@ -327,8 +329,11 @@ public abstract class BombermanClient implements Runnable {
 		}
 		buf.clear();
 	}
-
-	public static void startBombermanClient() throws IOException {
+   public static void SetActivity( MainActivity mainActivity)
+   {
+	   Mainactivity = mainActivity;
+   }
+	public static void startBombermanClient() throws IOException {		
 		client = new BombermanClient() {
 			@Override
 			protected void onRead(ByteBuffer buf) throws Exception {

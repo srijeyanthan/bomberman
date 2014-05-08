@@ -36,15 +36,16 @@ public class RobotThread extends Thread {
 	final static Lock lock = new ReentrantLock();
 	private IExplodable ExplodableActivity;
     private Object valueLock = new Object();
-    private boolean value = false;   
+    private boolean value = false; 
+    private int robotSpeed = ConfigReader.getGameConfig().robotspeed;
 	public RobotThread(int row, int col, BomberManWorker server) {
 		super();
 
-		for (int i = 1; i <= 5; ++i) {
+		for (int i = 1; i <= ConfigReader.totalrobotcount; ++i) {
 			RobotCor robotCor = new RobotCor();
 			updatedRobotPos.put(i, robotCor);
 		}
-		for (int i = 1; i <= 5; ++i) {
+		for (int i = 1; i <= ConfigReader.totalrobotcount; ++i) {
 			RobotCor robotCor = new RobotCor();
 			originalRbotPos.put(i, robotCor);
 		}
@@ -53,7 +54,6 @@ public class RobotThread extends Thread {
 		// I think we could remove this interface , because , we can directly
 		// call that method.
 		robotActiviy = (IMoveableRobot) server;
-		// ExplodableActivity = (IExplodable) server;
 
 	}
 
@@ -141,9 +141,7 @@ public class RobotThread extends Thread {
 					String key = Integer.toString(nxu) + Integer.toString(y);
 					if (!Phirobotmovelist.contains(key)) // contains key
 					{
-						// System.out.println("expected robot move - " + key);
 						Phirobotmovelist.add(key);
-						// //this.logicalworld.setElement(x, y, 0, null);
 						updatedRobotPos.get(RobotCounter).x = nxu;
 						updatedRobotPos.get(RobotCounter).y = y;
 						originalRbotPos.get(RobotCounter).x = x;
@@ -155,9 +153,7 @@ public class RobotThread extends Thread {
 
 					if (!Phirobotmovelist.contains(key)) // contains key
 					{
-						// ystem.out.println("expected robot move - " + key);
 						Phirobotmovelist.add(key);
-						// this.logicalworld.setElement(x, y, 0, null);
 						updatedRobotPos.get(RobotCounter).x = nxd;
 						updatedRobotPos.get(RobotCounter).y = y;
 						originalRbotPos.get(RobotCounter).x = x;
@@ -178,10 +174,7 @@ public class RobotThread extends Thread {
 								+ Integer.toString(nyr);
 						if (!Phirobotmovelist.contains(key)) // contains key
 						{
-							// System.out.println("expected robot move - " +
-							// key);
 							Phirobotmovelist.add(key);
-							// this.logicalworld.setElement(x, y, 0, null);
 							updatedRobotPos.get(RobotCounter).x = x;
 							updatedRobotPos.get(RobotCounter).y = nyr;
 							originalRbotPos.get(RobotCounter).x = x;
@@ -193,10 +186,7 @@ public class RobotThread extends Thread {
 								+ Integer.toString(nyl);
 						if (!Phirobotmovelist.contains(key)) // contains key
 						{
-							// System.out.println("expected robot move - " +
-							// key);
 							Phirobotmovelist.add(key);
-							// this.logicalworld.setElement(x, y, 0, null);
 							updatedRobotPos.get(RobotCounter).x = x;
 							updatedRobotPos.get(RobotCounter).y = nyl;
 							originalRbotPos.get(RobotCounter).x = x;
@@ -209,10 +199,7 @@ public class RobotThread extends Thread {
 								+ Integer.toString(y);
 						if (!Phirobotmovelist.contains(key)) // contains key
 						{
-							// System.out.println("expected robot move - " +
-							// key);
 							Phirobotmovelist.add(key);
-							// //this.logicalworld.setElement(x, y, 0, null);
 							updatedRobotPos.get(RobotCounter).x = nxu;
 							updatedRobotPos.get(RobotCounter).y = y;
 							originalRbotPos.get(RobotCounter).x = x;
@@ -225,8 +212,6 @@ public class RobotThread extends Thread {
 
 						if (!Phirobotmovelist.contains(key)) // contains key
 						{
-							// ystem.out.println("expected robot move - " +
-							// key);
 							Phirobotmovelist.add(key);
 							// this.logicalworld.setElement(x, y, 0, null);
 							updatedRobotPos.get(RobotCounter).x = nxd;
@@ -281,15 +266,13 @@ public class RobotThread extends Thread {
 		              try {
 						valueLock.wait();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}    
 		         }    
-		         // value is now true    
 		      }  
 			if ((getGameState() == GameState.RUN)) {
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(2000);
 					// ConfigReader.LockTheGrid();
 					lock.lock();
 					int RobotCounter = 0;
@@ -315,10 +298,13 @@ public class RobotThread extends Thread {
 								&& updatedRobotPos.get(iter).y != -1) {
 							int x = updatedRobotPos.get(iter).x;
 							int y = updatedRobotPos.get(iter).y;
-							// if(this.logicalworld.getElement(x, y)[0]
-							// instanceof
-							// Player)
-							// /ExplodableActivity.Exploaded(true);
+							if(this.logicalworld.getElement(x, y)[0]instanceof Player)
+							{
+								// player has been killed by robot 
+								//get the player id 
+								int playerid =((Player)this.logicalworld.getElement(x, y)[0]).getID();
+								Server.mGame.removePlayer(playerid);
+							}
 							ConfigReader.UpdateGridLayOutCell(x, y, (byte) 'r');
 							this.logicalworld.setElement(x, y, 0, new Robot(x,
 									y));

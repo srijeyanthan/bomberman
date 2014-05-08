@@ -1,7 +1,4 @@
 package com.cmov.bomberman.wifidirect;
-
-
-
 /*
  * Developer note - Group -2
  */

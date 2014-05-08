@@ -74,7 +74,7 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
 
         Context mContext = WiFiDirectActivity.this;
 		try {
-			ConfigReader.InitConfigParser(mContext);
+			ConfigReader.InitConfigParser(mContext,1);
 		} catch (XmlPullParserException e) {
 			e.printStackTrace();
 		}

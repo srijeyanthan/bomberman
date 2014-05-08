@@ -38,7 +38,7 @@ public class Server implements Runnable {
 	public static LogicalWorld logicalworld;
 	public static Game mGame = null;
 	public static Map<String, ServerDataEvent> clientList = new HashMap<String,ServerDataEvent>();
-	
+	public static boolean isGameStarted = false;
 	public Server(InetAddress hostAddress, int port, BomberManWorker worker) throws IOException {
 		this.hostAddress = hostAddress;
 		this.port = port;
@@ -164,6 +164,7 @@ public class Server implements Runnable {
 		if (numRead == -1) {
 			// Remote entity shut the socket down cleanly. Do the
 			// same from our end and cancel the channel.
+			
 			System.out.println("[Server] Client has diconnection from server -"+socketChannel.socket().getRemoteSocketAddress().toString());
 			clientList.remove(socketChannel.socket().getRemoteSocketAddress().toString());
 			System.out.println("[Server] Client has sucessfully remvoed from the client list");
@@ -174,6 +175,7 @@ public class Server implements Runnable {
 			mGame.removePlayer(playerid);
 			if(clientList.size() < 2)
 			{
+				//Server.isGameStarted =false;
 				Server.robotThread.setState(GameState.PAUSE);
 			}
 			key.channel().close();
@@ -231,13 +233,10 @@ public class Server implements Runnable {
 		// Create a new non-blocking server socket channel
 		this.serverChannel = ServerSocketChannel.open();
 		serverChannel.configureBlocking(false);
-		serverChannel.socket().setReuseAddress(true);
+
 		// Bind the server socket to the specified address and port
 		InetSocketAddress isa = new InetSocketAddress(this.hostAddress, this.port);
-		
-		
 		serverChannel.socket().bind(isa);
-		
 
 		// Register the server socket channel, indicating an interest in 
 		// accepting new connections
