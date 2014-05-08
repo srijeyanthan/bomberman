@@ -21,11 +21,16 @@ public class RectRender implements DrawView.ShapeRenderer {
 	public Bitmap playermap;
 	public Bitmap robotmap;
 	public Bitmap bomb;
+	public Bitmap explosion;
 	public GameState state;
 	final static Lock lock = new ReentrantLock();
 
 	public void setGameState(GameState s) {
 		this.state = s;
+	}
+	
+	public void setExplosionBitMap(Bitmap explosion){
+		this.explosion = explosion;
 	}
 
 	public void setPlayerBitMap(Bitmap playermap) {
@@ -66,6 +71,11 @@ public class RectRender implements DrawView.ShapeRenderer {
 		canvas.drawBitmap(getResizedBitmap(bomb, xOffset, yOffset),
 				(yOffset * y), (xOffset * x), paint);
 
+	}
+	public void drawExplosion(int x, int y, Paint paint, Canvas canvas){
+		paint.setStrokeWidth(1);
+		canvas.drawBitmap(getResizedBitmap(explosion, xOffset, yOffset), 
+				(yOffset * y), (xOffset * x), paint);
 	}
 
 	public void drawRobot(int x, int y, Paint paint, Canvas canvas) {
@@ -123,11 +133,8 @@ public class RectRender implements DrawView.ShapeRenderer {
 					} else if (grid[x][y] == 'x') {
 						drawPlayer(x, y, paint, canvas);
 						drawBomb(x, y, paint, canvas);
-					} else if (grid[x][y] == 'E') {
-						paint.setColor(Color.GREEN);
-						paint.setStrokeWidth(0);
-						canvas.drawRect((yOffset * y), (xOffset * x), yOffset
-								* (y + 1), xOffset * (x + 1), paint);
+					} else if (grid[x][y] == 'e') {
+						drawExplosion(x, y, paint, canvas);
 					}
 
 				}
