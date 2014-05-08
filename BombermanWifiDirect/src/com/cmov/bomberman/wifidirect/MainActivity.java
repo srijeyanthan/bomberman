@@ -80,9 +80,16 @@ public class MainActivity extends Activity {
 			public void onReceive(Context ctx, Intent intent) {
 				if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
 					if (bombermanGameDuration >= 0) {
-						--bombermanGameDuration;
+						--bombermanGameDuration; 
+						if(bombermanGameDuration <10)
+						{
+							bombermanelapsedTimeTextView.setText("00" + ":0"
+									+ bombermanGameDuration);
+						}else
+						{
 						bombermanelapsedTimeTextView.setText("00" + ":"
 								+ bombermanGameDuration);
+						}
 
 					}
 				}
@@ -288,7 +295,7 @@ public class MainActivity extends Activity {
 		}
 		Intent myIntent = getIntent();
 		String userName = myIntent.getStringExtra("userName");
-		bombermanGameDuration = ConfigReader.getGameConfig().gameduration;
+		bombermanGameDuration = ConfigReader.getGameConfig().gameduration /60;
 		setContentView(R.layout.activity_main);
 
 		bomberManView =  (DrawView) findViewById(R.id.bckg);
@@ -300,8 +307,15 @@ public class MainActivity extends Activity {
 
 		bombermanusernameview.setText(userName);
 		
-		bombermanelapsedTimeTextView
-				.setText("00" + ":" + bombermanGameDuration);
+		if(bombermanGameDuration <10)
+		{
+			bombermanelapsedTimeTextView.setText("00" + ":0"
+					+ bombermanGameDuration);
+		}else
+		{
+		bombermanelapsedTimeTextView.setText("00" + ":"
+				+ bombermanGameDuration);
+		}
 
 		rectrender = new RectRender(ConfigReader.getGameDim().row,
 				ConfigReader.getGameDim().column);
