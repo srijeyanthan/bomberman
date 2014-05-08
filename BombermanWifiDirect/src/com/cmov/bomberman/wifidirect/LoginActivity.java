@@ -16,7 +16,7 @@ public class LoginActivity extends Activity {
 	@SuppressWarnings("unused")
 	private Button button;
 	private String playername;
-
+    
 	Runnable runnable = new Runnable() {
 		public void run() {
 
@@ -57,7 +57,7 @@ public class LoginActivity extends Activity {
 						Thread bombermanclientThread = new Thread(runnable);
 						bombermanclientThread.start();
 						
-						while(!ConfigReader.isMapDataReady())
+						while(!ClientConfigReader.isMapDataReady())
 						{
 							try {
 								Thread.sleep(1000);

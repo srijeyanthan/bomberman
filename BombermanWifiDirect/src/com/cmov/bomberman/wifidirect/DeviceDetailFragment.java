@@ -164,6 +164,8 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         // socket.
         if (info.groupFormed && info.isGroupOwner) {
         	new BombServerStart();
+        	 Intent loginactivity = new Intent(getActivity(),LoginActivity.class);
+             startActivity(loginactivity);
             /*new FileServerAsyncTask(getActivity(), mContentView.findViewById(R.id.status_text))
                     .execute();*/
         } else if (info.groupFormed) {

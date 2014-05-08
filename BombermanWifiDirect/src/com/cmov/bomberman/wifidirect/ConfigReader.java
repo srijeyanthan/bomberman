@@ -6,8 +6,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Xml;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -86,6 +88,7 @@ public class ConfigReader {
 	private static int width = 0;
 	private static int height = 0;
 	public static Byte[][] gridlayout = null;
+	public static Byte[][] clientgridlayout = null;
 	private static Gameconfig gameconfig = null;
 	private static GameDim gameDim = null;
 
@@ -97,6 +100,8 @@ public class ConfigReader {
 	
 	private static Logger logger = new Logger();
 	static AssetManager am;
+	public static int totalnoplayer=0;
+	public static int totalrobotcount=0;
 
 private static boolean mapdataready = false;
 	
@@ -114,25 +119,26 @@ private static boolean mapdataready = false;
 		return logger;
 	}
 
-	public static void InitConfigParser(Context context)
+	public static void InitConfigParser(Context context,int gamelevel)
 			throws XmlPullParserException {
 		mContext = context;
 		am = mContext.getAssets();
+		String configFilename = "config_"+gamelevel+".xml";
 		try {
-			stream = am.open("config.xml");
-			InitReaders(stream);
+			stream = am.open(configFilename);
+			InitReaders(stream, gamelevel);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	public static void InitReaders(InputStream in)
+	public static void InitReaders(InputStream in, int gamelevel)
 			throws XmlPullParserException, IOException {
 
 		ReadGameDim(in);
-		ReadGridLayout();
-		ReadGameConfig();
+		ReadGridLayout(gamelevel);
+		ReadGameConfig(gamelevel);
 
 	}
 
@@ -178,15 +184,15 @@ private static boolean mapdataready = false;
 	
 	public static void InitializeTheGridFromServer(int row , int column , byte[] servermapbytearray)
 	{
-		gridlayout  = new Byte[row][column];
+		clientgridlayout  = new Byte[row][column];
 		int rowoffset =0;
 		int columnoffset=0;
 		System.out.println("Map message received from server - "+new String(servermapbytearray));
 		for ( int i =0; i < servermapbytearray.length ; ++i)
 		{
 			
-			gridlayout[rowoffset][columnoffset] = servermapbytearray[i];
-			if (gridlayout[rowoffset][columnoffset] == '1') {
+			clientgridlayout[rowoffset][columnoffset] = servermapbytearray[i];
+			if (clientgridlayout[rowoffset][columnoffset] == '1') {
 				players = new Player(rowoffset,columnoffset);
 			}
 			++columnoffset;
@@ -200,11 +206,12 @@ private static boolean mapdataready = false;
 		
 		setmapdataready(true);
 	}
-	public static void ReadGridLayout() throws XmlPullParserException,
+	public static void ReadGridLayout(int gamelevel) throws XmlPullParserException,
 			IOException {
 		XmlPullParser parser = Xml.newPullParser();
 		int event = parser.getEventType();
-		InputStream in = am.open("config.xml");
+		String configFilename = "config_"+gamelevel+".xml";
+		InputStream in = am.open(configFilename);
 		parser.setInput(in, null);
 		String sout = null;
 		String text = null;
@@ -243,6 +250,9 @@ private static boolean mapdataready = false;
 						} else {
 							grid[localycounter][localxcounter] = mapelement
 									.getBytes()[0];
+							if (mapelement.getBytes()[0] == 'r') {
+								++totalrobotcount;
+							}
 						}
 						++localxcounter;
 					}
@@ -255,6 +265,7 @@ private static boolean mapdataready = false;
 			event = parser.next();
 		}
 		gridlayout = grid;
+		totalnoplayer = playermap.size();
 	}
 
 	public static void ReadGameDim(InputStream in)
@@ -295,7 +306,7 @@ private static boolean mapdataready = false;
 		gameDim = new GameDim(maxplayer, row, column);
 	}
 
-	public static void ReadGameConfig() throws XmlPullParserException,
+	public static void ReadGameConfig(int gamelevel) throws XmlPullParserException,
 			IOException {
 		int gd = 0;
 		int et = 0;
@@ -304,7 +315,8 @@ private static boolean mapdataready = false;
 		int rs = 0;
 		int pr = 0;
 		int po = 0;
-		InputStream in = am.open("config.xml");
+		String configFilename = "config_"+gamelevel+".xml";
+		InputStream in = am.open(configFilename);
 		XmlPullParser parser = Xml.newPullParser();
 		int event = parser.getEventType();
 		parser.setInput(in, null);

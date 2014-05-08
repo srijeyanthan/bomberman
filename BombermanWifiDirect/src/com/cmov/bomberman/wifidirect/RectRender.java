@@ -21,6 +21,8 @@ public class RectRender implements DrawView.ShapeRenderer {
 	public Bitmap playermap;
 	public Bitmap robotmap;
 	public Bitmap bomb;
+	public Bitmap wall;
+	public Bitmap Explodablewall;
 	public GameState state;
 	final static Lock lock = new ReentrantLock();
 
@@ -30,6 +32,15 @@ public class RectRender implements DrawView.ShapeRenderer {
 
 	public void setPlayerBitMap(Bitmap playermap) {
 		this.playermap = playermap;
+	}
+	
+	public void setWall(Bitmap Wall)
+	{
+		this.wall = Wall;
+	}
+	public void setExploadableWall(Bitmap explodablewall)
+	{
+		this.Explodablewall = explodablewall;
 	}
 
 	public void setRobotBitMap(Bitmap robotmap) {
@@ -60,6 +71,20 @@ public class RectRender implements DrawView.ShapeRenderer {
 
 	}
 
+
+	public void drawWall(int x, int y, Paint paint, Canvas canvas) {
+
+		paint.setStrokeWidth(1);
+		canvas.drawBitmap(getResizedBitmap(wall, xOffset, yOffset),
+				(yOffset * y), (xOffset * x), paint);
+
+	}
+	public void drawExplodableWall(int x, int y, Paint paint, Canvas canvas)
+	{
+		paint.setStrokeWidth(1);
+		canvas.drawBitmap(getResizedBitmap(Explodablewall, xOffset, yOffset),
+				(yOffset * y), (xOffset * x), paint);
+	}
 	public void drawBomb(int x, int y, Paint paint, Canvas canvas) {
 
 		paint.setStrokeWidth(1);
@@ -97,22 +122,24 @@ public class RectRender implements DrawView.ShapeRenderer {
 		if (this.state != GameState.PAUSE) {
 			//ConfigReader.LockTheGrid();
 			lock.lock();
-			grid = ConfigReader.getGridLayout();
+			grid = ClientConfigReader.getGridLayout();
 			CalculateOffset(canvas.getHeight(), canvas.getWidth());
 
 			for (int x = 0; x < row; x++) {
 				for (int y = 0; y < column; y++) {
 					if (grid[x][y] == 'w') {
 
-						paint.setColor(Color.LTGRAY);
+						/*paint.setColor(Color.LTGRAY);
 						paint.setStrokeWidth(0);
 						canvas.drawRect((yOffset * y), (xOffset * x), yOffset
-								* (y + 1), xOffset * (x + 1), paint);
+								* (y + 1), xOffset * (x + 1), paint);*/
+						drawWall(x, y, paint, canvas);
 					} else if (grid[x][y] == 'o') {
-						paint.setColor(Color.RED);
+						/*paint.setColor(Color.RED);
 						paint.setStrokeWidth(0);
 						canvas.drawRect((yOffset * y), (xOffset * x), yOffset
-								* (y + 1), xOffset * (x + 1), paint);
+								* (y + 1), xOffset * (x + 1), paint);*/
+						drawExplodableWall(x, y, paint, canvas);
 					} else if (grid[x][y] == '1') {
 						drawPlayer(x, y, paint, canvas);
 					} else if (grid[x][y] == 'b') {
