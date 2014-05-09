@@ -46,7 +46,10 @@ public class Game {
 	public List<Player> getPlayers() {
 		return this.players;
 	}
-
+	public void clearPlayerList()
+	{
+		this.players.clear();
+	}
 	public void removePlayer(int x, int y, Player player) {
 		if (this.logicalWorld.getElement(x, y).equals(player)) // Removes only
 																// the selected

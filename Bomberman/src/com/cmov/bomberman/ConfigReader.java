@@ -86,6 +86,7 @@ public class ConfigReader {
 	public static Byte[][] gridlayout = null;
 	private static Gameconfig gameconfig = null;
 	private static GameDim gameDim = null;
+	public static int totalrobotcount=0;
 
 	public static Player players = null;
 	private static Logger logger = new Logger();
@@ -178,27 +179,18 @@ public class ConfigReader {
 					for (String string : elements) {
 
 						grid[localycounter][localxcounter] = string.getBytes()[0];
-						// System.out.println("this is the out put "
-						// + grid[localrowcounter][localcolumncounter]);
 						if (grid[localycounter][localxcounter] == '1') {
 							players = new Player();
 							players.setXCor(localycounter);
 							players.setYCor(localxcounter);
 						}
-						/*
-						 * if (grid[localrowcounter][localcolumncounter] == '2')
-						 * { players[1] = new Player();
-						 * players[1].setXCor(localrowcounter);
-						 * players[1].setYCor(localcolumncounter); } if
-						 * (grid[localrowcounter][localcolumncounter] == '3') {
-						 * players[2] = new Player();
-						 * players[2].setXCor(localrowcounter);
-						 * players[2].setYCor(localcolumncounter); }
-						 */
+						if (grid[localycounter][localxcounter] == 'r') {
+							++totalrobotcount;
+						}
 						++localxcounter;
 					}
 					++localycounter;
-					// /System.out.println("name of of the tag " + sout);
+
 				}
 			}
 				break;
@@ -206,7 +198,6 @@ public class ConfigReader {
 			}
 			event = parser.next();
 		}
-		// /System.out.println("Total number of row " + localrowcounter);
 		gridlayout = grid;
 	}
 
@@ -298,66 +289,4 @@ public class ConfigReader {
 		gameconfig = new Gameconfig(gd, et, ed, er, rs, pr, po);
 
 	}
-
-	/*
-	 * public static List<Gameconfig> getEntries() throws
-	 * XmlPullParserException, IOException { // return parse(stream);
-	 * ReadGridLayout(stream); return ReadGameConfig(stream); }
-	 * 
-	 * public static List<Gameconfig> parse(InputStream in) throws
-	 * XmlPullParserException, IOException { try { XmlPullParser parser =
-	 * Xml.newPullParser();
-	 * parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-	 * parser.setInput(in, null); parser.nextTag(); return readFeed(parser); }
-	 * finally { in.close(); } }
-	 * 
-	 * private static List<Gameconfig> readFeed(XmlPullParser parser) throws
-	 * XmlPullParserException, IOException { List<Gameconfig> entries = new
-	 * ArrayList<Gameconfig>();
-	 * 
-	 * // parser.require(XmlPullParser.START_TAG, ns, "feed"); while
-	 * (parser.next() != XmlPullParser.END_TAG) { if (parser.getEventType() !=
-	 * XmlPullParser.START_TAG) { continue; } String name = parser.getName(); //
-	 * Starts by looking for the entry tag if (name.equals("gameconfig")) {
-	 * entries.add(readEntry(parser)); } else { skip(parser); } } return
-	 * entries; }
-	 * 
-	 * // This class represents a single entry (post) in the XML feed.
-	 * 
-	 * 
-	 * 
-	 * // Parses the contents of an entry. If it encounters a title, summary, or
-	 * // link tag, hands them // off // to their respective &quot;read&quot;
-	 * methods for processing. Otherwise, // skips the tag. private static
-	 * Gameconfig readEntry(XmlPullParser parser) throws XmlPullParserException,
-	 * IOException { // parser.require(XmlPullParser.START_TAG, ns,
-	 * "gameconfig"); int gd = 0; int et = 0; int ed = 0; int er = 0; int rs =
-	 * 0; int pr = 0; int po = 0;
-	 * 
-	 * while (parser.next() != XmlPullParser.END_TAG) { if
-	 * (parser.getEventType() != XmlPullParser.START_TAG) { continue; } String
-	 * name = parser.getName(); if (name.equals("gd")) { gd =
-	 * Integer.parseInt(parser.getText()); } else if (name.equals("et")) { et =
-	 * Integer.parseInt(parser.getText()); } else if (name.equals("ed")) { ed =
-	 * Integer.parseInt(parser.getText()); } else if (name.equals("er")) { er =
-	 * Integer.parseInt(parser.getText()); } else if (name.equals("rs")) { rs =
-	 * Integer.parseInt(parser.getText()); } else if (name.equals("pr")) { pr =
-	 * Integer.parseInt(parser.getText()); } else if (name.equals("po")) { po =
-	 * Integer.parseInt(parser.getText()); } else { skip(parser); } }
-	 * System.out.println("what is the is " + gd + "|" + et + "|" + ed + "|" +
-	 * er + "|" + rs + "|" + pr + "|" + po); // /entries.add( new
-	 * Entry(gd,et,ed,er,rs,pr,po)); return new Gameconfig(gd, et, ed, er, rs,
-	 * pr, po); }
-	 * 
-	 * // Skips tags the parser isn't interested in. Uses depth to handle nested
-	 * // tags. i.e., // if the next tag after a START_TAG isn't a matching
-	 * END_TAG, it keeps // going until it // finds the matching END_TAG (as
-	 * indicated by the value of "depth" being // 0). private static void
-	 * skip(XmlPullParser parser) throws XmlPullParserException, IOException {
-	 * if (parser.getEventType() != XmlPullParser.START_TAG) { throw new
-	 * IllegalStateException(); } int depth = 1; while (depth != 0) { switch
-	 * (parser.next()) { case XmlPullParser.END_TAG: depth--; break; case
-	 * XmlPullParser.START_TAG: depth++; break; } }
-	 */
-	// }
 }

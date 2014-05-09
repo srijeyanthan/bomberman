@@ -135,6 +135,7 @@ public class RectRender implements DrawView.ShapeRenderer {
 						drawBomb(x, y, paint, canvas);
 					} else if (grid[x][y] == 'e') {
 						drawExplosion(x, y, paint, canvas);
+						ConfigReader.UpdateGridLayOutCell(x, y, (byte) '-');
 					}
 
 				}

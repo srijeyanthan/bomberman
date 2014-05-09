@@ -149,8 +149,10 @@ public class MainActivity extends Activity implements IExplodable,
 	public void Exploaded(boolean isPlayerDeadinGame) {
 		bomberManView.postInvalidate();
 		isBombPlaced = false;
+		if(isPlayerDeadinGame)
+			standAloneGame.getBombermanGame().clearPlayerList();
 		isPlayerDead = isPlayerDeadinGame; // / this is only for test ,
-
+		bomberManView.postInvalidate();
 	}
 
 	public void UpdateScore(int numberOfRobotDied) {
@@ -170,7 +172,24 @@ public class MainActivity extends Activity implements IExplodable,
 				ConfigReader.getGameDim().column, activity);
 		robotThread.setLogicalWord(logicalworld);
 		robotThread.setRunning(true);
+		robotThread.setState(GameState.RUN);
 		robotThread.start();
+	}
+	
+	public void quit(String title, String messageboxcontent) {
+		new AlertDialog.Builder(MainActivity.this)
+				.setTitle(title)
+				.setMessage(messageboxcontent)
+				.setPositiveButton(android.R.string.yes,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+								
+									android.os.Process
+											.killProcess(android.os.Process
+													.myPid());
+							}
+						}).setIcon(R.drawable.bomberman).show();
 	}
 
 	public void Close(String title, String messageboxcontent,
@@ -403,8 +422,8 @@ public class MainActivity extends Activity implements IExplodable,
 		quitebutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (state == GameState.RUN) {
-					Close("Closing..",
-							"Are you sure you want to quite the game ?", false);
+					quit("Closing..",
+							"Are you sure you want to quite the game ?");
 					// finish();
 					// android.os.Process.killProcess(android.os.Process.myPid());
 					// onDestroy();
