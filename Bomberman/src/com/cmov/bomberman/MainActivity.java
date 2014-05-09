@@ -30,6 +30,7 @@ public class MainActivity extends Activity implements IExplodable,
 	private static Bitmap player = null;
 	private static Bitmap robot = null;
 	private static Bitmap bomb = null;
+	private static Bitmap explosion = null;
 	private LogicalWorld logicalworld = null;
 	private static int scoreOfThePlayer = 0;
 	private static int numberofRobotkilled =0;
@@ -277,6 +278,8 @@ public class MainActivity extends Activity implements IExplodable,
 		robot = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
 		rectrender.setRobotBitMap(robot);
 		bomb = BitmapFactory.decodeResource(getResources(), R.drawable.bomb);
+		explosion = BitmapFactory.decodeResource(getResources(), R.drawable.explosion);
+		rectrender.setExplosionBitMap(explosion);
 		rectrender.setBombBitMap(bomb);
 		rectrender.setGameState(state);
 		bomberManView.setRenderer(rectrender);
