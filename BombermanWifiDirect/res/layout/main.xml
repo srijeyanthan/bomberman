@@ -10,14 +10,14 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <fragment
-            class="com.cmov.bomberman.wifidirect.DeviceListFragment"
+            class="com.cmov.bomberman.bombermanclient.DeviceListFragment"
             android:id="@+id/frag_list"
             android:layout_width="match_parent"
             android:layout_height="@dimen/phone_list_height">
             <!-- Preview: layout=@layout/row_devices -->
         </fragment>
         <fragment
-            class="com.cmov.bomberman.wifidirect.DeviceDetailFragment"
+            class="com.cmov.bomberman.bombermanclient.DeviceDetailFragment"
             android:id="@+id/frag_detail"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
