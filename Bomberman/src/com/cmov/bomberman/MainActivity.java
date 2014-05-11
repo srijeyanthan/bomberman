@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import com.cmov.bomberman.R;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -30,7 +32,9 @@ public class MainActivity extends Activity implements IExplodable,
 	private static Bitmap player = null;
 	private static Bitmap robot = null;
 	private static Bitmap bomb = null;
+	private static Bitmap wall=null;
 	private static Bitmap explosion = null;
+	private static Bitmap explodablewall=null;
 	private LogicalWorld logicalworld = null;
 	private static int scoreOfThePlayer = 0;
 	private static int numberofRobotkilled =0;
@@ -294,6 +298,10 @@ public class MainActivity extends Activity implements IExplodable,
 		player = BitmapFactory
 				.decodeResource(getResources(), R.drawable.group2);
 		rectrender.setPlayerBitMap(player);
+		wall = BitmapFactory.decodeResource(getResources(), R.drawable.solid_wall);
+		rectrender.setWall(wall);
+		explodablewall = BitmapFactory.decodeResource(getResources(), R.drawable.explodable_wall);
+		rectrender.setExploadableWall(explodablewall);
 		robot = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
 		rectrender.setRobotBitMap(robot);
 		bomb = BitmapFactory.decodeResource(getResources(), R.drawable.bomb);
