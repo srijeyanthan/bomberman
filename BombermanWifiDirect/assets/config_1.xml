@@ -31,7 +31,7 @@
         <gd value="120"/>
         <et value="2000"/>
         <ed value="2"/>
-        <er value="4"/>
+        <er value="2"/>   <!-- this has to set 4 -->
         <rs value="2"/>
         <pr value="10"/>
         <po value="100"/>

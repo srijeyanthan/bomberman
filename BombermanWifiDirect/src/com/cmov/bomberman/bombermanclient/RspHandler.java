@@ -320,9 +320,11 @@ public class RspHandler {
 		Map<Integer, Cor> bombExplosionCordinates = breakTheCordinateInToEasyFormat(bombExplosionCor);
 		for (Map.Entry<Integer, Cor> entry : bombExplosionCordinates.entrySet()) {
 			ClientConfigReader.UpdateGridLayOutCell(entry.getValue().x,
-					entry.getValue().y, (byte) '-');
+					entry.getValue().y, (byte) 'e');
 		}
 		if (bomberManView != null)
-			bomberManView.postInvalidate();
+			bomberManView.postInvalidate(); // this is invalidate with explosion
+		if (bomberManView != null)
+			bomberManView.postInvalidate(); // after the drawing the this will be caled to invalidate -
 	}
 }

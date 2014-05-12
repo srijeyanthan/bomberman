@@ -33,6 +33,7 @@ public class Server implements Runnable {
 	// A list of PendingChange instances
 	private List pendingChanges = new LinkedList();
 
+	public static List<Integer> deadPlayerlist = new ArrayList<Integer>();
 	// Maps a SocketChannel to a list of ByteBuffer instances
 	private Map pendingData = new HashMap();
 	public static LogicalWorld logicalworld;

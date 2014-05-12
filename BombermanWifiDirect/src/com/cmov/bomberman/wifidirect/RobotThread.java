@@ -303,7 +303,9 @@ public class RobotThread extends Thread {
 								// player has been killed by robot 
 								//get the player id 
 								int playerid =((Player)this.logicalworld.getElement(x, y)[0]).getID();
-								Server.mGame.removePlayer(playerid);
+								//Server.mGame.removePlayer(playerid);
+								Server.deadPlayerlist.add(playerid);
+								
 							}
 							ConfigReader.UpdateGridLayOutCell(x, y, (byte) 'r');
 							this.logicalworld.setElement(x, y, 0, new Robot(x,

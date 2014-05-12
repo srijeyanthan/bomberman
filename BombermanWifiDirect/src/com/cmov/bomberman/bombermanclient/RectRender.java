@@ -7,7 +7,6 @@ import com.cmov.bomberman.bombermanclient.MainActivity.GameState;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 
@@ -24,6 +23,7 @@ public class RectRender implements DrawView.ShapeRenderer {
 	public Bitmap wall;
 	public Bitmap Explodablewall;
 	public GameState state;
+	public Bitmap explosion;
 	final static Lock lock = new ReentrantLock();
 
 	public void setGameState(GameState s) {
@@ -34,6 +34,10 @@ public class RectRender implements DrawView.ShapeRenderer {
 		this.playermap = playermap;
 	}
 	
+	public void setExplosionBitMap(Bitmap explosion){
+		this.explosion = explosion;
+	}
+
 	public void setWall(Bitmap Wall)
 	{
 		this.wall = Wall;
@@ -92,6 +96,11 @@ public class RectRender implements DrawView.ShapeRenderer {
 				(yOffset * y), (xOffset * x), paint);
 
 	}
+	public void drawExplosion(int x, int y, Paint paint, Canvas canvas){
+		paint.setStrokeWidth(1);
+		canvas.drawBitmap(getResizedBitmap(explosion, xOffset, yOffset), 
+				(yOffset * y), (xOffset * x), paint);
+	}
 
 	public void drawRobot(int x, int y, Paint paint, Canvas canvas) {
 
@@ -120,7 +129,6 @@ public class RectRender implements DrawView.ShapeRenderer {
 	@Override
 	public void drawShape(Canvas canvas, Paint paint) {
 		if (this.state != GameState.PAUSE) {
-			//ConfigReader.LockTheGrid();
 			lock.lock();
 			grid = ClientConfigReader.getGridLayout();
 			CalculateOffset(canvas.getHeight(), canvas.getWidth());
@@ -128,17 +136,8 @@ public class RectRender implements DrawView.ShapeRenderer {
 			for (int x = 0; x < row; x++) {
 				for (int y = 0; y < column; y++) {
 					if (grid[x][y] == 'w') {
-
-						/*paint.setColor(Color.LTGRAY);
-						paint.setStrokeWidth(0);
-						canvas.drawRect((yOffset * y), (xOffset * x), yOffset
-								* (y + 1), xOffset * (x + 1), paint);*/
 						drawWall(x, y, paint, canvas);
 					} else if (grid[x][y] == 'o') {
-						/*paint.setColor(Color.RED);
-						paint.setStrokeWidth(0);
-						canvas.drawRect((yOffset * y), (xOffset * x), yOffset
-								* (y + 1), xOffset * (x + 1), paint);*/
 						drawExplodableWall(x, y, paint, canvas);
 					} else if (grid[x][y] == '1') {
 						drawPlayer(x, y, paint, canvas);
@@ -150,12 +149,14 @@ public class RectRender implements DrawView.ShapeRenderer {
 					} else if (grid[x][y] == 'x') {
 						drawPlayer(x, y, paint, canvas);
 						drawBomb(x, y, paint, canvas);
-					} else if (grid[x][y] == 'E') {
-						paint.setColor(Color.GREEN);
-						paint.setStrokeWidth(0);
-						canvas.drawRect((yOffset * y), (xOffset * x), yOffset
-								* (y + 1), xOffset * (x + 1), paint);
+					} else if (grid[x][y] == 'e') {
+						drawExplosion(x, y, paint, canvas);
+						com.cmov.bomberman.bombermanclient.ClientConfigReader.UpdateGridLayOutCell(x, y, (byte) 'm');
+					}else if (grid[x][y] == 'm') {
+						com.cmov.bomberman.bombermanclient.ClientConfigReader.UpdateGridLayOutCell(x, y, (byte) '-');
 					}
+					
+					
 
 				}
 

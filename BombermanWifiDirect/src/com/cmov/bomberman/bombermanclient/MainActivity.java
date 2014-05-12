@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.xmlpull.v1.XmlPullParserException;
+
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -43,6 +43,7 @@ public class MainActivity extends Activity {
 	private static Bitmap bomb = null;
 	private static Bitmap explodablewall=null;
 	private static Bitmap wall=null;
+	private static Bitmap explosion = null;
 	private static int scoreOfThePlayer = 0;
 	private static int numberofPlayers=0;
 	private String gameStatString;
@@ -163,13 +164,17 @@ public class MainActivity extends Activity {
 											public void onClick(DialogInterface dialog,
 													int which) {
 												
-												Intent i = getBaseContext()
+												//once we received the stat we will close the application
+												android.os.Process
+												.killProcess(android.os.Process
+														.myPid());
+												/*Intent i = getBaseContext()
 														.getPackageManager()
 														.getLaunchIntentForPackage(
 																getBaseContext()
 																		.getPackageName());
 												i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-												startActivity(i);
+												startActivity(i);*/
 											}
 											
 										})
@@ -324,6 +329,8 @@ public class MainActivity extends Activity {
 		rectrender.setRobotBitMap(robot);
 		bomb = BitmapFactory.decodeResource(getResources(), R.drawable.bomb);
 		rectrender.setBombBitMap(bomb);
+		explosion = BitmapFactory.decodeResource(getResources(), R.drawable.explosion);
+		rectrender.setExplosionBitMap(explosion);
 		rectrender.setGameState(state);
 		bomberManView.setRenderer(rectrender);
 

@@ -125,28 +125,31 @@ public class BomberManWorker implements Runnable, IMoveableRobot, IExplodable,
 		// lets get the which direction player has moved and player name
 		int playerid = Integer.parseInt(fieldmap
 				.get(BombermanProtocol.PLAYER_ID));
-		String playermovepos = fieldmap.get(BombermanProtocol.PLAYER_MOVEMENT);
-		String[] movpos = playermovepos.split("\\.");
-		int x = Integer.parseInt(movpos[0]);
-		int y = Integer.parseInt(movpos[1]);
-		Player localPlayer = Server.mGame.getPlayer(playerid);
-		if (localPlayer != null) {
-			String playermovementbuffer = Server.mGame.movePlayer(localPlayer,
-					x, y);
-			if (!playermovementbuffer.isEmpty()) {
-				System.out
-						.println("[Server] Player id request moved sucesfull id - "
-								+ playerid);
-				for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
-						.entrySet()) {
-					entry.getValue().server.send(entry.getValue().socket,
-							playermovementbuffer.getBytes());
+		if (!Server.deadPlayerlist.contains(playerid)) {
+			String playermovepos = fieldmap
+					.get(BombermanProtocol.PLAYER_MOVEMENT);
+			String[] movpos = playermovepos.split("\\.");
+			int x = Integer.parseInt(movpos[0]);
+			int y = Integer.parseInt(movpos[1]);
+			Player localPlayer = Server.mGame.getPlayer(playerid);
+			if (localPlayer != null) {
+				String playermovementbuffer = Server.mGame.movePlayer(
+						localPlayer, x, y);
+				if (!playermovementbuffer.isEmpty()) {
+					System.out
+							.println("[Server] Player id request moved sucesfull id - "
+									+ playerid);
+					for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
+							.entrySet()) {
+						entry.getValue().server.send(entry.getValue().socket,
+								playermovementbuffer.getBytes());
 
+					}
+				} else {
+					System.out
+							.println("[Server] Player id request moved failed  id - "
+									+ playerid);
 				}
-			} else {
-				System.out
-						.println("[Server] Player id request moved failed  id - "
-								+ playerid);
 			}
 		}
 	}
@@ -159,17 +162,20 @@ public class BomberManWorker implements Runnable, IMoveableRobot, IExplodable,
 		// lets get the which direction player has moved and player name
 		int playerid = Integer.parseInt(fieldmap
 				.get(BombermanProtocol.PLAYER_ID));
-		Player localPlayer = Server.mGame.getPlayer(playerid);
-		if (localPlayer != null) {
-			String bompmsg = localPlayer.placeBomb(playerid);
-			if (!bompmsg.isEmpty()) {
-				// send the bomb placement message to everyone
-				System.out.println("[Server] bomb placement msg - " + bompmsg);
-				for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
-						.entrySet()) {
-					entry.getValue().server.send(entry.getValue().socket,
-							bompmsg.getBytes());
+		if (!Server.deadPlayerlist.contains(playerid)) {
+			Player localPlayer = Server.mGame.getPlayer(playerid);
+			if (localPlayer != null) {
+				String bompmsg = localPlayer.placeBomb(playerid);
+				if (!bompmsg.isEmpty()) {
+					// send the bomb placement message to everyone
+					System.out.println("[Server] bomb placement msg - "
+							+ bompmsg);
+					for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
+							.entrySet()) {
+						entry.getValue().server.send(entry.getValue().socket,
+								bompmsg.getBytes());
 
+					}
 				}
 			}
 		}
@@ -342,20 +348,23 @@ public class BomberManWorker implements Runnable, IMoveableRobot, IExplodable,
 		// TODO Auto-generated method stub
 		int playerid = Integer.parseInt(fieldmap
 				.get(BombermanProtocol.PLAYER_ID));
-		int playerxcor = Server.mGame.getPlayer(playerid).getWorldXCor();
-		int playerycor = Server.mGame.getPlayer(playerid).getWorldYCor();
-		ConfigReader.UpdateGridLayOutCell(playerxcor, playerycor, (byte) '1');
-		String rsmMsg = "<" + BombermanProtocol.MESSAGE_TYPE + "="
-				+ BombermanProtocol.GAME_RESUME_MESSAGE + "|"
-				+ BombermanProtocol.RESUME_PLAYER_POS + "=" + playerxcor + ","
-				+ playerycor + ">";
-		for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
-				.entrySet()) {
-			System.out
-					.println("[Server] Server sending resume  message to these users - "
-							+ playerid);
-			entry.getValue().server.send(entry.getValue().socket,
-					rsmMsg.getBytes());
+		if (!Server.deadPlayerlist.contains(playerid)) {
+			int playerxcor = Server.mGame.getPlayer(playerid).getWorldXCor();
+			int playerycor = Server.mGame.getPlayer(playerid).getWorldYCor();
+			ConfigReader.UpdateGridLayOutCell(playerxcor, playerycor,
+					(byte) '1');
+			String rsmMsg = "<" + BombermanProtocol.MESSAGE_TYPE + "="
+					+ BombermanProtocol.GAME_RESUME_MESSAGE + "|"
+					+ BombermanProtocol.RESUME_PLAYER_POS + "=" + playerxcor
+					+ "," + playerycor + ">";
+			for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
+					.entrySet()) {
+				System.out
+						.println("[Server] Server sending resume  message to these users - "
+								+ playerid);
+				entry.getValue().server.send(entry.getValue().socket,
+						rsmMsg.getBytes());
+			}
 		}
 	}
 
@@ -363,25 +372,29 @@ public class BomberManWorker implements Runnable, IMoveableRobot, IExplodable,
 		// TODO Process Bomberman PauseMessage
 		int playerid = Integer.parseInt(fieldmap
 				.get(BombermanProtocol.PLAYER_ID));
-		Player player = Server.mGame.getPlayer(playerid);
-		if (player != null) {
-			int playerxcor = Server.mGame.getPlayer(playerid).getWorldXCor();
-			int playerycor = Server.mGame.getPlayer(playerid).getWorldYCor();
-			Server.logicalworld.setElement(playerxcor, playerycor, 0, new Wall(
-					playerxcor, playerycor));
-			ConfigReader.UpdateGridLayOutCell(playerxcor, playerycor,
-					(byte) 'w');
-			String pauseMsg = "<" + BombermanProtocol.MESSAGE_TYPE + "="
-					+ BombermanProtocol.GAME_PAUSE_MESSAGE + "|"
-					+ BombermanProtocol.PAUSE_PLAYER_POS + "=" + playerxcor
-					+ "," + playerycor + ">";
-			for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
-					.entrySet()) {
-				System.out
-						.println("[Server] Server sending pause  message to these users - "
-								+ playerid);
-				entry.getValue().server.send(entry.getValue().socket,
-						pauseMsg.getBytes());
+		if (!Server.deadPlayerlist.contains(playerid)) {
+			Player player = Server.mGame.getPlayer(playerid);
+			if (player != null) {
+				int playerxcor = Server.mGame.getPlayer(playerid)
+						.getWorldXCor();
+				int playerycor = Server.mGame.getPlayer(playerid)
+						.getWorldYCor();
+				Server.logicalworld.setElement(playerxcor, playerycor, 0,
+						new Wall(playerxcor, playerycor));
+				ConfigReader.UpdateGridLayOutCell(playerxcor, playerycor,
+						(byte) 'w');
+				String pauseMsg = "<" + BombermanProtocol.MESSAGE_TYPE + "="
+						+ BombermanProtocol.GAME_PAUSE_MESSAGE + "|"
+						+ BombermanProtocol.PAUSE_PLAYER_POS + "=" + playerxcor
+						+ "," + playerycor + ">";
+				for (Map.Entry<String, ServerDataEvent> entry : Server.clientList
+						.entrySet()) {
+					System.out
+							.println("[Server] Server sending pause  message to these users - "
+									+ playerid);
+					entry.getValue().server.send(entry.getValue().socket,
+							pauseMsg.getBytes());
+				}
 			}
 		}
 
