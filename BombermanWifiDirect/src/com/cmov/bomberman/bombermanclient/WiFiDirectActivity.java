@@ -80,6 +80,8 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
 
         manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         channel = manager.initialize(this, getMainLooper(), null);
+        LoginActivity.manager = manager;
+        LoginActivity.channel = channel;
     }
 
     /** register the BroadcastReceiver with the intent values to be matched */

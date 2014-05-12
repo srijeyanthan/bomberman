@@ -29,4 +29,6 @@
     <string name="button_quit">Quit</string>
     <string name="join">Join</string>
     <string name="enter_username">Enter A Username to join the game</string>
+    <string name="Disconnect"></string>
+    <string name="Quit">DumbServerStatus</string>
 </resources>

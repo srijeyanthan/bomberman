@@ -3,9 +3,15 @@ package com.cmov.bomberman.bombermanclient;
 
 import java.io.IOException;
 
+import com.cmov.bomberman.bombermanclient.MainActivity.GameState;
+
+import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.WifiP2pManager.ActionListener;
+import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +23,8 @@ public class LoginActivity extends Activity {
 	private Button button;
 	private String playername;
     
+	public static  WifiP2pManager manager;
+	public static  Channel channel;
 	Runnable runnable = new Runnable() {
 		public void run() {
 
@@ -75,6 +83,36 @@ public class LoginActivity extends Activity {
 		    }
 		};
 		findViewById(R.id.button1).setOnClickListener(handler);
+		
+		
+		final Button disconnect = (Button) findViewById(R.id.Button01);
+		disconnect.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				
+				// send owner dead message 
+				if (manager != null) {
+					manager.removeGroup(channel, new ActionListener() {
+
+						@Override
+						public void onFailure(int reasonCode) {
+							System.out.println("Disconnect failed. Reason :"
+									+ reasonCode);
+
+						}
+
+						@Override
+						public void onSuccess() {
+							android.os.Process.killProcess(android.os.Process
+									.myPid());
+							// fragment.getView().setVisibility(View.GONE);
+						}
+
+					});
+				}
+		        
+		        
+			}
+		});
 	}
 
 	@Override

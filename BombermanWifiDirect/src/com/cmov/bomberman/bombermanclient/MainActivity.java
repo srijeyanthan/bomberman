@@ -211,8 +211,7 @@ public class MainActivity extends Activity {
 		numberofPlayers = numberofPlayer;
 	}
 
-	public void Close(String title, String messageboxcontent,
-			final boolean isRestart) {
+	public void Close(String title, String messageboxcontent) {
 		new AlertDialog.Builder(MainActivity.this)
 				.setTitle(title)
 				.setMessage(messageboxcontent)
@@ -220,38 +219,11 @@ public class MainActivity extends Activity {
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int which) {
-								if (isRestart) {
-									Intent i = getBaseContext()
-											.getPackageManager()
-											.getLaunchIntentForPackage(
-													getBaseContext()
-															.getPackageName());
-									i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-									startActivity(i);
-								} else
-									android.os.Process
+								
+								finish();
+									/*android.os.Process
 											.killProcess(android.os.Process
-													.myPid());
-							}
-						})
-				.setNegativeButton(android.R.string.no,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-								if (isRestart) {
-									android.os.Process
-											.killProcess(android.os.Process
-													.myPid());
-								} else {
-									Intent i = getBaseContext()
-											.getPackageManager()
-											.getLaunchIntentForPackage(
-													getBaseContext()
-															.getPackageName());
-									i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-									startActivity(i);
-								}
-
+													.myPid());*/
 							}
 						}).setIcon(R.drawable.bomberman).show();
 	}
@@ -457,7 +429,7 @@ public class MainActivity extends Activity {
 							+ "=" + RspHandler.playerid + ">";
 					addToQ(playerQuitMsg);
 					Close("Closing..",
-							"Are you sure you want to quite the game ?", false);
+							"Game is quit now ...");
 					// send client leave message to server, so that server won't
 					// send any data
 
