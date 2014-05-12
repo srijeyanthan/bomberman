@@ -118,11 +118,12 @@ public class RspHandler {
 	private void processGridMessage(Map<Integer, String> fieldmap) {
 		int row = Integer.parseInt(fieldmap.get(BombermanProtocol.GRID_ROW));
 		int col = Integer.parseInt(fieldmap.get(BombermanProtocol.GRID_COLUMN));
+		int gameduration = Integer.parseInt(fieldmap.get(BombermanProtocol.GAME_DURATION));
 		String gridelements = fieldmap.get(BombermanProtocol.GRID_ELEMENTS);
 		playerid = Integer.parseInt(fieldmap.get(BombermanProtocol.PLAYER_ID));
 		System.out.println("[INFO] -GridMsg - Row-" + row + "|Col-" + col
 				+ "|GridElements-" + gridelements + "|playerid -" + playerid);
-		ClientConfigReader.InitializeTheGridFromServer(row, col,
+		ClientConfigReader.InitializeTheGridFromServer(gameduration,row, col,
 				gridelements.getBytes());
 
 	}

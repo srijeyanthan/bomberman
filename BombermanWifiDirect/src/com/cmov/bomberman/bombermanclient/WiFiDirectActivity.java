@@ -73,12 +73,6 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
 
         // add necessary intent values to be matched.
 
-        Context mContext = WiFiDirectActivity.this;
-		try {
-			ConfigReader.InitConfigParser(mContext,1);
-		} catch (XmlPullParserException e) {
-			e.printStackTrace();
-		}
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);

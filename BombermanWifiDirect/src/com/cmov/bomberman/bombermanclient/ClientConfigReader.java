@@ -15,11 +15,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ClientConfigReader {
 
 	final static Lock lock = new ReentrantLock();
-
-
-
-
-
 	static Context mContext;
 	public static Byte[][] gridlayout = null;
 
@@ -29,6 +24,9 @@ public class ClientConfigReader {
 	static AssetManager am;
 	public static int totalnoplayer=0;
 	public static int totalrobotcount=0;
+	public static int gridrow=0;
+	public static int gridcolumn=0;
+	public static int gameduration=0;
 
 private static boolean mapdataready = false;
 	
@@ -81,11 +79,14 @@ private static boolean mapdataready = false;
 		lock.unlock();
 	}
 	
-	public static void InitializeTheGridFromServer(int row , int column , byte[] servermapbytearray)
+	public static void InitializeTheGridFromServer(int duration, int row , int column , byte[] servermapbytearray)
 	{
 		gridlayout  = new Byte[row][column];
 		int rowoffset =0;
 		int columnoffset=0;
+		gridrow= row;
+		gridcolumn = column;
+		gameduration=duration;
 		System.out.println("Map message received from server - "+new String(servermapbytearray));
 		for ( int i =0; i < servermapbytearray.length ; ++i)
 		{

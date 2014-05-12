@@ -46,6 +46,8 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.xmlpull.v1.XmlPullParserException;
+
 /**
  * A fragment that manages a particular peer and allows interaction with device
  * i.e. setting up network connection and transferring data.
@@ -163,6 +165,12 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         // server. The file server is single threaded, single connection server
         // socket.
         if (info.groupFormed && info.isGroupOwner) {
+        	Context mContext = getActivity();
+        	try {
+				com.cmov.bomberman.wifidirect.ConfigReader.InitConfigParser(mContext,1);
+			} catch (XmlPullParserException e) {
+				e.printStackTrace();
+			}
         	new com.cmov.bomberman.wifidirect.BombServerStart();
         	 Intent loginactivity = new Intent(getActivity(),LoginActivity.class);
              startActivity(loginactivity);

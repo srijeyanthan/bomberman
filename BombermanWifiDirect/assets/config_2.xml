@@ -23,13 +23,6 @@
  		<row>w 4 - - - - - - r o o - o - o - o r w</row>
  	    <row>w w w w w w w w w w w w w w w w w w w</row>
     </field>
-
-    <icons>
-        <wall file="brickwall"/>
-        <obstacle file="brickwall"/>
-        <robot file="brickwall"/>
-        <bomb file="brickwall"/>
-    </icons>
     <!-- the following game configurations are denotes gd - Game duraion, et- explosion timout
      ed - explosion duratoin, er - explosion range rs - robot speed , pr-points per robots killed
      po - points per opponent killed -->

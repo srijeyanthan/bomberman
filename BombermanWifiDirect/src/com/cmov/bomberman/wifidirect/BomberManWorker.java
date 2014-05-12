@@ -91,10 +91,12 @@ public class BomberManWorker implements Runnable, IMoveableRobot, IExplodable,
 		String mapmessage = "";
 		int row = ConfigReader.getGameDim().row;
 		int column = ConfigReader.getGameDim().column;
+		int gameduration= ConfigReader.getGameConfig().gameduration;
 		mapmessage = "<" + BombermanProtocol.MESSAGE_TYPE + "="
 				+ BombermanProtocol.GRID_MESSAGE + "|"
 				+ BombermanProtocol.GRID_ROW + "=" + row + "|"
 				+ BombermanProtocol.GRID_COLUMN + "=" + column + "|"
+				+ BombermanProtocol.GAME_DURATION + "=" + gameduration + "|"
 				+ BombermanProtocol.GRID_ELEMENTS + "=";
 		Byte[][] GridLayout = ConfigReader.getGridLayout();
 		for (int i = 0; i < row; ++i) {

@@ -287,15 +287,9 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Context mContext = MainActivity.this;
-		try {
-			ConfigReader.InitConfigParser(mContext,1);
-		} catch (XmlPullParserException e) {
-			e.printStackTrace();
-		}
 		Intent myIntent = getIntent();
 		String userName = myIntent.getStringExtra("userName");
-		bombermanGameDuration = ConfigReader.getGameConfig().gameduration /60;
+		bombermanGameDuration = ClientConfigReader.gameduration /60;
 		setContentView(R.layout.activity_main);
 
 		bomberManView =  (DrawView) findViewById(R.id.bckg);
@@ -317,8 +311,8 @@ public class MainActivity extends Activity {
 				+ bombermanGameDuration);
 		}
 
-		rectrender = new RectRender(ConfigReader.getGameDim().row,
-				ConfigReader.getGameDim().column);
+		rectrender = new RectRender(ClientConfigReader.gridrow,
+				ClientConfigReader.gridcolumn);
 		player = BitmapFactory
 				.decodeResource(getResources(), R.drawable.group2);
 		explodablewall = BitmapFactory.decodeResource(getResources(), R.drawable.explodable_wall);
