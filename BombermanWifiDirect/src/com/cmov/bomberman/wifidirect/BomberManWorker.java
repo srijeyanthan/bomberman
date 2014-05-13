@@ -212,6 +212,7 @@ public class BomberManWorker implements Runnable, IMoveableRobot, IExplodable,
 				int y = player.getWorldYCor();
 				String newplayermsg = "<" + BombermanProtocol.MESSAGE_TYPE
 						+ "=" + BombermanProtocol.NEW_PLAYER_JOIN + "|"
+						+BombermanProtocol.PLAYER_ID+"="+playerid+"|"
 						+ BombermanProtocol.NEW_PLAYER_JOIN_COR + "=" + x + ","
 						+ y + ">";
 				entry.getValue().server.send(entry.getValue().socket,

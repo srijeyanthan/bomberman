@@ -15,7 +15,11 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+
 import android.app.Activity;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 
@@ -26,6 +30,7 @@ public abstract class BombermanClient implements Runnable {
 	private static final int READ_BUFFER_SIZE = 0x100000;
 	private static final int WRITE_BUFFER_SIZE = 0x100000;
 	public static MainActivity Mainactivity;
+	public static LoginActivity Loginactivity;
 
 	private long reconnectInterval = INITIAL_RECONNECT_INTERVAL;
 
@@ -187,6 +192,12 @@ public abstract class BombermanClient implements Runnable {
 					if (selector != null)
 						selector.close();
 					System.out.println("connection closed");
+					System.out.println("[Client] Client starting server cofig file ");
+					Context mContext = Mainactivity;
+					com.cmov.bomberman.wifidirect.ConfigReader.mContext = mContext;
+					com.cmov.bomberman.wifidirect.ConfigReader.copyNewGridLayout(ClientConfigReader.getGridLayout());
+					Mainactivity.setServerDeadFlag(true);
+					Loginactivity.finish();
 				}
 
 				try {
@@ -332,6 +343,10 @@ public abstract class BombermanClient implements Runnable {
    public static void SetActivity( MainActivity mainActivity)
    {
 	   Mainactivity = mainActivity;
+   }
+   public static void SetLoginActivity( LoginActivity loginAcitiviy)
+   {
+	   Loginactivity = loginAcitiviy;
    }
 	public static void startBombermanClient() throws IOException {		
 		client = new BombermanClient() {

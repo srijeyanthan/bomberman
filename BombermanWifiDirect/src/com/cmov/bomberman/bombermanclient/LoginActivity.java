@@ -22,7 +22,7 @@ public class LoginActivity extends Activity {
 	@SuppressWarnings("unused")
 	private Button button;
 	private String playername;
-    
+	public Intent mainActivity;
 	public static  WifiP2pManager manager;
 	public static  Channel channel;
 	Runnable runnable = new Runnable() {
@@ -61,6 +61,7 @@ public class LoginActivity extends Activity {
 		            	playername = textField.getText().toString();
 						textField.setText("");
 						BombermanClient.setPlayerName(playername);
+						BombermanClient.SetLoginActivity(LoginActivity.this);
 						
 						Thread bombermanclientThread = new Thread(runnable);
 						bombermanclientThread.start();
@@ -75,7 +76,6 @@ public class LoginActivity extends Activity {
 						}
 						Intent mainActivity = new Intent(LoginActivity.this, MainActivity.class);
 						mainActivity.putExtra("userName", playername);
-	
 		                startActivity(mainActivity);
 		                
 		                break;
@@ -89,6 +89,8 @@ public class LoginActivity extends Activity {
 		disconnect.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				
+				//finish();
+			
 				// send owner dead message 
 				if (manager != null) {
 					manager.removeGroup(channel, new ActionListener() {
@@ -102,6 +104,8 @@ public class LoginActivity extends Activity {
 
 						@Override
 						public void onSuccess() {
+				
+							finish();
 							android.os.Process.killProcess(android.os.Process
 									.myPid());
 							// fragment.getView().setVisibility(View.GONE);

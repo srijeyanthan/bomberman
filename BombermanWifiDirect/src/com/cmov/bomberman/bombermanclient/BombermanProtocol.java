@@ -38,4 +38,5 @@ public class BombermanProtocol {
 	public static final byte GAME_RESUME_MESSAGE='C';
 	public static final byte INDIVIDUAL_SCORE_UPDATE='S';
 	public static final byte NUMBER_OF_PLAYERS_MESSAGE='T';
+	public static final byte DEAD_PLAYER_MESSAGE='W';
 }

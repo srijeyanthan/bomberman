@@ -39,7 +39,6 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public class DeviceDetailFragment extends Fragment implements ConnectionInfoListener {
 
-    protected static final int CHOOSE_FILE_RESULT_CODE = 20;
     private View mContentView = null;
     private WifiP2pDevice device;
     private WifiP2pInfo info;
@@ -93,11 +92,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
                     @Override
                     public void onClick(View v) {
-                        // Allow user to pick an image from Gallery or other
-                        // registered apps
-                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                        intent.setType("image/*");
-                        startActivityForResult(intent, CHOOSE_FILE_RESULT_CODE);
                         Intent loginactivity = new Intent(getActivity(),LoginActivity.class);
                         startActivity(loginactivity);
                     }
@@ -109,8 +103,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        // User has picked an image. Transfer it to group owner i.e peer using
-        // FileTransferService.
     	Intent loginactivity = new Intent(getActivity(),LoginActivity.class);
         getActivity().startService(loginactivity);
     }
@@ -136,7 +128,8 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         if (info.groupFormed && info.isGroupOwner) {
         	Context mContext = getActivity();
         	try {
-				com.cmov.bomberman.wifidirect.ConfigReader.InitConfigParser(mContext,1);
+        		com.cmov.bomberman.wifidirect.ConfigReader.mContext=mContext;
+				com.cmov.bomberman.wifidirect.ConfigReader.InitConfigParser(1);
 			} catch (XmlPullParserException e) {
 				e.printStackTrace();
 			}

@@ -1,11 +1,8 @@
 package com.cmov.bomberman.bombermanclient;
 
 import android.annotation.SuppressLint;
-
 import android.graphics.Bitmap.Config;
-
 import android.widget.TextView;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -191,9 +188,13 @@ public class RspHandler {
 	private void processNewPlayerJoinMessage(Map<Integer, String> fieldmap) {
 		String newplayercor = fieldmap
 				.get(BombermanProtocol.NEW_PLAYER_JOIN_COR);
+		int playerid = Integer.parseInt(fieldmap
+				.get(BombermanProtocol.PLAYER_ID));
 		Map<Integer, Cor> breaknewplayerCor = breakTheCordinateInToEasyFormat(newplayercor);
 		ClientConfigReader.UpdateGridLayOutCell(breaknewplayerCor.get(0).x,
 				breaknewplayerCor.get(0).y, (byte) '1');
+		// this is actually part of the wifi direct handover protocol.
+		com.cmov.bomberman.wifidirect.ConfigReader.playeridlist.add(playerid);
 		if (bomberManView != null)
 			bomberManView.postInvalidate();
 
@@ -256,9 +257,18 @@ public class RspHandler {
 				{
 					processPlayerResumeMessage(fieldmap);
 				}
+				else if(msgType == BombermanProtocol.DEAD_PLAYER_MESSAGE)
+				{
+					processDeadPlayerMessage(fieldmap);
+				}
 			}
 
 		}
+	}
+
+	private void processDeadPlayerMessage(Map<Integer, String> fieldmap) {
+		int deadplayerid = Integer.parseInt(fieldmap.get(BombermanProtocol.RESUME_PLAYER_POS));
+		com.cmov.bomberman.wifidirect.ConfigReader.deadplayerlist.add(deadplayerid);
 	}
 
 	private void processPlayerResumeMessage(Map<Integer, String> fieldmap) {

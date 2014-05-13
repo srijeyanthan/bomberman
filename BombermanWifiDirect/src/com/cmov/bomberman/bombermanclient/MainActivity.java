@@ -55,8 +55,12 @@ public class MainActivity extends Activity {
 	private static List<String> messageq = new ArrayList<String>();
 	final static Lock lock = new ReentrantLock();
 	private static boolean isPlayerDead =false;
-
-	
+    private boolean isServerdead=false;
+	public void setServerDeadFlag(boolean isServerDead)
+	{
+		 this.isServerdead = isServerDead;
+		
+	}
 	public void SetGameStat(String stat)
 	{
 		this.gameStatString = stat;
@@ -180,6 +184,12 @@ public class MainActivity extends Activity {
 										})
 								.setIcon(R.drawable.bomberman).show();
 								isPlayerDead = false;
+							}
+							if(isServerdead)
+							{
+								finish();
+								android.os.Process
+								.killProcess(android.os.Process.myPid());
 							}
 						}
 					});
