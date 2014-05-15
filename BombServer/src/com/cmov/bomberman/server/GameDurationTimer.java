@@ -7,8 +7,7 @@ import java.util.TimerTask;
 import com.cmov.bomberman.server.RobotThread.GameState;
 
 class GameDurationTimer extends TimerTask {
-	//public static final int Gameduration = ConfigReader.getGameConfig().gameduration;
-	public static final int Gameduration =70000;
+	public static final int Gameduration = ConfigReader.getGameConfig().gameduration*1000;
 
 	private Timer timer = new Timer();
     int tickcounter=1;

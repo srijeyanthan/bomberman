@@ -11,14 +11,15 @@ import java.util.TimerTask;
  * */
 
 class BombExplosionTimer extends TimerTask {
-	public static final int BOMB_TIME = 500; //ConfigReader.getGameConfig().explosiontimeout;
-			//ConfigReader.getGameConfig().explosiontimeout;
+	public static final int BOMB_TIME = ConfigReader.getGameConfig().explosiontimeout;
+   
 
 	private Timer timer = new Timer();
 	private Bomb bomb;
 
 	public BombExplosionTimer(Bomb bomb) {
 		this.bomb = bomb;
+		System.out.println("bomb explostion timeer-------------::"+BOMB_TIME);
 		timer.schedule(this, BOMB_TIME / 6, BOMB_TIME / 6);
 	}
 
