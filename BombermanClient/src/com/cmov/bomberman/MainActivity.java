@@ -12,6 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -36,6 +37,9 @@ public class MainActivity extends Activity {
 	private static Bitmap player = null;
 	private static Bitmap robot = null;
 	private static Bitmap bomb = null;
+	private static Bitmap explodablewall=null;
+	private static Bitmap wall=null;
+	private static Bitmap explosion = null;
 	private static int scoreOfThePlayer = 0;
 	private static int numberofPlayers=0;
 	private String gameStatString;
@@ -74,8 +78,15 @@ public class MainActivity extends Activity {
 				if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
 					if (bombermanGameDuration >= 0) {
 						--bombermanGameDuration;
+						if(bombermanGameDuration <10)
+						{
+							bombermanelapsedTimeTextView.setText("00" + ":0"
+									+ bombermanGameDuration);
+						}else
+						{
 						bombermanelapsedTimeTextView.setText("00" + ":"
 								+ bombermanGameDuration);
+						}
 
 					}
 				}
@@ -281,7 +292,7 @@ public class MainActivity extends Activity {
 		}
 		Intent myIntent = getIntent();
 		String userName = myIntent.getStringExtra("userName");
-		bombermanGameDuration = ConfigReader.getGameConfig().gameduration;
+		bombermanGameDuration = ConfigReader.gameduration /60;
 		setContentView(R.layout.activity_main);
 
 		bomberManView = (com.cmov.bomberman.DrawView) findViewById(R.id.bckg);
@@ -293,14 +304,28 @@ public class MainActivity extends Activity {
 
 		bombermanusernameview.setText(userName);
 		
-		bombermanelapsedTimeTextView
-				.setText("00" + ":" + bombermanGameDuration);
+		if(bombermanGameDuration <10)
+		{
+			bombermanelapsedTimeTextView.setText("00" + ":0"
+					+ bombermanGameDuration);
+		}else
+		{
+		bombermanelapsedTimeTextView.setText("00" + ":"
+				+ bombermanGameDuration);
+		}
 
 		rectrender = new RectRender(ConfigReader.getGameDim().row,
 				ConfigReader.getGameDim().column);
 		player = BitmapFactory
 				.decodeResource(getResources(), R.drawable.group2);
 		rectrender.setPlayerBitMap(player);
+		
+		explodablewall = BitmapFactory.decodeResource(getResources(), R.drawable.explodable_wall);
+		wall = BitmapFactory.decodeResource(getResources(), R.drawable.solid_wall);
+		rectrender.setWall(wall);
+		rectrender.setExploadableWall(explodablewall);
+		explosion = BitmapFactory.decodeResource(getResources(), R.drawable.explosion);
+		rectrender.setExplosionBitMap(explosion);
 		robot = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
 		rectrender.setRobotBitMap(robot);
 		bomb = BitmapFactory.decodeResource(getResources(), R.drawable.bomb);

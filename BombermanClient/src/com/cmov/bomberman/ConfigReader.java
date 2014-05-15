@@ -86,7 +86,7 @@ public class ConfigReader {
 	public static Byte[][] gridlayout = null;
 	private static Gameconfig gameconfig = null;
 	private static GameDim gameDim = null;
-
+	public static int gameduration=0;
 	public static Player players = null;
 	private static Logger logger = new Logger();
 	static AssetManager am;
@@ -162,9 +162,10 @@ public class ConfigReader {
 
 	}
 
-	public static void InitializeTheGridFromServer(int row , int column , byte[] servermapbytearray)
+	public static void InitializeTheGridFromServer(int duration,int row , int column , byte[] servermapbytearray)
 	{
 		gridlayout  = new Byte[row][column];
+		gameduration =duration;
 		int rowoffset =0;
 		int columnoffset=0;
 		System.out.println("Map message received from server - "+new String(servermapbytearray));
@@ -188,6 +189,7 @@ public class ConfigReader {
 		
 		setmapdataready(true);
 	}
+
 	public static void ReadGridLayout() throws XmlPullParserException,
 			IOException {
 		XmlPullParser parser = Xml.newPullParser();

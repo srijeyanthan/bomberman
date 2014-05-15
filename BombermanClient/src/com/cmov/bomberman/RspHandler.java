@@ -1,16 +1,14 @@
 package com.cmov.bomberman;
 
 import android.annotation.SuppressLint;
-
-import android.graphics.Bitmap.Config;
-
 import android.widget.TextView;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.cmov.bomberman.BombermanProtocol;
 
 public class RspHandler {
 	private String IncomingBuffer = "";
@@ -118,11 +116,12 @@ public class RspHandler {
 	private void processGridMessage(Map<Integer, String> fieldmap) {
 		int row = Integer.parseInt(fieldmap.get(BombermanProtocol.GRID_ROW));
 		int col = Integer.parseInt(fieldmap.get(BombermanProtocol.GRID_COLUMN));
+		int gameduration = Integer.parseInt(fieldmap.get(BombermanProtocol.GAME_DURATION));
 		String gridelements = fieldmap.get(BombermanProtocol.GRID_ELEMENTS);
 		playerid = Integer.parseInt(fieldmap.get(BombermanProtocol.PLAYER_ID));
 		System.out.println("[INFO] -GridMsg - Row-" + row + "|Col-" + col
 				+ "|GridElements-" + gridelements + "|playerid -" + playerid);
-		ConfigReader.InitializeTheGridFromServer(row, col,
+		ConfigReader.InitializeTheGridFromServer(gameduration,row, col,
 				gridelements.getBytes());
 
 	}
@@ -259,6 +258,7 @@ public class RspHandler {
 
 		}
 	}
+	
 
 	private void processPlayerResumeMessage(Map<Integer, String> fieldmap) {
 		// TODO Auto-generated method stub
@@ -319,9 +319,11 @@ public class RspHandler {
 		Map<Integer, Cor> bombExplosionCordinates = breakTheCordinateInToEasyFormat(bombExplosionCor);
 		for (Map.Entry<Integer, Cor> entry : bombExplosionCordinates.entrySet()) {
 			ConfigReader.UpdateGridLayOutCell(entry.getValue().x,
-					entry.getValue().y, (byte) '-');
+					entry.getValue().y, (byte) 'e');
 		}
 		if (bomberManView != null)
-			bomberManView.postInvalidate();
+			bomberManView.postInvalidate(); // this is invalidate with explosion
+		if (bomberManView != null)
+			bomberManView.postInvalidate(); // after the drawing the this will be caled to invalidate -
 	}
 }
