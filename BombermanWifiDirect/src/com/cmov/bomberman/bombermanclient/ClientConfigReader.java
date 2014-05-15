@@ -27,6 +27,7 @@ public class ClientConfigReader {
 	public static int gridrow=0;
 	public static int gridcolumn=0;
 	public static int gameduration=0;
+	public static int gamedurationwhenserverfailed=0;
 
 private static boolean mapdataready = false;
 	

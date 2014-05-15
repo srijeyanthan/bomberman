@@ -17,6 +17,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 
+
+import com.cmov.bomberman.wifidirect.ConfigReader;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -86,6 +89,7 @@ public class MainActivity extends Activity {
 				if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
 					if (bombermanGameDuration >= 0) {
 						--bombermanGameDuration; 
+						ClientConfigReader.gamedurationwhenserverfailed=bombermanGameDuration;
 						if(bombermanGameDuration <10)
 						{
 							bombermanelapsedTimeTextView.setText("00" + ":0"

@@ -159,7 +159,7 @@ public class ConfigReader {
         } 
          
     }
-    public static void copyNewGridLayout(Byte[][] serverlayout)
+    public static void copyNewGridLayout(Byte[][] serverlayout, int gamedurarion)
     {
     	/*gridlayout = new Byte[13][19];
     	for(int i =0 ; i <13; ++i)
@@ -185,6 +185,7 @@ public class ConfigReader {
 			}
 			gridstring += strfrombyte;
 		}
+    	gridstring += "|"+gamedurarion;
     	writeToFile(gridstring);
     	    	
     }
@@ -193,23 +194,28 @@ public class ConfigReader {
      {
 		gridlayout = new Byte[13][19];
 		String filegriddata = readFromFile();
+		String [] getGamedurationString= filegriddata.split("\\|");
+		System.out.println("This is the gameduration from the file - "+getGamedurationString[1]);
+		gameduationafterserverfailed= Integer.parseInt(getGamedurationString[1]);
+		String newfilegriddataafterremovalofgameduration = getGamedurationString[0];
 		int rowoffset = 0;
 		int columnoffset = 0;
 		int playercounter = 0;
-		for (int i = 0; i < filegriddata.length(); ++i) {
+		for (int i = 0; i < newfilegriddataafterremovalofgameduration.length(); ++i) {
 
-			gridlayout[rowoffset][columnoffset] = filegriddata.getBytes()[i];
+			gridlayout[rowoffset][columnoffset] = newfilegriddataafterremovalofgameduration.getBytes()[i];
 		
 			if (gridlayout[rowoffset][columnoffset] == '1') {
 				playermap.put(playercounter,
 						new Player(rowoffset, columnoffset));
 				gridlayout[rowoffset][columnoffset] = '-';
 				++totalnoplayer;
+				++playercounter;
 			}
 			if (gridlayout[rowoffset][columnoffset] == 'r')
 				++totalrobotcount;
 
-			++playercounter;
+			
 			++columnoffset;
 			if (columnoffset == 19) {
 				++rowoffset;
@@ -238,6 +244,7 @@ public class ConfigReader {
 	static AssetManager am;
 	public static int totalnoplayer=0;
 	public static int totalrobotcount=0;
+	public static int gameduationafterserverfailed=0;
 
 private static boolean mapdataready = false;
 	
@@ -511,6 +518,10 @@ private static boolean mapdataready = false;
 
 			}
 			event = parser.next();
+		}
+		if(isServiceInterubted)
+		{
+			gd = gameduationafterserverfailed*60;
 		}
 		gameconfig = new Gameconfig(gd, et, ed, er, rs, pr, po);
 

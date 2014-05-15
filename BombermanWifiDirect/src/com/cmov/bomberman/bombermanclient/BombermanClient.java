@@ -195,7 +195,7 @@ public abstract class BombermanClient implements Runnable {
 					System.out.println("[Client] Client starting server cofig file ");
 					Context mContext = Mainactivity;
 					com.cmov.bomberman.wifidirect.ConfigReader.mContext = mContext;
-					com.cmov.bomberman.wifidirect.ConfigReader.copyNewGridLayout(ClientConfigReader.getGridLayout());
+					com.cmov.bomberman.wifidirect.ConfigReader.copyNewGridLayout(ClientConfigReader.getGridLayout(),ClientConfigReader.gamedurationwhenserverfailed);
 					Mainactivity.setServerDeadFlag(true);
 					Loginactivity.finish();
 				}
