@@ -30,10 +30,7 @@ public class LogicalWorld {
 		for (int x = 0; x < rows; x++) {
 			for (int y = 0; y < cols; y++) {
 
-				switch (entries[x][y]) {
-				case 'z': {
-					this.twoDWorld[x][y][0] = new Explosion(x, y);
-				}
+				switch (entries[x][y]) {			
 				case 'w': {
 					this.twoDWorld[x][y][0] = new Wall(x, y);
 				}

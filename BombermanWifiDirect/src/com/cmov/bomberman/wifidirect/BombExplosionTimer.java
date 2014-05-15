@@ -11,7 +11,7 @@ import java.util.TimerTask;
  * */
 
 class BombExplosionTimer extends TimerTask {
-	public static final int BOMB_TIME = 2000; //ConfigReader.getGameConfig().explosiontimeout;
+	public static final int BOMB_TIME = (int) (ConfigReader.getGameConfig().explosiontimeout*1000);
 			//ConfigReader.getGameConfig().explosiontimeout;
 
 	private Timer timer = new Timer();

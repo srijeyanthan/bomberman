@@ -22,16 +22,16 @@ public class Game {
 		// Adds player to playground view, set starting position
 		int x = ConfigReader.players.getXCor();
 		int y = ConfigReader.players.getYCor();
-		System.out.println("Player is going to insert in to map x " + x + "|"
-				+ "y " + y);
+		//System.out.println("Player is going to insert in to map x " + x + "|"
+		//		+ "y " + y);
 
 		this.logicalWorld.setElement(x, y, player.getID(), player);
 		player.setPosition(x, y);
 
 		players.add(player);
 		player.setGame(this);
-		System.out.println("Player" + player.getID()
-				+ "added to logical world (" + player.getNickname() + ")");
+		//System.out.println("Player" + player.getID()
+		//		+ "added to logical world (" + player.getNickname() + ")");
 		return true;
 	}
 

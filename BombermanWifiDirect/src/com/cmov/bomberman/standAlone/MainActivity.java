@@ -118,13 +118,16 @@ public class MainActivity extends Activity implements IExplodable,
 											public void onClick(DialogInterface dialog,
 													int which) {
 												
-												Intent i = getBaseContext()
+											/*	Intent i = getBaseContext()
 														.getPackageManager()
 														.getLaunchIntentForPackage(
 																getBaseContext()
 																		.getPackageName());
 												i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-												startActivity(i);
+												startActivity(i);*/
+												android.os.Process
+												.killProcess(android.os.Process
+														.myPid());
 											}
 											
 										})

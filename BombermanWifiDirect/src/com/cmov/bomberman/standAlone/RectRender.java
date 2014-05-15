@@ -65,8 +65,8 @@ public class RectRender implements DrawView.ShapeRenderer {
 	private void CalculateOffset(int Height, int Width) {
 		this.xOffset = Height / row;
 		this.yOffset = Width / column;
-		System.out.println("Offset has bee set xOfset -" + xOffset + "|yOffset"
-				+ yOffset);
+		//System.out.println("Offset has bee set xOfset -" + xOffset + "|yOffset"
+		//		+ yOffset);
 	}
 
 	public void drawPlayer(int x, int y, Paint paint, Canvas canvas) {

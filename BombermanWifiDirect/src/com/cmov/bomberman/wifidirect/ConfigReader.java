@@ -41,14 +41,14 @@ public class ConfigReader {
 
 	public static class Gameconfig {
 		public final int gameduration;
-		public final int explosiontimeout;
+		public final float explosiontimeout;
 		public final int explosionduration;
 		public final int explosionrange;
-		public final int robotspeed;
+		public final float robotspeed;
 		public final int pointperrobotkilled;
 		public final int pointsperopponentkilled;
 
-		private Gameconfig(int gd, int et, int ed, int er, int rs, int pr,
+		private Gameconfig(int gd, float et, int ed, int er, float rs, int pr,
 				int po) {
 			this.gameduration = gd;
 			this.explosiontimeout = et;
@@ -474,10 +474,10 @@ private static boolean mapdataready = false;
 	public static void ReadGameConfig(int gamelevel) throws XmlPullParserException,
 			IOException {
 		int gd = 0;
-		int et = 0;
+		float et = 0;
 		int ed = 0;
 		int er = 0;
-		int rs = 0;
+		float rs = 0;
 		int pr = 0;
 		int po = 0;
 		String configFilename = "config_"+gamelevel+".xml";
@@ -495,7 +495,7 @@ private static boolean mapdataready = false;
 					gd = Integer.parseInt(parser.getAttributeValue(null,
 							"value"));
 				} else if (name.equals("et")) {
-					et = Integer.parseInt(parser.getAttributeValue(null,
+					et = Float.parseFloat(parser.getAttributeValue(null,
 							"value"));
 				} else if (name.equals("ed")) {
 					ed = Integer.parseInt(parser.getAttributeValue(null,
@@ -504,7 +504,7 @@ private static boolean mapdataready = false;
 					er = Integer.parseInt(parser.getAttributeValue(null,
 							"value"));
 				} else if (name.equals("rs")) {
-					rs = Integer.parseInt(parser.getAttributeValue(null,
+					rs = Float.parseFloat(parser.getAttributeValue(null,
 							"value"));
 				} else if (name.equals("pr")) {
 					pr = Integer.parseInt(parser.getAttributeValue(null,
