@@ -1,4 +1,5 @@
 package com.cmov.bomberman.server;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -32,6 +33,7 @@ public class Server implements Runnable {
 
 	// A list of PendingChange instances
 	private List pendingChanges = new LinkedList();
+	public static List<Integer> deadPlayerlist = new ArrayList<Integer>();
 
 	// Maps a SocketChannel to a list of ByteBuffer instances
 	private Map pendingData = new HashMap();
@@ -46,9 +48,9 @@ public class Server implements Runnable {
 		this.worker = worker;
 		InitBombermanGame();
 		startRobotThread();
-		
+
 	}
-	
+
 	private void InitBombermanGame() {
 		mGame = new Game("BombServer");
 		logicalworld = mGame.getLogicalWorld();
@@ -120,7 +122,7 @@ public class Server implements Runnable {
 					} else if (key.isWritable()) {
 						this.write(key);
 					}
-				
+
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -164,12 +166,12 @@ public class Server implements Runnable {
 		if (numRead == -1) {
 			// Remote entity shut the socket down cleanly. Do the
 			// same from our end and cancel the channel.
-			
+
 			System.out.println("[Server] Client has diconnection from server -"+socketChannel.socket().getRemoteSocketAddress().toString());
 			clientList.remove(socketChannel.socket().getRemoteSocketAddress().toString());
 			System.out.println("[Server] Client has sucessfully remvoed from the client list");
 			//remvove the player from the map
-			
+
 			int playerid  = BomberManWorker.useridmap.get(socketChannel.socket().getRemoteSocketAddress().toString());
 			System.out.println("[Server] Player id is removing from the map -" +playerid);
 			mGame.removePlayer(playerid);
@@ -180,7 +182,7 @@ public class Server implements Runnable {
 			}
 			key.channel().close();
 			key.cancel();
-			
+
 			// some of the client has diconnected , send the message to all the client except disconnected socket
 			String noOfPlayerMsg = "<" + BombermanProtocol.MESSAGE_TYPE
 					+ "=" + BombermanProtocol.NUMBER_OF_PLAYERS_MESSAGE
@@ -189,9 +191,9 @@ public class Server implements Runnable {
 					.entrySet()) {
 				entry.getValue().server.send(entry.getValue().socket,
 						noOfPlayerMsg.getBytes());
-				
+
 			}
-			
+
 			return;
 		}
 

@@ -23,6 +23,7 @@ public class BombermanProtocol {
 	public static final int RESUME_PLAYER_POS=21;
 	public static final int SCORE=22;
     public static final int NUMBER_OF_PLAYERS=23;
+    public static final int GAME_DURATION=24;
 
 	public static final byte JOIN_MESSAGE = 'J';
 	public static final byte PLAYER_MOVEMENT_MESSAGE = 'P';

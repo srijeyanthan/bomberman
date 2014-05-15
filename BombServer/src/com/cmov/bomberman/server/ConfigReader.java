@@ -106,7 +106,7 @@ public class ConfigReader {
 
 		String configFilename = "config_"+gamelevel+".xml";
 		ReadGameDim();
-		ReadGameConfig();
+		ReadGameConfig(gamelevel);
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
@@ -194,15 +194,68 @@ public class ConfigReader {
 		gameDim = new GameDim(maxplayer, 13, 19);
 	}
 
-	public static void ReadGameConfig() {
-		int gd = 30;
-		int et = 1;
-		int ed = 1;
-		int er = 1;
-		int rs = 1;
-		int pr = 300;
-		int po = 1000;
+	public static void ReadGameConfig(int gamelevel) {
+		String configFilename = "config_"+gamelevel+".xml";
+		int gd = 0;
+		int et = 0;
+		int ed = 0;
+		int er = 0;
+		int rs = 0;
+		int pr = 0;
+		int po = 0;
+		try {
 
+			File fXmlFile = new File(configFilename);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+
+			doc.getDocumentElement().normalize();
+			System.out.println("Root element :"
+					+ doc.getDocumentElement().getNodeName());
+			NodeList nList = doc.getElementsByTagName("gameconfig");
+
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+
+				Node nNode = nList.item(temp);
+
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+					Element eElement = (Element) nNode;
+
+					gd = Integer.parseInt(eElement.getElementsByTagName("gd")
+							.item(0).getTextContent());
+					et = Integer.parseInt(eElement.getElementsByTagName("et")
+							.item(0).getTextContent());
+					ed = Integer.parseInt(eElement.getElementsByTagName("ed")
+							.item(0).getTextContent());
+					er = Integer.parseInt(eElement.getElementsByTagName("er")
+							.item(0).getTextContent());
+					rs = Integer.parseInt(eElement.getElementsByTagName("rs")
+							.item(0).getTextContent());
+					pr = Integer.parseInt(eElement.getElementsByTagName("pr")
+							.item(0).getTextContent());
+					po = Integer.parseInt(eElement.getElementsByTagName("po")
+							.item(0).getTextContent());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		    }
+
+		System.out.println("[SERVER] ************************** SERVER GAME CONFIG ***********************");
+		/*the following game configurations are denotes gd - Game duraion, et- explosion timout
+	     ed - explosion duratoin, er - explosion range rs - robot speed , pr-points per robots killed
+	     po - points per opponent killed */
+		System.out.println("[SERVER] GAME DURATION -"+gd);
+		System.out.println("[SERVER] EXPLOSION TIMEOUT -"+et);
+		System.out.println("[SERVER] EXPLOSION DURATION -"+ed);
+		System.out.println("[SERVER] EXPLOSION RANGE -"+er);
+		System.out.println("[SERVER] ROBOT SPEED -"+rs);
+		System.out.println("[SERVER] POINTS PER ROBOT KILLED -"+pr);
+		System.out.println("[SERVER] POINTS PER OPPONENT KILLED -"+po);
+		
 		gameconfig = new Gameconfig(gd, et, ed, er, rs, pr, po);
 
 	}

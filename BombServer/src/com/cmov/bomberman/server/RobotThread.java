@@ -347,8 +347,6 @@ public class RobotThread extends Thread {
 					}
 					Phirobotmovelist.clear();
 					Robotmovementbuffer += ">";
-					/*System.out.println("Robot movement buffer is ready - "
-							+ Robotmovementbuffer);*/
 					robotActiviy.RobotMovedAtLogicalLayer(Robotmovementbuffer);
 
 					// ConfigReader.UnlockTheGrid();
