@@ -31,4 +31,6 @@
     <string name="enter_username">Enter A Username to join the game</string>
     <string name="Disconnect"></string>
     <string name="Quit">DisconnectOtherPeers</string>
+    <string name="standAlone">SINGLE PLAYER</string>
+    <string name="wifiDirect">MULTI PLAYER</string>
 </resources>

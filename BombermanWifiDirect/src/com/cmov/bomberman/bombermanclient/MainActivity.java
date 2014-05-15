@@ -18,6 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 
+import com.cmov.bomberman.R;
 import com.cmov.bomberman.wifidirect.ConfigReader;
 
 import android.os.Bundle;

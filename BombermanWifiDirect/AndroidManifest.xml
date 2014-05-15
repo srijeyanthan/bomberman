@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.cmov.bomberman.bombermanclient"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.cmov.bomberman"
     android:versionCode="1" android:versionName="1.0">
 
     <uses-sdk android:minSdkVersion="14" />
@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Holo">
         <activity
-            android:name=".WiFiDirectActivity"
+            android:name=".bombermanclient.StartActivity"
             android:label="@string/app_name" android:launchMode="singleTask">
             <intent-filter>
                 <action
@@ -28,9 +28,17 @@
                     android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+          <activity
+            android:name=".bombermanclient.WiFiDirectActivity"
+            android:label="@string/app_name" android:launchMode="singleTask">
+            <intent-filter>
+                <category
+                    android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> 
         
         <activity
-            android:name=".LoginActivity"
+            android:name=".bombermanclient.LoginActivity"
             android:label="@string/app_name" android:launchMode="singleTask">
             <intent-filter>
                 <category
@@ -39,13 +47,23 @@
         </activity>
         
          <activity
-            android:name=".MainActivity"
+            android:name=".bombermanclient.MainActivity"
             android:label="@string/app_name" android:launchMode="singleTask">
             <intent-filter>
                 <category
                     android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+         <activity
+            android:name=".standAlone.MainActivity"
+            android:label="@string/app_name" android:launchMode="singleTask">
+            <intent-filter>
+                <category
+                    android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
 
         <!-- Used for transferring files  after a successful connection -->
         <service android:enabled="true" android:name=".FileTransferService" />

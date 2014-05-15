@@ -3,6 +3,7 @@ package com.cmov.bomberman.bombermanclient;
 
 import java.io.IOException;
 
+import com.cmov.bomberman.R;
 import com.cmov.bomberman.bombermanclient.MainActivity.GameState;
 
 import android.net.wifi.p2p.WifiP2pManager;
@@ -21,10 +22,12 @@ public class LoginActivity extends Activity {
 	private EditText textField;
 	@SuppressWarnings("unused")
 	private Button button;
-	private String playername;
+	//private String playername;
 	public Intent mainActivity;
 	public static  WifiP2pManager manager;
 	public static  Channel channel;
+	private String playername = WiFiDirectActivity.userName;
+	private int level = WiFiDirectActivity.level;
 	Runnable runnable = new Runnable() {
 		public void run() {
 
@@ -51,6 +54,8 @@ public class LoginActivity extends Activity {
 		setContentView(R.layout.activity_login);
 		textField = (EditText) findViewById(R.id.editText1);
 		button = (Button) findViewById(R.id.button1);
+		textField.setText(playername);
+		
 		
 		View.OnClickListener handler = new View.OnClickListener(){
 		    public void onClick(View v) {
@@ -58,8 +63,8 @@ public class LoginActivity extends Activity {
 		        switch (v.getId()) {
 
 		            case R.id.button1: 
-		            	playername = textField.getText().toString();
-						textField.setText("");
+		            	//playername = textField.getText().toString();
+						//textField.setText("");
 						BombermanClient.setPlayerName(playername);
 						BombermanClient.SetLoginActivity(LoginActivity.this);
 						

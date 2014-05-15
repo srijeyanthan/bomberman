@@ -2,6 +2,7 @@
 package com.cmov.bomberman.bombermanclient;
 
 
+import com.cmov.bomberman.R;
 import com.cmov.bomberman.bombermanclient.DeviceListFragment.DeviceActionListener;
 
 import android.app.Activity;
@@ -38,6 +39,8 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
     private WifiP2pManager manager;
     private boolean isWifiP2pEnabled = false;
     private boolean retryChannel = false;
+    public static String userName;
+    public static int level;
 
     private final IntentFilter intentFilter = new IntentFilter();
     private Channel channel;
@@ -53,6 +56,9 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent myIntent = getIntent();
+		userName = myIntent.getStringExtra("userName");
+		level = Integer.parseInt(myIntent.getStringExtra("level"));
         setContentView(R.layout.main);
 
         // add necessary intent values to be matched.
