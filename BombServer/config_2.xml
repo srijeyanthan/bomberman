@@ -29,7 +29,7 @@
      po - points per opponent killed -->
       <gameconfig>
         <gd>120</gd>
-        <et>1500</et> <!-- this is acutall milli secod  -->
+        <et>1.5</et> <!-- this is acutall milli secod  -->
         <ed>1</ed>
         <er>3</er> 
         <rs>1</rs>   <!-- this actualyl means, each 0.5 second , robot has to move 1 cell  -->

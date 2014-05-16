@@ -29,14 +29,14 @@ public class ConfigReader {
 	
 	public static class Gameconfig {
 		public final int gameduration;
-		public final int explosiontimeout;
+		public final float explosiontimeout;
 		public final int explosionduration;
 		public final int explosionrange;
-		public final int robotspeed;
+		public final float robotspeed;
 		public final int pointperrobotkilled;
 		public final int pointsperopponentkilled;
 
-		private Gameconfig(int gd, int et, int ed, int er, int rs, int pr,
+		private Gameconfig(int gd, float et, int ed, int er, float rs, int pr,
 				int po) {
 			this.gameduration = gd;
 			this.explosiontimeout = et;
@@ -197,10 +197,10 @@ public class ConfigReader {
 	public static void ReadGameConfig(int gamelevel) {
 		String configFilename = "config_"+gamelevel+".xml";
 		int gd = 0;
-		int et = 0;
+		float et = 0;
 		int ed = 0;
 		int er = 0;
-		int rs = 0;
+		float rs = 0;
 		int pr = 0;
 		int po = 0;
 		try {
@@ -226,13 +226,13 @@ public class ConfigReader {
 
 					gd = Integer.parseInt(eElement.getElementsByTagName("gd")
 							.item(0).getTextContent());
-					et = Integer.parseInt(eElement.getElementsByTagName("et")
+					et = Float.parseFloat(eElement.getElementsByTagName("et")
 							.item(0).getTextContent());
 					ed = Integer.parseInt(eElement.getElementsByTagName("ed")
 							.item(0).getTextContent());
 					er = Integer.parseInt(eElement.getElementsByTagName("er")
 							.item(0).getTextContent());
-					rs = Integer.parseInt(eElement.getElementsByTagName("rs")
+					rs = Float.parseFloat(eElement.getElementsByTagName("rs")
 							.item(0).getTextContent());
 					pr = Integer.parseInt(eElement.getElementsByTagName("pr")
 							.item(0).getTextContent());

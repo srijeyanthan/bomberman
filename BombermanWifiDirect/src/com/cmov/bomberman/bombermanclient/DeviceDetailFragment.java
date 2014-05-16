@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.cmov.bomberman.R;
 import com.cmov.bomberman.bombermanclient.DeviceListFragment.DeviceActionListener;
 
 import java.io.File;
@@ -30,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -43,6 +45,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
     private WifiP2pDevice device;
     private WifiP2pInfo info;
     ProgressDialog progressDialog = null;
+    private int level = WiFiDirectActivity.level;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -129,11 +132,11 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         	Context mContext = getActivity();
         	try {
         		com.cmov.bomberman.wifidirect.ConfigReader.mContext=mContext;
-				com.cmov.bomberman.wifidirect.ConfigReader.InitConfigParser(1);
+				com.cmov.bomberman.wifidirect.ConfigReader.InitConfigParser(level);
 			} catch (XmlPullParserException e) {
 				e.printStackTrace();
 			}
-        	new com.cmov.bomberman.wifidirect.BombServerStart();
+        	new com.cmov.bomberman.wifidirect.BombServerStart();       	
         	 Intent loginactivity = new Intent(getActivity(),LoginActivity.class);
              startActivity(loginactivity);
         } else if (info.groupFormed) {

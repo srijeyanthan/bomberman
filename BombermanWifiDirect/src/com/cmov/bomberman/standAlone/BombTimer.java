@@ -1,4 +1,4 @@
-package com.cmov.bomberman.wifidirect;
+package com.cmov.bomberman.standAlone;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -10,14 +10,13 @@ import java.util.TimerTask;
  *  we could read this configuration from config file.
  * */
 
-class BombExplosionTimer extends TimerTask {
+class BombTimer extends TimerTask {
 	public static final int BOMB_TIME = (int) (ConfigReader.getGameConfig().explosiontimeout*1000);
-			//ConfigReader.getGameConfig().explosiontimeout;
 
 	private Timer timer = new Timer();
 	private Bomb bomb;
 
-	public BombExplosionTimer(Bomb bomb) {
+	public BombTimer(Bomb bomb) {
 		this.bomb = bomb;
 		timer.schedule(this, BOMB_TIME / 6, BOMB_TIME / 6);
 	}

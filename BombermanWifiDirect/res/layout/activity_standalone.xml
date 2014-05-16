@@ -75,7 +75,7 @@
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"/>
 		    
-		    <com.cmov.bomberman.bombermanclient.DrawView
+		    <com.cmov.bomberman.standAlone.DrawView
 		        android:id="@+id/bckg"
 		        android:layout_below="@+id/upprSeparator" 
 		        android:background="#336600"
@@ -155,3 +155,4 @@
          />
      
 </RelativeLayout>
+

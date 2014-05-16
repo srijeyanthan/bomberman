@@ -37,7 +37,9 @@ public class RobotThread extends Thread {
 	private IExplodable ExplodableActivity;
     private Object valueLock = new Object();
     private boolean value = false; 
-    private int robotSpeed = ConfigReader.getGameConfig().robotspeed;
+    private float robotSpeed = ConfigReader.getGameConfig().robotspeed;
+    private boolean dowereallyhavearobotmovementdataforloop1 =false;
+    private boolean dowereallyhavearobotmovementdataforloop2 =false;
 	public RobotThread(int row, int col, BomberManWorker server) {
 		super();
 
@@ -272,7 +274,8 @@ public class RobotThread extends Thread {
 		      }  
 			if ((getGameState() == GameState.RUN)) {
 				try {
-					Thread.sleep(2000);
+					int rs = (int) (robotSpeed*1000);
+					Thread.sleep(rs);
 					// ConfigReader.LockTheGrid();
 					lock.lock();
 					int RobotCounter = 0;
@@ -313,6 +316,7 @@ public class RobotThread extends Thread {
 							Robotmovementbuffer += x + "," + y + ".";
 							updatedRobotPos.get(iter).x = -1;
 							updatedRobotPos.get(iter).y = -1;
+							dowereallyhavearobotmovementdataforloop1= true;
 
 						}
 						++iter;
@@ -336,6 +340,7 @@ public class RobotThread extends Thread {
 							Robotmovementbuffer += x + "," + y + ".";
 							originalRbotPos.get(iter).x = -1;
 							originalRbotPos.get(iter).y = -1;
+							dowereallyhavearobotmovementdataforloop2=true;
 							ConfigReader.UpdateGridLayOutCell(x, y, (byte) '-');
 							this.logicalworld.setElement(x, y, 0, null);
 						}
@@ -349,15 +354,16 @@ public class RobotThread extends Thread {
 					}
 					Phirobotmovelist.clear();
 					Robotmovementbuffer += ">";
-					/*System.out.println("Robot movement buffer is ready - "
-							+ Robotmovementbuffer);*/
-					robotActiviy.RobotMovedAtLogicalLayer(Robotmovementbuffer);
+					if (dowereallyhavearobotmovementdataforloop2
+							&& dowereallyhavearobotmovementdataforloop1) {
+						robotActiviy
+								.RobotMovedAtLogicalLayer(Robotmovementbuffer);
+					}
 
-					// ConfigReader.UnlockTheGrid();
+					dowereallyhavearobotmovementdataforloop2 = false;
+					dowereallyhavearobotmovementdataforloop1 = false;
+
 					lock.unlock();
-					/*System.out
-							.println("_____________ Robot thread is going to sleep now ____________");*/
-					// Thread.sleep(2000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
