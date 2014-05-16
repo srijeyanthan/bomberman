@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map>
+    <description>
+	     Add some information here - cmove project 
+    </description> 
+    <board>
+        <maxplayers value="3"/>
+        <height        value="13"/>
+        <width     value="19"/>
+    </board>   
+    <field>
+        <r1>w w w w w w w w w w w w w w w w w w w</r1>
+        <r2>w - 2 - - - - - r - - - - o - - - - w</r2>
+        <r3>w w o w - w - w - w - w - w - w - w w</r3>
+        <r4>w - o - - o - - - - - r - - - - - - w</r4>
+        <r5>w w o w o w - w - w - w - w o w - w w</r5>
+        <r6>w - - o - - - - - 1 - - o - r - - 3 w</r6>
+    	<r7>w w - w - w - w - w - w - w - w - - w</r7>
+ 		<r8>w - - o - o - - o - - o - o - - - o w</r8>
+        <r9>w w o w - w o w o w - w - w - w - w w</r9>
+       	<r10>w - - o - o o - - r - - - w - - - - w</r10>
+ 		<r11>w w - w r w o w o w - w o w o w o w w</r11>
+ 		<r12>w 4 - - - - - - r o o - o - o - o r w</r12>
+ 	    <r13>w w w w w w w w w w w w w w w w w w w</r13>
+    </field>
+
+    <!-- the following game configurations are denotes gd - Game duraion, et- explosion timout
+     ed - explosion duratoin, er - explosion range rs - robot speed , pr-points per robots killed
+     po - points per opponent killed -->
+      <gameconfig>
+        <gd>120</gd>
+        <et>1.5</et> <!-- this is acutall milli secod  -->
+        <ed>1</ed>
+        <er>3</er> 
+        <rs>1</rs>   <!-- this actualyl means, each 0.5 second , robot has to move 1 cell  -->
+        <pr>10</pr>
+        <po>100</po>
+    </gameconfig>
+</map>

@@ -1,0 +1,26 @@
+#########################
+README
+% Group - 2
+% May 16th 2014
+#########################
+
+The submitted zip file contains two main folders
+
+1. WiFiDirect+StandAlone
+Compile and run as an android application..You can start both Multiplayer decentralized (WiFiDirect) and Singleplayer Game from here.
+
+2.Centralized Version
+
+This contains two folders
+1. BombermanClient - { Android clients connecting to the server }
+Compile and run as an android application. 
+Note: You have to change the server address and port in the BombermanClient.java file
+
+2. BombermanServer - { Centralized Server }
+compile and run as a java application
+
+
+Note: You can also connect to the centralized server through a telnet connection by sending a join message to simulate multiple clients connection.
+E.g.
+telnet 194.210.176.179 9090  # Specify the server address and port
+<1=J|2=Dan>                  # Send a join message in the format of the specified protocol
